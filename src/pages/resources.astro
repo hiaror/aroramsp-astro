@@ -1,0 +1,92 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+<Layout
+  title="Resources · AroraMSP"
+  description="Open-source PowerShell tooling and reference guides for Microsoft 365, Intune, and Entra ID. Sanitised, production-tested repositories for IT engineers."
+  page="resources"
+  canonical="https://aroramsp.com/resources"
+  ogTitle="Resources - AroraMSP"
+  ogDescription="Open-source PowerShell tooling and reference guides for Microsoft 365, Intune, and Entra ID. Sanitised, production-tested repositories for IT engineers."
+>
+  <meta slot="head" name="keywords" content="Microsoft Graph PowerShell, Windows LAPS, Exchange Online, Intune, Entra ID, MBR2GPT, hybrid Entra registration, open source PowerShell" />
+
+  <section class="page wrap">
+    <div class="page-head">
+      <div class="sec-label">02 · resources</div>
+      <h1>Open-source tooling.</h1>
+      <p>Sanitised, production-tested PowerShell scripts, reference guides, and sample outputs published as public GitHub repositories. Each repo includes usage examples and a breakdown of what the tool does and why.</p>
+    </div>
+
+    <div class="resource-anchors">
+      <a href="#open-source-tooling" class="resource-anchor-pill">// open-source tooling</a>
+      <a href="#sample-outputs" class="resource-anchor-pill">// sample outputs</a>
+    </div>
+
+    <div class="resource-section">
+      <div class="sec-label" id="open-source-tooling">// open-source tooling</div>
+      <div class="resource-list">
+        <a href="https://github.com/hiaror/graph-exchange-mailbox-cleanup" class="resource-card" target="_blank" rel="noopener">
+          <div class="resource-meta">github.com/hiaror/graph-exchange-mailbox-cleanup</div>
+          <h3>Exchange Online mailbox cleanup via Microsoft Graph PowerShell</h3>
+          <p>CSV-driven Exchange Online mailbox cleanup using Microsoft Graph. Dry-run first, multi-pass deletes with retry logic, and a per-mailbox transient ceiling so one noisy mailbox cannot stall the run. Audit-grade CSV reporting included.</p>
+          <span class="read">view on github <span class="arrow">→</span></span>
+        </a>
+
+        <a href="https://github.com/hiaror/exo-mailbox-size-report" class="resource-card" target="_blank" rel="noopener">
+          <div class="resource-meta">github.com/hiaror/exo-mailbox-size-report</div>
+          <h3>Exchange Online mailbox size reporting</h3>
+          <p>PowerShell that pulls mailbox sizes from Exchange Online into a sortable CSV. Normalises ByteQuantifiedSize strings into numeric GB columns, handles primary and archive mailboxes, ready for tenant-to-tenant migration planning.</p>
+          <span class="read">view on github <span class="arrow">→</span></span>
+        </a>
+
+        <a href="https://github.com/hiaror/windows11-uefi-upgrade-guide" class="resource-card" target="_blank" rel="noopener">
+          <div class="resource-meta">github.com/hiaror/windows11-uefi-upgrade-guide</div>
+          <h3>Legacy BIOS to UEFI conversion and Windows 11 25H2 upgrade guide</h3>
+          <p>Step-by-step guide to convert MBR to GPT and switch from Legacy BIOS to UEFI without reinstalling Windows, then upgrade to Windows 11 25H2. Covers MBR2GPT, BitLocker handling, UEFI boot repair, and the in-place upgrade path.</p>
+          <span class="read">view on github <span class="arrow">→</span></span>
+        </a>
+
+        <a href="https://github.com/hiaror/intune-laps-fleet-audit-graph" class="resource-card" target="_blank" rel="noopener">
+          <div class="resource-meta">github.com/hiaror/intune-laps-fleet-audit-graph</div>
+          <h3>Windows LAPS fleet audit via Microsoft Graph</h3>
+          <p>End-to-end Windows LAPS fleet audit via Microsoft Graph PowerShell. Cross-references Intune inventory against escrow records, categorises devices by Windows 11 24H2 eligibility for WLapsAdmin, and confirms per-device account names through the beta endpoint.</p>
+          <span class="read">view on github <span class="arrow">→</span></span>
+        </a>
+
+        <a href="https://github.com/hiaror/intune-laps-hybrid-registration-fix" class="resource-card" target="_blank" rel="noopener">
+          <div class="resource-meta">github.com/hiaror/intune-laps-hybrid-registration-fix</div>
+          <h3>Hybrid Entra registration fix for LAPS escrow failures</h3>
+          <p>Diagnose and remediate broken Hybrid Entra ID device registration that silently blocks Windows LAPS escrow. Surfaces alternativeSecurityIds via the Graph beta endpoint, with a verified dsregcmd leave-and-rejoin remediation procedure.</p>
+          <span class="read">view on github <span class="arrow">→</span></span>
+        </a>
+
+        <a href="https://github.com/hiaror/aroramsp-audit-scripts" class="resource-card" target="_blank" rel="noopener">
+          <div class="resource-meta">github.com/hiaror/aroramsp-audit-scripts</div>
+          <h3>AroraMSP M365 Audit Scripts</h3>
+          <p>Two PowerShell scripts that run a full Microsoft 365 tenant security audit and mailbox storage report. Certificate-based app authentication, 20 security checks across identity, email, Conditional Access and licensing, self-contained HTML output reports. No third-party dependencies.</p>
+          <span class="read">view on github <span class="arrow">→</span></span>
+        </a>
+      </div>
+    </div>
+
+    <div class="resource-section">
+      <div class="sec-label" id="sample-outputs">// sample outputs</div>
+      <div class="sample-list">
+        <a href="/blog/samples/M365-Audit-Report-Sample" class="resource-card">
+          <div class="resource-meta">aroramsp.com/blog/samples</div>
+          <h3>Sample M365 Tenant Audit Report</h3>
+          <p>A real audit report output generated against a sample tenant. Shows exactly what you receive after an AroraMSP tenant health check - 20 checks across five categories with PASS, FAIL, and WARNING status per finding.</p>
+          <span class="read">view sample <span class="arrow">→</span></span>
+        </a>
+
+        <a href="/blog/samples/Mailbox-Report-Sample" class="resource-card">
+          <div class="resource-meta">aroramsp.com/blog/samples</div>
+          <h3>Sample Mailbox Storage Report</h3>
+          <p>A real mailbox report output showing Exchange Online mailbox sizes, archive status, and quota usage across a sample tenant. Demonstrates the sortable HTML report format generated by the audit scripts.</p>
+          <span class="read">view sample <span class="arrow">→</span></span>
+        </a>
+      </div>
+    </div>
+  </section>
+</Layout>

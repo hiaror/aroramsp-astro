@@ -1,0 +1,76 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+<Layout
+  title="Process · AroraMSP"
+  description="How we work together: four clear stages, honest timelines, no surprise invoices."
+  page="process"
+  canonical="https://aroramsp.com/process"
+  ogTitle="Process - AroraMSP"
+  ogDescription="How we work together: four clear stages, honest timelines, no surprise invoices."
+>
+  <section class="page wrap">
+    <div class="page-head">
+      <div class="sec-label">02 · process</div>
+      <h2>How we work together.</h2>
+      <p>Four clear stages. Honest timelines. No surprise invoices at the end.</p>
+    </div>
+
+    <div class="process-steps" id="steps">
+      <div class="step" data-step="1" aria-expanded="true">
+        <div class="step-head">
+          <span class="step-num">01</span>
+          <h4>Discovery call</h4>
+          <span class="chev">›</span>
+        </div>
+        <div class="step-body">
+          A 30-minute free call. I ask where it hurts, you tell me what you've tried. No sales pitch, no deck. If I'm not the right fit, I'll say so and point you somewhere that is.
+          <span class="dur">// 30 min · free</span>
+        </div>
+      </div>
+      <div class="step" data-step="2" aria-expanded="false">
+        <div class="step-head">
+          <span class="step-num">02</span>
+          <h4>Tenant audit</h4>
+          <span class="chev">›</span>
+        </div>
+        <div class="step-body">
+          Read-only access to your tenant. I run the full audit covering security posture, identity config, license utilization, and mail flow, and send back a short, plain-English findings doc.
+          <span class="dur">// 3 to 5 days · fixed fee</span>
+        </div>
+      </div>
+      <div class="step" data-step="3" aria-expanded="false">
+        <div class="step-head">
+          <span class="step-num">03</span>
+          <h4>Scoped plan</h4>
+          <span class="chev">›</span>
+        </div>
+        <div class="step-body">
+          You get a prioritised plan: what to fix now, what can wait, and what's nice-to-have. Every item has an effort estimate and a fixed price. You pick what moves forward.
+          <span class="dur">// 1 to 2 days</span>
+        </div>
+      </div>
+      <div class="step" data-step="4" aria-expanded="false">
+        <div class="step-head">
+          <span class="step-num">04</span>
+          <h4>Execution</h4>
+          <span class="chev">›</span>
+        </div>
+        <div class="step-body">
+          I do the work. You get a weekly status note, a live change log, and documentation checked into your own repo or SharePoint. Nothing lives in my head.
+          <span class="dur">// 1 to 3 weeks, scope-dependent</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    document.querySelectorAll('.step').forEach((step) => {
+      step.addEventListener('click', () => {
+        const isOpen = step.getAttribute('aria-expanded') === 'true';
+        document.querySelectorAll('.step').forEach((s) => s.setAttribute('aria-expanded', 'false'));
+        if (!isOpen) step.setAttribute('aria-expanded', 'true');
+      });
+    });
+  </script>
+</Layout>

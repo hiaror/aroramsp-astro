@@ -1,0 +1,101 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+<Layout
+  title="About · AroraMSP"
+  description="Himanshu Arora is an independent Microsoft 365 consultant with 11+ years in the Microsoft ecosystem. Serving 50 to 500 seat organisations globally. Specialising in Intune, Entra ID, Conditional Access, Exchange Online, and PowerShell automation."
+  page="about"
+  canonical="https://aroramsp.com/about"
+  ogTitle="About AroraMSP"
+  ogDescription="11 years in the Microsoft ecosystem. Independent Microsoft 365 consulting practice run by Himanshu Arora, focused on tenant audits, identity, and PowerShell automation."
+>
+  <section class="page wrap">
+    <div class="page-head">
+      <div class="sec-label">03 · about</div>
+      <picture>
+        <source srcset="/himanshu-arora.webp" type="image/webp" />
+        <img src="/himanshu-arora.png" alt="Himanshu Arora" class="hero-headshot" width="111" height="111" />
+      </picture>
+      <div class="about-links">
+        <a href="https://linkedin.com/in/himanshusac" class="about-pill" target="_blank" rel="noopener">Connect on LinkedIn</a>
+        <a href="https://github.com/hiaror" class="about-pill" target="_blank" rel="noopener">GitHub</a>
+        <a href="mailto:himanshu@aroramsp.com" class="about-pill">Email Me</a>
+        <a href="https://outlook.office.com/bookwithme/user/583f5a3aa6e24f3fa36ea6bf9f4d2ba5@aroramsp.com/meetingtype/Vz8AH2J0jkiWmYCcAuw7bw2?anonymous&ismsaljsauthenabled&ep=mcard" class="about-pill" target="_blank" rel="noopener">Book a 30-min call</a>
+      </div>
+      <h1>11 years in the Microsoft ecosystem. Still in the thick of it.</h1>
+    </div>
+
+    <div class="about">
+      <div class="about-lead">
+        <p>
+          I started in Microsoft cloud support in 2014, working escalations across Exchange
+          Online, Entra ID, and Intune for enterprise customers across North America, Europe,
+          and Asia Pacific. From there I moved into Microsoft partner organisations,
+          delivering M365 security, Intune rollouts, and hybrid identity projects for
+          enterprise clients globally.
+        </p>
+        <p>
+          I take on a small number of fixed-fee engagements each month. If your team is
+          dealing with an M365 security gap, a broken Intune rollout, or a hybrid identity
+          problem that has gone unresolved too long, that is exactly where I work best.
+        </p>
+        <div class="sig">// Himanshu Arora · founder, AroraMSP</div>
+
+        <div class="sec-label engage-head">// recent engagements</div>
+        <div class="cases">
+          <div class="case">
+            <h4>Windows LAPS Escrow Failure - Hybrid Entra Environment</h4>
+            <p>340 devices silently failing to escrow LAPS passwords. Helpdesk locked out of local admin credentials during incidents.</p>
+            <p>Root cause: stale alternativeSecurityIds breaking Hybrid Entra trust at the authentication layer. Diagnosed via dsregcmd and Graph beta API. Resolved via controlled leave/join remediation cycle across all affected devices.</p>
+            <p class="outcome">Outcome: full escrow restored, zero helpdesk calls after remediation.</p>
+          </div>
+          <hr class="case-divider" />
+          <div class="case">
+            <h4>Autopilot Deployment with Custom LOB App Packaging</h4>
+            <p>180 devices needing to move from manual imaging to fully automated Autopilot. LOB applications undocumented, never packaged for Intune.</p>
+            <p>Packaged all apps as Win32 with dependency chaining, designed Autopilot profiles with ESP, compliance policies, and Conditional Access enforcement.</p>
+            <p class="outcome">Outcome: completed in 3 weeks, zero reimaging, technician touchtime down from 3 hours to under 20 minutes per device.</p>
+          </div>
+          <hr class="case-divider" />
+          <div class="case">
+            <h4>Legacy Authentication Eliminated Before ISO Audit</h4>
+            <p>500-seat tenant with 23% of sign-ins still on basic auth. ISO audit deadline approaching with no enforcement policy in place.</p>
+            <p>Analysed 30 days of sign-in logs, identified every legacy auth source, executed phased Conditional Access rollout using report-only mode first to avoid disruption.</p>
+            <p class="outcome">Outcome: legacy auth reduced from 23% to 0% before the audit deadline.</p>
+          </div>
+        </div>
+
+        <div class="certs">
+          <div class="cert">
+            <img src="/badges/microsoft-certified-expert-badge.svg" alt="Microsoft Certified Expert badge" class="cert-badge" />
+            <div><div class="n">M365 Certified</div><div class="t">Administrator Expert</div></div>
+          </div>
+          <div class="cert">
+            <img src="/badges/microsoft-certified-associate-badge.svg" alt="Microsoft Certified Associate badge" class="cert-badge" />
+            <div><div class="n">Microsoft Certified</div><div class="t">Identity &amp; Access Admin</div></div>
+          </div>
+          <div class="cert">
+            <img src="/badges/microsoft-certified-fundamentals-badge.svg" alt="Microsoft Certified Fundamentals badge" class="cert-badge" />
+            <div><div class="n">Microsoft Certified</div><div class="t">Azure Fundamentals</div></div>
+          </div>
+          <div class="cert">
+            <img src="/badges/microsoft-certified-expert-badge.svg" alt="Microsoft Certified Expert badge" class="cert-badge" />
+            <div><div class="n">MCSE</div><div class="t">Productivity Solutions Expert</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="about-card">
+        <div class="head"><span>// profile</span><span>v.arora</span></div>
+        <div class="row"><span class="k">name</span><span class="v">Himanshu Arora</span></div>
+        <div class="row"><span class="k">role</span><span class="v">founder · AroraMSP</span></div>
+        <div class="row"><span class="k">experience</span><span class="v"><span class="hl">11+ yrs</span> Microsoft ecosystem</span></div>
+        <div class="row"><span class="k">depth</span><span class="v">Exchange · Entra · Intune · LAPS</span></div>
+        <div class="row"><span class="k">stack</span><span class="v">PowerShell · Graph API · Intune · Entra</span></div>
+        <div class="row"><span class="k">regions</span><span class="v">worldwide</span></div>
+        <div class="row"><span class="k">clients</span><span class="v">50 to 500 seat orgs · worldwide</span></div>
+        <div class="row"><span class="k">status</span><span class="v"><span style="color:var(--good)">●</span> accepting clients</span></div>
+      </div>
+    </div>
+  </section>
+</Layout>

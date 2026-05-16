@@ -1,0 +1,129 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+<Layout
+  title="Contact · AroraMSP"
+  description="Get in touch with Himanshu Arora, independent Microsoft 365 consultant. Book a free 30-minute discovery call or send a message. Response within one business day."
+  page="contact"
+  canonical="https://aroramsp.com/contact"
+  ogTitle="Contact AroraMSP"
+  ogDescription="Tell me where it hurts. Discovery calls are free, no deck, no commitment. Reply within one business day."
+>
+  <section class="page wrap">
+    <div class="page-head">
+      <div class="sec-label">04 · contact</div>
+      <h1>Get in Touch</h1>
+      <h2>Let's scope your tenant.</h2>
+      <p>Tell me where it hurts. I'll reply within one business day, usually faster. Discovery calls are free and have no deck.</p>
+    </div>
+
+    <div class="contact-grid">
+      <form class="form" id="contactForm" action="https://formspree.io/f/xpqbjpln" method="POST">
+        <div class="field row">
+          <div class="field">
+            <label>Name</label>
+            <input type="text" name="name" required placeholder="Jane Doe" />
+          </div>
+          <div class="field">
+            <label>Company</label>
+            <input type="text" name="company" placeholder="Acme Legal" />
+          </div>
+        </div>
+        <div class="field">
+          <label>Work email</label>
+          <input type="email" name="email" required placeholder="jane@acmelegal.com" />
+        </div>
+        <div class="field row">
+          <div class="field">
+            <label>Users</label>
+            <select name="users">
+              <option>1 to 10</option>
+              <option>11 to 25</option>
+              <option selected>26 to 50</option>
+              <option>51 to 100</option>
+              <option>101 to 250</option>
+              <option>250+</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Need</label>
+            <select name="need">
+              <option>Tenant audit</option>
+              <option>Migration</option>
+              <option>Security hardening</option>
+              <option>Licensing optimization</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>What's going on?</label>
+          <textarea name="msg" placeholder="Our Exchange to M365 migration stalled and our last IT provider ghosted us..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Send message <span class="arrow">→</span></button>
+        <div class="form-msg" id="formMsg">✓ Sent. I'll reply within one business day.</div>
+        <div class="form-msg err" id="formErr">Something went wrong. Please email himanshu@aroramsp.com directly.</div>
+        <p class="response-line">// I respond to all enquiries within one business day.</p>
+      </form>
+
+      <div class="contact-side">
+        <a class="cside" href="mailto:himanshu@aroramsp.com">
+          <div class="icon">@</div>
+          <div>
+            <div class="k">email</div>
+            <div class="v">himanshu@<span class="hl">aroramsp.com</span></div>
+          </div>
+        </a>
+        <a class="cside" href="https://outlook.office.com/bookwithme/user/583f5a3aa6e24f3fa36ea6bf9f4d2ba5@aroramsp.com/meetingtype/Vz8AH2J0jkiWmYCcAuw7bw2?anonymous&ismsaljsauthenabled&ep=mcard" target="_blank" rel="noopener">
+          <div class="icon">↗</div>
+          <div>
+            <div class="k">book · 30 min</div>
+            <div class="v">Microsoft Bookings · <span class="hl">30 min discovery call</span></div>
+          </div>
+        </a>
+        <p class="cside-note">In 30 minutes we cover three things: what your current M365 environment looks like, where the most critical gaps are, and whether a formal engagement makes sense. You will leave with a clear picture of your risk areas regardless of whether we work together. No sales pitch, no obligation.</p>
+        <a class="cside" href="https://www.linkedin.com/in/himanshusac/" target="_blank" rel="noopener noreferrer">
+          <div class="icon">in</div>
+          <div>
+            <div class="k">linkedin</div>
+            <div class="v"><span class="hl">/in/</span>himanshusac</div>
+          </div>
+        </a>
+        <a class="cside" href="#">
+          <div class="icon">☏</div>
+          <div>
+            <div class="k">phone</div>
+            <div class="v">Available on request · <span class="hl">email first</span></div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const form = document.getElementById('contactForm') as HTMLFormElement | null;
+    const success = document.getElementById('formMsg');
+    const error = document.getElementById('formErr');
+    if (form && success && error) {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        success.classList.remove('show');
+        error.classList.remove('show');
+        fetch(form.action, {
+          method: form.method || 'POST',
+          body: new FormData(form),
+          headers: { 'Accept': 'application/json' }
+        }).then((response) => {
+          if (response.ok) {
+            success.classList.add('show');
+            form.reset();
+          } else {
+            error.classList.add('show');
+          }
+        }).catch(() => {
+          error.classList.add('show');
+        });
+      });
+    }
+  </script>
+</Layout>
