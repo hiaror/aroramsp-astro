@@ -1,0 +1,345 @@
+---
+---
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mailbox Report - Contoso Ltd - 2026-05-09</title>
+<meta name="description" content="Exchange Online mailbox storage and archive report for Contoso Ltd, generated 2026-05-09 by AroraMSP." />
+<link rel="canonical" href="https://aroramsp.com/blog/samples/Mailbox-Report-Sample" />
+<link rel="icon" href="/uploads/arora_msp_favicon.svg?v=23" type="image/svg+xml" />
+<link rel="icon" type="image/png" sizes="512x512" href="/assets/images/favicon-512.png" />
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/images/favicon-192.png" />
+<link rel="icon" type="image/png" sizes="48x48" href="/assets/images/favicon-48.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-192.png" />
+<link rel="shortcut icon" type="image/png" href="/assets/images/favicon-512.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style is:inline>
+:root {
+  --bg:#0f1117; --bg-1:#12151d; --bg-2:#171a23; --bg-3:#1d212c;
+  --line:#242936; --line-2:#2e3344;
+  --fg:#e7eaf0; --fg-dim:#e5e7eb; --fg-mute:#cbd5e1;
+  --accent:#7c6ff7; --accent-soft:rgba(124,111,247,.18); --accent-line:rgba(124,111,247,.4);
+  --cyan:#4ecdc4; --cyan-soft:rgba(78,205,196,.18); --cyan-line:rgba(78,205,196,.4);
+  --good:#10b981; --warn:#f59e0b; --warn-soft:rgba(245,158,11,.16); --red:#ef4444;
+  --sans:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --maxw:1400px; --pad:clamp(20px,4vw,40px);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;min-height:100vh}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--pad);position:relative;z-index:1;width:100%}
+.grid-bg{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:64px 64px;mask-image:radial-gradient(ellipse at 50% 0%,black 0%,transparent 70%);opacity:.35}
+
+.top{position:sticky;top:0;z-index:50;backdrop-filter:saturate(140%) blur(10px);background:color-mix(in oklab,var(--bg) 78%,transparent);border-bottom:1px solid var(--line)}
+.top-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 0;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;color:var(--fg);font-family:var(--sans);line-height:1}
+.brand-text{display:flex;flex-direction:column;gap:4px}
+.brand-word{font-size:24px;font-weight:700;letter-spacing:-.02em}
+.brand-msp{color:#0078d4}
+.brand-tagline{font-size:10px;font-weight:600;letter-spacing:2px;opacity:.75;color:#ffffff}
+.meta{font-family:var(--mono);font-size:12px;text-align:right}
+.meta .dim{color:var(--fg-mute);font-size:11px}
+
+main{flex:1;display:flex;flex-direction:column;position:relative;z-index:1}
+.page{padding:clamp(28px,4vw,48px) 0 clamp(40px,5vw,64px)}
+.page-head{margin-bottom:24px;max-width:760px}
+.sec-label{font-family:var(--mono);font-size:12px;color:var(--cyan);display:inline-flex;align-items:center;gap:8px;margin-bottom:12px}
+.sec-label::before{content:"";width:18px;height:1px;background:var(--cyan)}
+.page-head h1{font-size:clamp(28px,4vw,40px);margin:0 0 12px;letter-spacing:-.02em;line-height:1.1;font-weight:600}
+.page-head p{color:var(--fg-dim);margin:0;font-size:15px;max-width:64ch}
+
+.summary{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px}
+@media (max-width:1000px){.summary{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:640px){.summary{grid-template-columns:repeat(2,1fr)}}
+.sum-card{background:var(--bg-1);border:1px solid var(--line);border-radius:10px;padding:18px 20px}
+.sum-card .num{font-family:var(--mono);font-size:24px;font-weight:600;line-height:1;color:var(--cyan)}
+.sum-card .num .unit{font-size:14px;color:var(--fg-mute);margin-left:4px}
+.sum-card .lbl{font-family:var(--mono);font-size:11px;color:var(--fg-mute);text-transform:uppercase;letter-spacing:.08em;margin-top:8px}
+
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:24px}
+.btn{font-family:var(--mono);font-size:13px;font-weight:500;padding:10px 16px;border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:filter .15s,background .2s,border-color .2s;border:1px solid transparent}
+.btn.primary{background:var(--accent);color:white;border-color:color-mix(in oklab,white 12%,var(--accent))}
+.btn.primary:hover{filter:brightness(1.1)}
+.btn.ghost{background:var(--bg-1);color:var(--fg);border-color:var(--line-2)}
+.btn.ghost:hover{background:var(--bg-2)}
+.btn svg{width:14px;height:14px}
+
+.tbl-wrap{overflow-x:auto;background:var(--bg-1);border:1px solid var(--line);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{position:sticky;top:0;background:var(--bg-2);text-align:left;font-family:var(--mono);font-size:11px;color:var(--fg-mute);text-transform:uppercase;letter-spacing:.06em;font-weight:500;padding:12px 14px;border-bottom:1px solid var(--line);cursor:pointer;user-select:none;white-space:nowrap}
+thead th:hover{color:var(--fg)}
+thead th[data-dir]::after{content:" ▾";color:var(--cyan);font-size:10px}
+thead th[data-dir="asc"]::after{content:" ▴"}
+tbody td{padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:var(--bg-2)}
+.num{font-family:var(--mono);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.strong{font-weight:600;color:var(--cyan)}
+.mono{font-family:var(--mono);font-size:12px;color:var(--fg-dim)}
+tbody tr.flag{background:var(--warn-soft)}
+tbody tr.flag:hover{background:color-mix(in oklab,var(--warn-soft) 80%,white)}
+tbody tr.flag td{border-bottom-color:rgba(245,158,11,.3)}
+
+footer{border-top:1px solid var(--line);padding:22px 0 20px;font-family:var(--mono);font-size:12px;color:var(--fg-mute);margin-top:auto;position:relative;z-index:1}
+.foot-top{display:flex;flex-wrap:wrap;gap:18px;justify-content:space-between;align-items:center;padding-bottom:14px;margin-bottom:14px;border-bottom:1px dashed var(--line)}
+.foot-top a:hover{color:var(--fg)}
+.foot-bottom{text-align:center;font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+.foot-bottom .dot{color:var(--good)}
+
+.legend{font-family:var(--mono);font-size:11px;color:var(--fg-mute);margin:14px 0 0;display:flex;align-items:center;gap:10px}
+.legend .dot{display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--warn-soft);border:1px solid rgba(245,158,11,.4)}
+
+@media print{
+  @page{margin:12mm 10mm}
+  :root{
+    --bg:#fff; --bg-1:#fff; --bg-2:#f7f8fa;
+    --line:#d4d8e0; --line-2:#b8bdc7;
+    --fg:#0f1117; --fg-dim:#1f2430; --fg-mute:#4b5563;
+    --accent:#5b50d6; --cyan:#0e7490;
+    --warn:#b45309; --warn-soft:#fef3c7; --good:#047857;
+  }
+  body{background:#fff;color:#0f1117;font-size:9.5pt;line-height:1.35}
+  .grid-bg,.top,.actions{display:none !important}
+  main,.page{padding:0}
+  .wrap{max-width:100%;padding:0}
+  .page-head h1{font-size:18pt}
+  .summary{gap:8px;margin-bottom:12px}
+  .sum-card{border:1px solid #d4d8e0;padding:8px 10px;break-inside:avoid}
+  .sum-card .num{font-size:14pt}
+  .tbl-wrap{border:1px solid #d4d8e0;overflow:visible}
+  thead th{background:#f7f8fa;color:#4b5563;font-size:8pt;padding:8px 10px;position:static}
+  thead th[data-dir]::after,thead th::after{display:none}
+  tbody td{padding:6px 10px;font-size:9pt}
+  tbody tr.flag{background:#fef3c7}
+  tbody tr{break-inside:avoid}
+  footer{border-top:1px solid #d4d8e0;padding:8px 0}
+  .foot-top a{display:none}
+  -webkit-print-color-adjust:exact;print-color-adjust:exact
+}
+</style>
+</head>
+<body>
+<div class="grid-bg" aria-hidden="true"></div>
+
+<header class="top">
+  <div class="wrap top-inner">
+    <a class="brand" href="https://aroramsp.com" target="_blank" rel="noopener" aria-label="AroraMSP home"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 100" width="220" height="55" role="img" aria-label="AroraMSP, Microsoft 365 Consulting" style="display:inline-block;vertical-align:middle"><defs><radialGradient id="mccF" cx="32%" cy="28%" r="82%"><stop offset="0%" stop-color="#3aa0e8"/><stop offset="55%" stop-color="#0078d4"/><stop offset="100%" stop-color="#0a4d8a"/></radialGradient><radialGradient id="mccH" cx="30%" cy="22%" r="45%"><stop offset="0%" stop-color="#ffffff" stop-opacity="0.55"/><stop offset="100%" stop-color="#ffffff" stop-opacity="0"/></radialGradient><linearGradient id="mcaF" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffffff"/><stop offset="60%" stop-color="#eef4fb"/><stop offset="100%" stop-color="#cdd9ea"/></linearGradient><linearGradient id="mcaS" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#000000" stop-opacity="0"/><stop offset="100%" stop-color="#04223f" stop-opacity="0.35"/></linearGradient><linearGradient id="mcaT" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/><stop offset="35%" stop-color="#ffffff" stop-opacity="0"/><stop offset="100%" stop-color="#ffffff" stop-opacity="0"/></linearGradient><filter id="mcss" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur in="SourceAlpha" stdDeviation="1.6"/><feOffset dy="1.6"/><feComponentTransfer><feFuncA type="linear" slope="0.45"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><g transform="translate(4 -3)" filter="url(#mcss)"><g class="logo-cloud"><path d="M 12,82 L 88,82 A 14,14 0 0 0 82,56 A 12,12 0 0 0 66,44 A 19,19 0 0 0 34,40 A 13,13 0 0 0 20,52 A 13,13 0 0 0 12,82 Z" fill="url(#mccF)"/><path d="M 12,82 L 88,82 A 14,14 0 0 0 82,56 A 12,12 0 0 0 66,44 A 19,19 0 0 0 34,40 A 13,13 0 0 0 20,52 A 13,13 0 0 0 12,82 Z" fill="url(#mccH)"/></g><g class="logo-a"><path d="M 32,74 L 45.5,42 L 54.5,42 L 68,74 L 59,74 L 50,50 L 41,74 Z" fill="#0a3a6b" transform="translate(1.2 1.2)"/><path d="M 32,74 L 45.5,42 L 54.5,42 L 68,74 L 59,74 L 50,50 L 41,74 Z" fill="#0d4a86" transform="translate(1.0 1.0)"/><path d="M 32,74 L 45.5,42 L 54.5,42 L 68,74 L 59,74 L 50,50 L 41,74 Z" fill="#125b9f" transform="translate(0.8 0.8)"/><path d="M 32,74 L 45.5,42 L 54.5,42 L 68,74 L 59,74 L 50,50 L 41,74 Z" fill="#1d6db5" transform="translate(0.6 0.6)"/><path d="M 32,74 L 45.5,42 L 54.5,42 L 68,74 L 59,74 L 50,50 L 41,74 Z" fill="#3a83c3" transform="translate(0.4 0.4)"/><path d="M 32,74 L 45.5,42 L 54.5,42 L 68,74 L 59,74 L 50,50 L 41,74 Z" fill="#94b5d6" transform="translate(0.2 0.2)"/><path d="M 32,74 L 45.5,42 L 54.5,42 L 68,74 L 59,74 L 50,50 L 41,74 Z" fill="url(#mcaF)"/><path d="M 32,74 L 45.5,42 L 54.5,42 L 68,74 L 59,74 L 50,50 L 41,74 Z" fill="url(#mcaS)" opacity="0.7"/><path d="M 32,74 L 45.5,42 L 54.5,42 L 68,74 L 59,74 L 50,50 L 41,74 Z" fill="url(#mcaT)" opacity="0.9"/><circle cx="50" cy="42" r="6.5" fill="#22d3ee" fill-opacity="0.28"/><circle cx="50" cy="42" r="3.4" fill="#22d3ee"/><circle cx="49" cy="40.6" r="0.9" fill="#ffffff" fill-opacity="0.85"/></g></g><text x="112" y="58" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="36" font-weight="700" letter-spacing="-0.6"><tspan fill="#ffffff">Arora</tspan><tspan fill="#0078d4">MSP</tspan></text><text x="113" y="80" font-family="'JetBrains Mono','Inter',ui-monospace,monospace" font-size="11" font-weight="600" letter-spacing="2.0" fill="#ffffff" fill-opacity="0.80">MICROSOFT 365 CONSULTING</text></svg></a>
+    <div class="meta">
+      <div>Contoso Ltd</div>
+      <div class="dim">2026-05-09</div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="page wrap">
+    <div class="page-head">
+      <div class="sec-label">// exchange online · mailbox report · v1.0 · sample</div>
+      <h1>Mailbox storage report.</h1>
+      <p>Per-mailbox primary size, archive size, and assigned licence SKU for the Contoso Ltd tenant. Sorted descending by total size. Click a column to re-sort.</p>
+    </div>
+
+    <div class="summary">
+      <div class="sum-card"><div class="num">7</div><div class="lbl">Total mailboxes</div></div>
+      <div class="sum-card"><div class="num">133.87<span class="unit">GB</span></div><div class="lbl">Total storage</div></div>
+      <div class="sum-card"><div class="num">2</div><div class="lbl">Archive enabled</div></div>
+      <div class="sum-card"><div class="num">58.00<span class="unit">GB</span></div><div class="lbl">Largest mailbox</div></div>
+      <div class="sum-card"><div class="num">1</div><div class="lbl">Over 80% quota</div></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn primary" id="btnPrint" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Export to PDF
+      </button>
+      <button class="btn ghost" id="btnCsv" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Export to CSV
+      </button>
+    </div>
+
+    <div class="tbl-wrap">
+      <table id="mbxTable">
+        <thead>
+          <tr>
+            <th data-sort="text">DisplayName</th>
+            <th data-sort="text">Email</th>
+            <th data-sort="text">Type</th>
+            <th data-sort="num">Used (GB)</th>
+            <th data-sort="num">Quota (GB)</th>
+            <th data-sort="num">Available (GB)</th>
+            <th data-sort="num">Used %</th>
+            <th data-sort="text">Archive Enabled</th>
+            <th data-sort="num">Archive Used (GB)</th>
+            <th data-sort="num" data-dir="desc">Total Used (GB)</th>
+            <th data-sort="text">License SKU</th>
+          </tr>
+        </thead>
+        <tbody>
+<tr class="flag">
+  <td>HR Manager</td>
+  <td class="mono">hr@contoso.com</td>
+  <td>UserMailbox</td>
+  <td class="num">45.20</td>
+  <td class="num">50.00</td>
+  <td class="num">4.80</td>
+  <td class="num">90.40</td>
+  <td>Yes</td>
+  <td class="num">12.80</td>
+  <td class="num strong">58.00</td>
+  <td class="mono">Microsoft 365 E3</td>
+</tr>
+<tr class="">
+  <td>Jane Doe</td>
+  <td class="mono">jdoe@contoso.com</td>
+  <td>UserMailbox</td>
+  <td class="num">28.45</td>
+  <td class="num">100.00</td>
+  <td class="num">71.55</td>
+  <td class="num">28.45</td>
+  <td>Yes</td>
+  <td class="num">8.20</td>
+  <td class="num strong">36.65</td>
+  <td class="mono">Microsoft 365 E5</td>
+</tr>
+<tr class="">
+  <td>John Smith</td>
+  <td class="mono">jsmith@contoso.com</td>
+  <td>UserMailbox</td>
+  <td class="num">15.80</td>
+  <td class="num">50.00</td>
+  <td class="num">34.20</td>
+  <td class="num">31.60</td>
+  <td>No</td>
+  <td class="num">0.00</td>
+  <td class="num strong">15.80</td>
+  <td class="mono">Microsoft 365 E3</td>
+</tr>
+<tr class="flag">
+  <td>Finance Team</td>
+  <td class="mono">finance@contoso.com</td>
+  <td>SharedMailbox</td>
+  <td class="num">11.95</td>
+  <td class="num">50.00</td>
+  <td class="num">38.05</td>
+  <td class="num">23.90</td>
+  <td>No</td>
+  <td class="num">0.00</td>
+  <td class="num strong">11.95</td>
+  <td class="mono">Office 365 E3</td>
+</tr>
+<tr class="">
+  <td>IT Admin</td>
+  <td class="mono">itadmin@contoso.com</td>
+  <td>UserMailbox</td>
+  <td class="num">8.30</td>
+  <td class="num">100.00</td>
+  <td class="num">91.70</td>
+  <td class="num">8.30</td>
+  <td>No</td>
+  <td class="num">0.00</td>
+  <td class="num strong">8.30</td>
+  <td class="mono">Microsoft 365 E5</td>
+</tr>
+<tr class="">
+  <td>Reception</td>
+  <td class="mono">reception@contoso.com</td>
+  <td>SharedMailbox</td>
+  <td class="num">3.15</td>
+  <td class="num">50.00</td>
+  <td class="num">46.85</td>
+  <td class="num">6.30</td>
+  <td>No</td>
+  <td class="num">0.00</td>
+  <td class="num strong">3.15</td>
+  <td class="mono"></td>
+</tr>
+<tr class="">
+  <td>Discovery Search Mailbox</td>
+  <td class="mono">DiscoverySearchMailbox&#123;D919BA05-46A6-415f-80AD-7E09334BB852&#125;@contoso.onmicrosoft.com</td>
+  <td>DiscoveryMailbox</td>
+  <td class="num">0.02</td>
+  <td class="num">50.00</td>
+  <td class="num">49.98</td>
+  <td class="num">0.04</td>
+  <td>No</td>
+  <td class="num">0.00</td>
+  <td class="num strong">0.02</td>
+  <td class="mono"></td>
+</tr>
+
+        </tbody>
+      </table>
+    </div>
+
+    <p class="legend"><span class="dot"></span> shared mailbox with assigned licence, or mailbox over 80% of quota (review)</p>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-top">
+      <div>© 2026 AroraMSP · Microsoft 365 consulting</div>
+      <a href="https://aroramsp.com" target="_blank" rel="noopener">aroramsp.com →</a>
+    </div>
+    <div class="foot-bottom"><span class="dot">●</span> Mailbox report · v1.0 · sample</div>
+  </div>
+</footer>
+
+<script is:inline>
+const MAILBOXES = [{"DisplayName":"HR Manager","Email":"hr@contoso.com","Type":"UserMailbox","Used (GB)":45.20,"Quota (GB)":50.00,"Available (GB)":4.80,"Used %":90.40,"Archive Enabled":"Yes","Archive Used (GB)":12.80,"Total Used (GB)":58.00,"License SKU":"Microsoft 365 E3"},{"DisplayName":"Jane Doe","Email":"jdoe@contoso.com","Type":"UserMailbox","Used (GB)":28.45,"Quota (GB)":100.00,"Available (GB)":71.55,"Used %":28.45,"Archive Enabled":"Yes","Archive Used (GB)":8.20,"Total Used (GB)":36.65,"License SKU":"Microsoft 365 E5"},{"DisplayName":"John Smith","Email":"jsmith@contoso.com","Type":"UserMailbox","Used (GB)":15.80,"Quota (GB)":50.00,"Available (GB)":34.20,"Used %":31.60,"Archive Enabled":"No","Archive Used (GB)":0.00,"Total Used (GB)":15.80,"License SKU":"Microsoft 365 E3"},{"DisplayName":"Finance Team","Email":"finance@contoso.com","Type":"SharedMailbox","Used (GB)":11.95,"Quota (GB)":50.00,"Available (GB)":38.05,"Used %":23.90,"Archive Enabled":"No","Archive Used (GB)":0.00,"Total Used (GB)":11.95,"License SKU":"Office 365 E3"},{"DisplayName":"IT Admin","Email":"itadmin@contoso.com","Type":"UserMailbox","Used (GB)":8.30,"Quota (GB)":100.00,"Available (GB)":91.70,"Used %":8.30,"Archive Enabled":"No","Archive Used (GB)":0.00,"Total Used (GB)":8.30,"License SKU":"Microsoft 365 E5"},{"DisplayName":"Reception","Email":"reception@contoso.com","Type":"SharedMailbox","Used (GB)":3.15,"Quota (GB)":50.00,"Available (GB)":46.85,"Used %":6.30,"Archive Enabled":"No","Archive Used (GB)":0.00,"Total Used (GB)":3.15,"License SKU":""},{"DisplayName":"Discovery Search Mailbox","Email":"DiscoverySearchMailbox{D919BA05-46A6-415f-80AD-7E09334BB852}@contoso.onmicrosoft.com","Type":"DiscoveryMailbox","Used (GB)":0.02,"Quota (GB)":50.00,"Available (GB)":49.98,"Used %":0.04,"Archive Enabled":"No","Archive Used (GB)":0.00,"Total Used (GB)":0.02,"License SKU":""}];
+const TENANT = "Contoso Ltd";
+const DATE = "2026-05-09";
+
+function sortTable(idx, type) {
+  const table = document.getElementById('mbxTable');
+  const tbody = table.tBodies[0];
+  const ths = table.tHead.rows[0].cells;
+  const th = ths[idx];
+  const dir = th.dataset.dir === 'asc' ? 'desc' : 'asc';
+  for (const t of ths) t.removeAttribute('data-dir');
+  th.dataset.dir = dir;
+  const rows = Array.from(tbody.rows);
+  rows.sort((a, b) => {
+    let va = a.cells[idx].textContent.trim();
+    let vb = b.cells[idx].textContent.trim();
+    if (type === 'num') {
+      va = parseFloat(va.replace(/,/g, '')) || 0;
+      vb = parseFloat(vb.replace(/,/g, '')) || 0;
+    } else if (type === 'date') {
+      va = va ? Date.parse(va) || 0 : 0;
+      vb = vb ? Date.parse(vb) || 0 : 0;
+    }
+    return (va > vb ? 1 : va < vb ? -1 : 0) * (dir === 'asc' ? 1 : -1);
+  });
+  rows.forEach(r => tbody.appendChild(r));
+}
+
+document.querySelectorAll('#mbxTable thead th').forEach((th, idx) => {
+  th.addEventListener('click', () => sortTable(idx, th.dataset.sort || 'text'));
+});
+
+function csvEscape(v) { return '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"'; }
+function downloadCsv() {
+  const headers = ['DisplayName','Email','Type','Used (GB)','Quota (GB)','Available (GB)','Used %','Archive Enabled','Archive Used (GB)','Total Used (GB)','License SKU'];
+  const lines = [headers.join(',')];
+  for (const m of MAILBOXES) lines.push(headers.map(h => csvEscape(m[h])).join(','));
+  const blob = new Blob(['﻿' + lines.join('\r\n')], {type:'text/csv;charset=utf-8;'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  const safe = (TENANT + '-' + DATE).replace(/[^A-Za-z0-9._-]/g, '_');
+  a.download = 'Mailbox-Report-' + safe + '.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+document.getElementById('btnPrint').addEventListener('click', () => window.print());
+document.getElementById('btnCsv').addEventListener('click', downloadCsv);
+</script>
+</body>
+</html>

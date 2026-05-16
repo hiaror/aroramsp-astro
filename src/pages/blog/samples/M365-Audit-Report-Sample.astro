@@ -1,0 +1,398 @@
+---
+---
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>M365 Audit Report - Contoso Ltd - 2026-05-09</title>
+<meta name="description" content="Microsoft 365 security audit report for Contoso Ltd, generated 2026-05-09 by AroraMSP." />
+<link rel="canonical" href="https://aroramsp.com/blog/samples/M365-Audit-Report-Sample" />
+<link rel="icon" href="/uploads/arora_msp_favicon.svg?v=23" type="image/svg+xml" />
+<link rel="icon" type="image/png" sizes="512x512" href="/assets/images/favicon-512.png" />
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/images/favicon-192.png" />
+<link rel="icon" type="image/png" sizes="48x48" href="/assets/images/favicon-48.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-192.png" />
+<link rel="shortcut icon" type="image/png" href="/assets/images/favicon-512.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style is:inline>
+:root {
+  --bg:#0f1117; --bg-1:#12151d; --bg-2:#171a23; --bg-3:#1d212c;
+  --line:#242936; --line-2:#2e3344;
+  --fg:#e7eaf0; --fg-dim:#e5e7eb; --fg-mute:#cbd5e1;
+  --accent:#7c6ff7; --accent-soft:rgba(124,111,247,.18); --accent-line:rgba(124,111,247,.4);
+  --cyan:#4ecdc4; --cyan-soft:rgba(78,205,196,.18); --cyan-line:rgba(78,205,196,.4);
+  --good:#10b981; --good-soft:rgba(16,185,129,.16);
+  --warn:#f59e0b; --warn-soft:rgba(245,158,11,.16);
+  --red:#ef4444;  --red-soft:rgba(239,68,68,.16);
+  --sans:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --maxw:1100px; --pad:clamp(20px,4vw,40px);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;min-height:100vh}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--pad);position:relative;z-index:1;width:100%}
+.grid-bg{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:64px 64px;mask-image:radial-gradient(ellipse at 50% 0%,black 0%,transparent 70%);opacity:.35}
+
+.top{position:sticky;top:0;z-index:50;backdrop-filter:saturate(140%) blur(10px);background:color-mix(in oklab,var(--bg) 78%,transparent);border-bottom:1px solid var(--line)}
+.top-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 0;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;color:var(--fg);font-family:var(--sans);line-height:1}
+.brand-text{display:flex;flex-direction:column;gap:4px}
+.brand-word{font-size:24px;font-weight:700;letter-spacing:-.02em}
+.brand-msp{color:#0078d4}
+.brand-tagline{font-size:10px;font-weight:600;letter-spacing:2px;opacity:.75;color:#ffffff}
+.meta{font-family:var(--mono);font-size:12px;text-align:right}
+.meta .dim{color:var(--fg-mute);font-size:11px}
+
+main{flex:1;display:flex;flex-direction:column;position:relative;z-index:1}
+.page{padding:clamp(28px,4vw,48px) 0 clamp(40px,5vw,64px)}
+.page-head{margin-bottom:24px;max-width:760px}
+.sec-label{font-family:var(--mono);font-size:12px;color:var(--cyan);display:inline-flex;align-items:center;gap:8px;margin-bottom:12px}
+.sec-label::before{content:"";width:18px;height:1px;background:var(--cyan)}
+.page-head h1{font-size:clamp(28px,4vw,40px);margin:0 0 12px;letter-spacing:-.02em;line-height:1.1;font-weight:600}
+.page-head p{color:var(--fg-dim);margin:0;font-size:15px;max-width:64ch}
+
+.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+@media (max-width:640px){.summary{grid-template-columns:repeat(2,1fr)}}
+.sum-card{background:var(--bg-1);border:1px solid var(--line);border-radius:10px;padding:18px 20px}
+.sum-card .num{font-family:var(--mono);font-size:28px;font-weight:600;line-height:1}
+.sum-card .lbl{font-family:var(--mono);font-size:11px;color:var(--fg-mute);text-transform:uppercase;letter-spacing:.08em;margin-top:8px}
+.sum-card.pass .num{color:var(--good)}
+.sum-card.fail .num{color:var(--red)}
+.sum-card.warn .num{color:var(--warn)}
+.sum-card.total .num{color:var(--cyan)}
+
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:28px}
+.btn{font-family:var(--mono);font-size:13px;font-weight:500;padding:10px 16px;border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:filter .15s,background .2s,border-color .2s;border:1px solid transparent}
+.btn.primary{background:var(--accent);color:white;border-color:color-mix(in oklab,white 12%,var(--accent))}
+.btn.primary:hover{filter:brightness(1.1)}
+.btn.ghost{background:var(--bg-1);color:var(--fg);border-color:var(--line-2)}
+.btn.ghost:hover{background:var(--bg-2)}
+.btn svg{width:14px;height:14px}
+
+.category{margin-bottom:22px}
+.cat-head{display:flex;align-items:center;gap:14px;margin-bottom:12px}
+.cat-num{font-family:var(--mono);font-size:11px;color:var(--cyan);border:1px solid var(--cyan-line);border-radius:6px;padding:3px 8px;letter-spacing:.06em}
+.cat-head h2{margin:0;font-size:18px;font-weight:600;letter-spacing:-.01em}
+
+.finding{background:var(--bg-1);border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin-bottom:10px;display:grid;grid-template-columns:90px 1fr;gap:18px;align-items:start;break-inside:avoid}
+.finding.fail{border-left:3px solid var(--red)}
+.finding.warning{border-left:3px solid var(--warn)}
+.finding.pass{border-left:3px solid var(--good)}
+.finding.info{border-left:3px solid var(--cyan)}
+.finding .status{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.06em;display:inline-flex;align-items:center;justify-content:center;padding:6px 0;border-radius:6px;height:fit-content;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.finding .status.pass{background:var(--good-soft);color:var(--good)}
+.finding .status.fail{background:var(--red-soft);color:var(--red)}
+.finding .status.warning{background:var(--warn-soft);color:var(--warn)}
+.finding .status.info{background:var(--cyan-soft);color:var(--cyan)}
+.finding .body h3{margin:0 0 6px;font-size:14.5px;font-weight:600;letter-spacing:-.01em;line-height:1.4}
+.finding .body .detail{margin:0;font-family:var(--mono);font-size:12px;color:var(--fg-dim);line-height:1.55;word-break:break-word}
+.finding .body .rec{margin:8px 0 0;font-size:13px;color:var(--fg-mute);line-height:1.5}
+.finding .body .rec-lbl{font-family:var(--mono);font-size:10px;color:var(--accent);text-transform:uppercase;letter-spacing:.08em;margin-right:6px}
+
+footer{border-top:1px solid var(--line);padding:22px 0 20px;font-family:var(--mono);font-size:12px;color:var(--fg-mute);margin-top:auto;position:relative;z-index:1}
+.foot-top{display:flex;flex-wrap:wrap;gap:18px;justify-content:space-between;align-items:center;padding-bottom:14px;margin-bottom:14px;border-bottom:1px dashed var(--line)}
+.foot-top a:hover{color:var(--fg)}
+.foot-bottom{text-align:center;font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+.foot-bottom .dot{color:var(--good)}
+
+@media (max-width:640px){
+  .finding{grid-template-columns:1fr;gap:8px}
+  .finding .status{width:fit-content;padding:4px 10px}
+}
+
+@media print{
+  @page{margin:14mm 12mm}
+  :root{
+    --bg:#fff; --bg-1:#fff; --bg-2:#f7f8fa; --bg-3:#eef0f4;
+    --line:#d4d8e0; --line-2:#b8bdc7;
+    --fg:#0f1117; --fg-dim:#1f2430; --fg-mute:#4b5563;
+    --accent:#5b50d6; --cyan:#0e7490;
+    --good:#047857; --warn:#b45309; --red:#b91c1c;
+    --good-soft:#d1fae5; --warn-soft:#fef3c7; --red-soft:#fee2e2; --cyan-soft:#cffafe;
+  }
+  body{background:#fff;color:#0f1117;font-size:10.5pt;line-height:1.4}
+  .grid-bg,.top,.actions{display:none !important}
+  main,.page{padding:0}
+  .wrap{max-width:100%;padding:0}
+  .page-head h1{font-size:20pt}
+  .summary{gap:8px;margin-bottom:14px}
+  .sum-card{border:1px solid #d4d8e0;padding:10px 12px;break-inside:avoid}
+  .sum-card .num{font-size:18pt}
+  .category{break-inside:avoid-page;margin-bottom:12px}
+  .finding{break-inside:avoid;border:1px solid #d4d8e0;padding:10px 14px;margin-bottom:6px}
+  .finding .status{padding:4px 8px}
+  footer{border-top:1px solid #d4d8e0;padding:10px 0}
+  .foot-top a{display:none}
+  -webkit-print-color-adjust:exact;print-color-adjust:exact
+}
+</style>
+</head>
+<body>
+<div class="grid-bg" aria-hidden="true"></div>
+
+<header class="top">
+  <div class="wrap top-inner">
+    <a class="brand" href="https://aroramsp.com" target="_blank" rel="noopener" aria-label="AroraMSP home"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 100" width="220" height="55" role="img" aria-label="AroraMSP, Microsoft 365 Consulting" style="display:inline-block;vertical-align:middle"><defs><radialGradient id="accF" cx="32%" cy="28%" r="82%"><stop offset="0%" stop-color="#3aa0e8"/><stop offset="55%" stop-color="#0078d4"/><stop offset="100%" stop-color="#0a4d8a"/></radialGradient><radialGradient id="accH" cx="30%" cy="22%" r="45%"><stop offset="0%" stop-color="#ffffff" stop-opacity="0.55"/><stop offset="100%" stop-color="#ffffff" stop-opacity="0"/></radialGradient><linearGradient id="acaF" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffffff"/><stop offset="60%" stop-color="#eef4fb"/><stop offset="100%" stop-color="#cdd9ea"/></linearGradient><linearGradient id="acaS" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#000000" stop-opacity="0"/><stop offset="100%" stop-color="#04223f" stop-opacity="0.35"/></linearGradient><linearGradient id="acaT" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/><stop offset="35%" stop-color="#ffffff" stop-opacity="0"/><stop offset="100%" stop-color="#ffffff" stop-opacity="0"/></linearGradient><filter id="acss" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur in="SourceAlpha" stdDeviation="1.6"/><feOffset dy="1.6"/><feComponentTransfer><feFuncA type="linear" slope="0.45"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><g transform="translate(4 -3)" filter="url(#acss)"><g class="logo-cloud"><path d="M 12,82 L 88,82 A 14,14 0 0 0 82,56 A 12,12 0 0 0 66,44 A 19,19 0 0 0 34,40 A 13,13 0 0 0 20,52 A 13,13 0 0 0 12,82 Z" fill="url(#accF)"/><path d="M 12,82 L 88,82 A 14,14 0 0 0 82,56 A 12,12 0 0 0 66,44 A 19,19 0 0 0 34,40 A 13,13 0 0 0 20,52 A 13,13 0 0 0 12,82 Z" fill="url(#accH)"/></g><g class="logo-a"><path d="M 32,74 L 45.5,42 L 54.5,42 L 68,74 L 59,74 L 50,50 L 41,74 Z" fill="#0a3a6b" transform="translate(1.2 1.2)"/><path d="M 32,74 L 45.5,42 L 54.5,42 L 68,74 L 59,74 L 50,50 L 41,74 Z" fill="#0d4a86" transform="translate(1.0 1.0)"/><path d="M 32,74 L 45.5,42 L 54.5,42 L 68,74 L 59,74 L 50,50 L 41,74 Z" fill="#125b9f" transform="translate(0.8 0.8)"/><path d="M 32,74 L 45.5,42 L 54.5,42 L 68,74 L 59,74 L 50,50 L 41,74 Z" fill="#1d6db5" transform="translate(0.6 0.6)"/><path d="M 32,74 L 45.5,42 L 54.5,42 L 68,74 L 59,74 L 50,50 L 41,74 Z" fill="#3a83c3" transform="translate(0.4 0.4)"/><path d="M 32,74 L 45.5,42 L 54.5,42 L 68,74 L 59,74 L 50,50 L 41,74 Z" fill="#94b5d6" transform="translate(0.2 0.2)"/><path d="M 32,74 L 45.5,42 L 54.5,42 L 68,74 L 59,74 L 50,50 L 41,74 Z" fill="url(#acaF)"/><path d="M 32,74 L 45.5,42 L 54.5,42 L 68,74 L 59,74 L 50,50 L 41,74 Z" fill="url(#acaS)" opacity="0.7"/><path d="M 32,74 L 45.5,42 L 54.5,42 L 68,74 L 59,74 L 50,50 L 41,74 Z" fill="url(#acaT)" opacity="0.9"/><circle cx="50" cy="42" r="6.5" fill="#22d3ee" fill-opacity="0.28"/><circle cx="50" cy="42" r="3.4" fill="#22d3ee"/><circle cx="49" cy="40.6" r="0.9" fill="#ffffff" fill-opacity="0.85"/></g></g><text x="112" y="58" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="36" font-weight="700" letter-spacing="-0.6"><tspan fill="#ffffff">Arora</tspan><tspan fill="#0078d4">MSP</tspan></text><text x="113" y="80" font-family="'JetBrains Mono','Inter',ui-monospace,monospace" font-size="11" font-weight="600" letter-spacing="2.0" fill="#ffffff" fill-opacity="0.80">MICROSOFT 365 CONSULTING</text></svg></a>
+    <div class="meta">
+      <div>Contoso Ltd</div>
+      <div class="dim">2026-05-09</div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="page wrap">
+    <div class="page-head">
+      <div class="sec-label">// microsoft 365 security audit · v1.0 · sample</div>
+      <h1>Tenant audit report.</h1>
+      <p>Read-only baseline audit of identity, email security, endpoint, and licensing posture for the Contoso Ltd tenant. Findings below are grouped by category, with status, detail, and recommendation per check.</p>
+    </div>
+
+    <div class="summary">
+      <div class="sum-card pass"><div class="num">10</div><div class="lbl">PASS</div></div>
+      <div class="sum-card fail"><div class="num">3</div><div class="lbl">FAIL</div></div>
+      <div class="sum-card warn"><div class="num">10</div><div class="lbl">WARNING</div></div>
+      <div class="sum-card total"><div class="num">23</div><div class="lbl">TOTAL CHECKS</div></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn primary" id="btnPrint" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Export to PDF
+      </button>
+      <button class="btn ghost" id="btnCsv" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Export to CSV
+      </button>
+    </div>
+
+<section class="category">
+  <header class="cat-head"><span class="cat-num">01</span><h2>Identity &amp; Access</h2></header>
+  <article class="finding pass">
+    <div class="status pass">PASS</div>
+    <div class="body">
+      <h3>Legacy authentication blocked via CA</h3>
+      <p class="detail">2 enabled policy/policies block legacy authentication.</p>
+    </div>
+  </article>
+  <article class="finding warning">
+    <div class="status warning">WARNING</div>
+    <div class="body">
+      <h3>Global Administrator count</h3>
+      <p class="detail">5 Global Administrators.</p>
+      <p class="rec"><span class="rec-lbl">recommendation</span> Reduce to 2-4. Use PIM and lower-privilege roles for daily admin work.</p>
+    </div>
+  </article>
+  <article class="finding pass">
+    <div class="status pass">PASS</div>
+    <div class="body">
+      <h3>Break-glass accounts excluded from CA</h3>
+      <p class="detail">2 excluded principal(s) found across broad CA policies.</p>
+    </div>
+  </article>
+  <article class="finding pass">
+    <div class="status pass">PASS</div>
+    <div class="body">
+      <h3>Tenant-wide MFA Conditional Access policy</h3>
+      <p class="detail">1 policy/policies require MFA for all users on all cloud apps.</p>
+    </div>
+  </article>
+  <article class="finding warning">
+    <div class="status warning">WARNING</div>
+    <div class="body">
+      <h3>Self-service password reset (SSPR) enabled</h3>
+      <p class="detail">SSPR enablement scope is not directly exposed via Microsoft Graph; manual verification required.</p>
+      <p class="rec"><span class="rec-lbl">recommendation</span> Verify in Entra admin center: Protection &gt; Password reset &gt; Properties (Self service password reset enabled = All).</p>
+    </div>
+  </article>
+</section>
+<section class="category">
+  <header class="cat-head"><span class="cat-num">02</span><h2>Email Security</h2></header>
+  <article class="finding warning">
+    <div class="status warning">WARNING</div>
+    <div class="body">
+      <h3>DMARC: contoso.com</h3>
+      <p class="detail">p=quarantine</p>
+      <p class="rec"><span class="rec-lbl">recommendation</span> Move to p=reject after monitoring rua aggregate reports for 30+ days.</p>
+    </div>
+  </article>
+  <article class="finding fail">
+    <div class="status fail">FAIL</div>
+    <div class="body">
+      <h3>DMARC: contoso.co.uk</h3>
+      <p class="detail">No DMARC TXT record found.</p>
+      <p class="rec"><span class="rec-lbl">recommendation</span> Publish: v=DMARC1; p=quarantine; rua=mailto:dmarc@contoso.co.uk</p>
+    </div>
+  </article>
+  <article class="finding pass">
+    <div class="status pass">PASS</div>
+    <div class="body">
+      <h3>SPF: contoso.com</h3>
+      <p class="detail">SPF -all (hard fail).</p>
+    </div>
+  </article>
+  <article class="finding warning">
+    <div class="status warning">WARNING</div>
+    <div class="body">
+      <h3>SPF: contoso.co.uk</h3>
+      <p class="detail">SPF ~all (soft fail).</p>
+      <p class="rec"><span class="rec-lbl">recommendation</span> Tighten to -all once all sending sources are confirmed in the SPF record.</p>
+    </div>
+  </article>
+  <article class="finding pass">
+    <div class="status pass">PASS</div>
+    <div class="body">
+      <h3>DKIM: contoso.com</h3>
+      <p class="detail">DKIM signing enabled on default selectors.</p>
+    </div>
+  </article>
+  <article class="finding fail">
+    <div class="status fail">FAIL</div>
+    <div class="body">
+      <h3>DKIM: contoso.co.uk</h3>
+      <p class="detail">DKIM signing disabled.</p>
+      <p class="rec"><span class="rec-lbl">recommendation</span> Publish CNAMEs and enable: Set-DkimSigningConfig -Identity &#39;contoso.co.uk&#39; -Enabled $true</p>
+    </div>
+  </article>
+  <article class="finding pass">
+    <div class="status pass">PASS</div>
+    <div class="body">
+      <h3>External auto-forwarding blocked</h3>
+      <p class="detail">Default remote domain blocks auto-forwarding and outbound spam policy AutoForwardingMode is Off.</p>
+    </div>
+  </article>
+  <article class="finding pass">
+    <div class="status pass">PASS</div>
+    <div class="body">
+      <h3>Mailbox audit logging (tenant)</h3>
+      <p class="detail">Tenant-level mailbox auditing enabled (default since 2019).</p>
+    </div>
+  </article>
+  <article class="finding pass">
+    <div class="status pass">PASS</div>
+    <div class="body">
+      <h3>Shared mailboxes: sign-in disabled</h3>
+      <p class="detail">All 2 shared mailbox(es) have sign-in disabled.</p>
+    </div>
+  </article>
+</section>
+<section class="category">
+  <header class="cat-head"><span class="cat-num">03</span><h2>Licensing</h2></header>
+  <article class="finding warning">
+    <div class="status warning">WARNING</div>
+    <div class="body">
+      <h3>Shared mailboxes: no paid licences</h3>
+      <p class="detail">1 shared mailbox(es) carry licences: finance@contoso.com</p>
+      <p class="rec"><span class="rec-lbl">recommendation</span> Shared mailboxes &lt;50 GB do not require a licence. Reclaim unless archive or litigation hold requires Exchange Online Plan 2.</p>
+    </div>
+  </article>
+  <article class="finding warning">
+    <div class="status warning">WARNING</div>
+    <div class="body">
+      <h3>Unassigned licences</h3>
+      <p class="detail">Microsoft 365 E5: 12 of 50 unassigned; Microsoft Entra ID P2: 8 of 50 unassigned; Microsoft Intune Plan 1: 3 of 25 unassigned</p>
+      <p class="rec"><span class="rec-lbl">recommendation</span> Reclaim or downsize unused licences at the next renewal cycle.</p>
+    </div>
+  </article>
+  <article class="finding warning">
+    <div class="status warning">WARNING</div>
+    <div class="body">
+      <h3>Inactive licensed users (90 days)</h3>
+      <p class="detail">5 licensed user(s) with no sign-in in 90 days.</p>
+      <p class="rec"><span class="rec-lbl">recommendation</span> Review and reclaim licences. Disable accounts where the user has left.</p>
+    </div>
+  </article>
+</section>
+<section class="category">
+  <header class="cat-head"><span class="cat-num">04</span><h2>Endpoint</h2></header>
+  <article class="finding pass">
+    <div class="status pass">PASS</div>
+    <div class="body">
+      <h3>Intune compliance policies deployed</h3>
+      <p class="detail">4 compliance policy/policies deployed.</p>
+    </div>
+  </article>
+  <article class="finding pass">
+    <div class="status pass">PASS</div>
+    <div class="body">
+      <h3>App protection policies deployed</h3>
+      <p class="detail">3 MAM policy/policies deployed (iOS: 2, Android: 1).</p>
+    </div>
+  </article>
+</section>
+<section class="category">
+  <header class="cat-head"><span class="cat-num">05</span><h2>App Registrations</h2></header>
+  <article class="finding warning">
+    <div class="status warning">WARNING</div>
+    <div class="body">
+      <h3>App registration certificates expired or expiring</h3>
+      <p class="detail">1 certificate(s) expire within 30 days: Backup Service / Backup-cert-2024 / expires 2026-05-25</p>
+      <p class="rec"><span class="rec-lbl">recommendation</span> Rotate before expiry. Both old and new certs can coexist on the registration during transition.</p>
+    </div>
+  </article>
+  <article class="finding fail">
+    <div class="status fail">FAIL</div>
+    <div class="body">
+      <h3>App registration client secrets expired or expiring</h3>
+      <p class="detail">2 expired secret(s): Legacy Sync App / expires 2026-04-02; Old API Client / expires 2026-03-15</p>
+      <p class="rec"><span class="rec-lbl">recommendation</span> Rotate expired secrets immediately. Prefer migrating to certificate-based credentials where the host can hold a non-exportable private key.</p>
+    </div>
+  </article>
+  <article class="finding warning">
+    <div class="status warning">WARNING</div>
+    <div class="body">
+      <h3>High-privilege Graph application permissions</h3>
+      <p class="detail">2 app(s) hold high-privilege Graph permissions: Lifecycle Workflows: User.ReadWrite.All; Audit Bot: Directory.ReadWrite.All</p>
+      <p class="rec"><span class="rec-lbl">recommendation</span> Review whether each high-privilege permission is still required. Replace with narrower scopes or migrate to delegated flows where possible.</p>
+    </div>
+  </article>
+  <article class="finding warning">
+    <div class="status warning">WARNING</div>
+    <div class="body">
+      <h3>App registrations with owners</h3>
+      <p class="detail">3 app(s) without owners: Backup Service, Legacy Sync App, Old API Client</p>
+      <p class="rec"><span class="rec-lbl">recommendation</span> Assign at least one owner per app registration so there is a clear human accountable for credential rotation and lifecycle.</p>
+    </div>
+  </article>
+</section>
+
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-top">
+      <div>© 2026 AroraMSP · Microsoft 365 consulting</div>
+      <a href="https://aroramsp.com" target="_blank" rel="noopener">aroramsp.com →</a>
+    </div>
+    <div class="foot-bottom"><span class="dot">●</span> M365 audit report · v1.0 · sample</div>
+  </div>
+</footer>
+
+<script is:inline>
+const FINDINGS = [{"Category":"Identity & Access","CheckName":"Legacy authentication blocked via CA","Status":"PASS","Detail":"2 enabled policy/policies block legacy authentication.","Recommendation":""},{"Category":"Identity & Access","CheckName":"Global Administrator count","Status":"WARNING","Detail":"5 Global Administrators.","Recommendation":"Reduce to 2-4. Use PIM and lower-privilege roles for daily admin work."},{"Category":"Identity & Access","CheckName":"Break-glass accounts excluded from CA","Status":"PASS","Detail":"2 excluded principal(s) found across broad CA policies.","Recommendation":""},{"Category":"Identity & Access","CheckName":"Tenant-wide MFA Conditional Access policy","Status":"PASS","Detail":"1 policy/policies require MFA for all users on all cloud apps.","Recommendation":""},{"Category":"Identity & Access","CheckName":"Self-service password reset (SSPR) enabled","Status":"WARNING","Detail":"SSPR enablement scope is not directly exposed via Microsoft Graph; manual verification required.","Recommendation":"Verify in Entra admin center: Protection > Password reset > Properties (Self service password reset enabled = All)."},{"Category":"Email Security","CheckName":"DMARC: contoso.com","Status":"WARNING","Detail":"p=quarantine","Recommendation":"Move to p=reject after monitoring rua aggregate reports for 30+ days."},{"Category":"Email Security","CheckName":"DMARC: contoso.co.uk","Status":"FAIL","Detail":"No DMARC TXT record found.","Recommendation":"Publish: v=DMARC1; p=quarantine; rua=mailto:dmarc@contoso.co.uk"},{"Category":"Email Security","CheckName":"SPF: contoso.com","Status":"PASS","Detail":"SPF -all (hard fail).","Recommendation":""},{"Category":"Email Security","CheckName":"SPF: contoso.co.uk","Status":"WARNING","Detail":"SPF ~all (soft fail).","Recommendation":"Tighten to -all once all sending sources are confirmed in the SPF record."},{"Category":"Email Security","CheckName":"DKIM: contoso.com","Status":"PASS","Detail":"DKIM signing enabled on default selectors.","Recommendation":""},{"Category":"Email Security","CheckName":"DKIM: contoso.co.uk","Status":"FAIL","Detail":"DKIM signing disabled.","Recommendation":"Publish CNAMEs and enable: Set-DkimSigningConfig -Identity 'contoso.co.uk' -Enabled $true"},{"Category":"Email Security","CheckName":"External auto-forwarding blocked","Status":"PASS","Detail":"Default remote domain blocks auto-forwarding and outbound spam policy AutoForwardingMode is Off.","Recommendation":""},{"Category":"Email Security","CheckName":"Mailbox audit logging (tenant)","Status":"PASS","Detail":"Tenant-level mailbox auditing enabled (default since 2019).","Recommendation":""},{"Category":"Email Security","CheckName":"Shared mailboxes: sign-in disabled","Status":"PASS","Detail":"All 2 shared mailbox(es) have sign-in disabled.","Recommendation":""},{"Category":"Licensing","CheckName":"Shared mailboxes: no paid licences","Status":"WARNING","Detail":"1 shared mailbox(es) carry licences: finance@contoso.com","Recommendation":"Shared mailboxes <50 GB do not require a licence. Reclaim unless archive or litigation hold requires Exchange Online Plan 2."},{"Category":"Endpoint","CheckName":"Intune compliance policies deployed","Status":"PASS","Detail":"4 compliance policy/policies deployed.","Recommendation":""},{"Category":"Endpoint","CheckName":"App protection policies deployed","Status":"PASS","Detail":"3 MAM policy/policies deployed (iOS: 2, Android: 1).","Recommendation":""},{"Category":"App Registrations","CheckName":"App registration certificates expired or expiring","Status":"WARNING","Detail":"1 certificate(s) expire within 30 days: Backup Service / Backup-cert-2024 / expires 2026-05-25","Recommendation":"Rotate before expiry. Both old and new certs can coexist on the registration during transition."},{"Category":"App Registrations","CheckName":"App registration client secrets expired or expiring","Status":"FAIL","Detail":"2 expired secret(s): Legacy Sync App / expires 2026-04-02; Old API Client / expires 2026-03-15","Recommendation":"Rotate expired secrets immediately. Prefer migrating to certificate-based credentials where the host can hold a non-exportable private key."},{"Category":"App Registrations","CheckName":"High-privilege Graph application permissions","Status":"WARNING","Detail":"2 app(s) hold high-privilege Graph permissions: Lifecycle Workflows: User.ReadWrite.All; Audit Bot: Directory.ReadWrite.All","Recommendation":"Review whether each high-privilege permission is still required. Replace with narrower scopes or migrate to delegated flows where possible."},{"Category":"App Registrations","CheckName":"App registrations with owners","Status":"WARNING","Detail":"3 app(s) without owners: Backup Service, Legacy Sync App, Old API Client","Recommendation":"Assign at least one owner per app registration so there is a clear human accountable for credential rotation and lifecycle."},{"Category":"Licensing","CheckName":"Unassigned licences","Status":"WARNING","Detail":"Microsoft 365 E5: 12 of 50 unassigned; Microsoft Entra ID P2: 8 of 50 unassigned; Microsoft Intune Plan 1: 3 of 25 unassigned","Recommendation":"Reclaim or downsize unused licences at the next renewal cycle."},{"Category":"Licensing","CheckName":"Inactive licensed users (90 days)","Status":"WARNING","Detail":"5 licensed user(s) with no sign-in in 90 days.","Recommendation":"Review and reclaim licences. Disable accounts where the user has left."}];
+const TENANT = "Contoso Ltd";
+const DATE = "2026-05-09";
+function csvEscape(v){ return '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"'; }
+function downloadCsv(){
+  const headers = ['Category','CheckName','Status','Detail','Recommendation'];
+  const rows = [headers.join(',')];
+  for (const f of FINDINGS) rows.push(headers.map(h => csvEscape(f[h])).join(','));
+  const blob = new Blob(['﻿' + rows.join('\r\n')], {type:'text/csv;charset=utf-8;'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  const safe = (TENANT + '-' + DATE).replace(/[^A-Za-z0-9._-]/g, '_');
+  a.download = 'M365-Audit-' + safe + '.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+document.getElementById('btnPrint').addEventListener('click', () => window.print());
+document.getElementById('btnCsv').addEventListener('click', downloadCsv);
+</script>
+</body>
+</html>
