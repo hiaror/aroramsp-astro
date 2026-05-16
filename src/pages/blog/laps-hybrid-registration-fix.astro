@@ -1,0 +1,331 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+<Layout
+  title="Fix Windows LAPS escrow failure on hybrid Entra devices · AroraMSP"
+  description="Diagnose and repair broken Hybrid Entra ID device registration that blocks Windows LAPS escrow. Uses dsregcmd leave/join, Graph beta, alternativeSecurityIds."
+  page="blog"
+  canonical="https://aroramsp.com/blog/laps-hybrid-registration-fix"
+  ogTitle="Fix Windows LAPS escrow failure on hybrid Entra devices"
+  ogDescription="Diagnose and repair broken Hybrid Entra ID device registration that blocks Windows LAPS escrow. Uses dsregcmd leave/join, Graph beta, alternativeSecurityIds."
+>
+  <Fragment slot="head">
+    <meta name="keywords" content="Hybrid Entra LAPS, dsregcmd leave join, alternativeSecurityIds, DeviceAuthStatus FAILED, Windows LAPS escrow failure, Microsoft Graph Entra device, broken hybrid registration" />
+    <script type="application/ld+json" is:raw>
+    {
+      "@context": "https://schema.org",
+      "@type": "TechArticle",
+      "headline": "Fix Windows LAPS escrow failure on hybrid Entra devices",
+      "description": "Diagnose and repair broken Hybrid Entra ID device registration that blocks Windows LAPS escrow. Uses dsregcmd leave/join, Graph beta, alternativeSecurityIds.",
+      "url": "https://aroramsp.com/blog/laps-hybrid-registration-fix",
+      "datePublished": "2026-05-08",
+      "dateModified": "2026-05-08",
+      "author": { "@id": "https://aroramsp.com/#himanshu-arora" },
+      "publisher": { "@id": "https://aroramsp.com/#org" },
+      "image": "https://aroramsp.com/uploads/og-preview.png",
+      "proficiencyLevel": "Expert",
+      "about": [
+        { "@type": "Thing", "name": "Windows LAPS" },
+        { "@type": "Thing", "name": "Hybrid Entra ID" },
+        { "@type": "Thing", "name": "device registration" }
+      ],
+      "mainEntityOfPage": "https://aroramsp.com/blog/laps-hybrid-registration-fix"
+    }
+    </script>
+    <script type="application/ld+json" is:raw>
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://aroramsp.com/" },
+        { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://aroramsp.com/blog" },
+        { "@type": "ListItem", "position": 3, "name": "Fix Windows LAPS escrow failure on hybrid Entra devices", "item": "https://aroramsp.com/blog/laps-hybrid-registration-fix" }
+      ]
+    }
+    </script>
+  </Fragment>
+
+  <section class="page wrap">
+    <article class="article">
+      <div class="post-meta">
+        <a href="/blog">&larr; all posts</a>
+        <span class="dot"></span>
+        <span class="post-author">
+          By <a href="/about" rel="author">Himanshu Arora</a>
+          &nbsp;&middot;&nbsp;11+ yrs Microsoft ecosystem
+          &nbsp;&middot;&nbsp;<a href="https://linkedin.com/in/himanshusac" target="_blank" rel="noopener">LinkedIn</a>
+          &nbsp;&middot;&nbsp;<a href="https://github.com/hiaror" target="_blank" rel="noopener">GitHub</a>
+          &nbsp;&middot;&nbsp;
+        </span>
+        <span>2026-04-25</span>
+        <span class="dot"></span>
+        <span class="tag">// laps &middot; entra hybrid &middot; intune</span>
+        <span class="dot"></span>
+        <span>12 min read</span>
+      </div>
+
+      <h1>When LAPS silently refuses to escrow on hybrid Entra devices.</h1>
+      <p class="lede">
+        Five PCs in a hybrid Intune tenant. All enrolled, all compliant, LAPS policy
+        applied. Not one of them escrowing. No alerts. No errors in any portal. The
+        diagnostic signal is one Graph beta endpoint field that the Entra UI does not
+        show, and it stays empty until you run the right two commands on the device
+        itself. Then you wait 15 hours and do nothing. Here is the full chain.
+      </p>
+
+      <h2>why this matters</h2>
+      <p>
+        Hybrid Entra registration is a two-stage process. Most engineers only ever see
+        Stage 1.
+      </p>
+      <p>
+        <strong>Stage 1: Entra Connect does its thing on the server.</strong> Entra Connect
+        (the on-prem sync agent) reads the AD computer object and creates a matching device
+        record in Entra. The device appears in the portal with
+        <code>TrustType: ServerAd</code>. Tick.
+      </p>
+      <p>
+        <strong>Stage 2: the device proves it owns that record.</strong> A Windows scheduled
+        task called <code>Automatic-Device-Join</code> runs on the device. It authenticates
+        to Entra, exchanges cryptographic keys, and writes two fields on the Entra object:
+        <code>registrationDateTime</code> and <code>alternativeSecurityIds</code>. Without
+        those, the device cannot prove its identity to Entra.
+      </p>
+      <p>
+        When Stage 2 fails, Stage 1 still looks healthy. The portal shows the device. The
+        AD computer object has its <code>userCertificate</code>. Intune happily enrols it
+        through MDM auto-enrolment. The device is "joined" by every visible measure. But it
+        cannot authenticate as itself to Entra. Windows LAPS cannot escrow without that
+        authentication.
+      </p>
+      <p>
+        Because the symptom is silence rather than an error, you only notice when someone
+        asks why the recovery portal has no entry for that machine.
+      </p>
+
+      <h2>what the broken state actually looks like</h2>
+      <p>
+        On the device, <code>dsregcmd /status</code> tells you the truth in three lines:
+      </p>
+      <div class="code-label">// output (dsregcmd /status excerpt)</div>
+      <pre><code><span class="m">  AzureAdJoined    : YES</span>
+<span class="m">  DomainJoined     : YES</span>
+<span class="w">  DeviceAuthStatus : FAILED. Device is either disabled or deleted</span>
+<span class="ok">  KeySignTest      : PASSED</span></code></pre>
+      <p>
+        <strong>What this means line by line:</strong>
+      </p>
+      <ul>
+        <li><code>AzureAdJoined: YES</code>. The device thinks it is joined.</li>
+        <li><code>DomainJoined: YES</code>. The on-prem AD side is fine.</li>
+        <li><code>DeviceAuthStatus: FAILED</code>. When the device tried to authenticate to Entra, Entra rejected it. This is the smoking gun.</li>
+        <li><code>KeySignTest: PASSED</code>. The local cryptographic keys exist and are valid. The device is not the problem; Entra is rejecting it.</li>
+      </ul>
+      <p>
+        Look in the LAPS event log for the matching rejection message. It usually reads:
+      </p>
+      <div class="code-label">// output (LAPS event log excerpt)</div>
+      <pre><code><span class="w">  Server ErrorSubCode : error_missing_device</span>
+<span class="w">  Https Status        : 400</span>
+<span class="w">  Server Message      : The device object by the given id is not found.</span></code></pre>
+      <p>
+        <strong>What this means in plain English:</strong> the device id <em>does</em>
+        exist in Entra. The portal will happily show it. But the cryptographic keys the
+        device is presenting do not match anything the directory accepts, because the
+        matching <code>alternativeSecurityIds</code> field was never written during Stage 2
+        registration. As far as Entra is concerned, this device is a stranger.
+      </p>
+
+      <h2>the diagnostic signal</h2>
+      <p>
+        There is exactly one field that confirms this state, and the Entra portal does not
+        display it. You have to query Microsoft Graph beta:
+      </p>
+      <div class="code-label">// run this</div>
+      <pre><code><span class="c">$u = "https://graph.microsoft.com/beta/devices/$objectId" + `</span>
+<span class="c">     "?`$select=displayName,trustType,registrationDateTime," + `</span>
+<span class="c">     "alternativeSecurityIds,accountEnabled,createdDateTime"</span>
+<span class="c">Invoke-MgGraphRequest -Method GET -Uri $u</span></code></pre>
+      <div class="code-label">// output</div>
+      <pre><code><span class="m">  displayName            : CORP-PC-001</span>
+<span class="m">  trustType              : ServerAd</span>
+<span class="m">  createdDateTime        : 4/15/2026 10:29:34 AM</span>
+<span class="w">  registrationDateTime   : (empty)</span>
+<span class="w">  alternativeSecurityIds : (empty)</span>
+<span class="m">  accountEnabled         : True</span></code></pre>
+      <p>
+        Two empty fields. Object enabled, trust type correct, created recently, but never
+        registered and no security identifiers. Compare against a healthy hybrid device:
+        both fields populated, last sign-in recent. The shape is unmistakable once you
+        have seen it twice.
+      </p>
+
+      <h2>before you touch anything</h2>
+      <ul>
+        <li><strong>Confirm the device is on a supported Windows 11 build.</strong> 23H2 (<code>10.0.22631</code>) at minimum. 24H2 (<code>10.0.26100</code>) for full Automatic Account Management. Pre-production builds are not LAPS-eligible.</li>
+        <li><strong>Confirm the AD computer object is healthy.</strong> Right OU, <code>userCertificate</code> populated, member of the MDM enrolment GPO security group. If it is in <code>CN=Computers</code>, AADC may not be syncing it at all.</li>
+        <li><strong>Confirm AADC delta sync is running.</strong> If Entra Connect is paused or in staging mode, none of this works regardless.</li>
+        <li><strong>Have local admin on the affected device</strong>, ideally during a maintenance window. The procedure requires two restarts.</li>
+      </ul>
+
+      <h2>step 1 &middot; find the broken devices via Graph</h2>
+      <p>
+        Pull all Entra devices with pagination, then for each device-in-scope check
+        <code>registrationDateTime</code> and <code>alternativeSecurityIds</code>. The
+        beta endpoint surfaces both. The v1.0 endpoint does not surface
+        <code>alternativeSecurityIds</code> at all.
+      </p>
+      <div class="code-label">// run this</div>
+      <pre><code><span class="c">$all = @()</span>
+<span class="c">$u = "https://graph.microsoft.com/v1.0/devices"</span>
+<span class="c">do &#123;</span>
+<span class="c">    $r = Invoke-MgGraphRequest -Method GET -Uri $u</span>
+<span class="c">    $all += $r.value</span>
+<span class="c">    $u = $r.'@odata.nextLink'</span>
+<span class="c">&#125; while ($u)</span>
+<span class="c">$all.Count</span></code></pre>
+      <div class="code-label">// output</div>
+      <pre><code><span class="ok">  2676</span></code></pre>
+      <p>
+        Then for each device name on the broken list, get the detail and inspect:
+      </p>
+      <div class="code-label">// run this</div>
+      <pre><code><span class="c">$targets = @("CORP-PC-001","CORP-PC-002","CORP-PC-003","CORP-PC-004","CORP-PC-005")</span>
+<span class="c">$matching = $all | Where-Object &#123; $_['displayName'] -in $targets &#125;</span>
+<span class="c">foreach ($d in $matching) &#123; Get-EntraDeviceDetail -ObjectId $d['id'] &#125;</span></code></pre>
+      <div class="code-label">// output</div>
+      <pre><code><span class="m">  Name         TrustType  Registered    HasAltSec  Enabled</span>
+<span class="m">  ----         ---------  ----------    ---------  -------</span>
+<span class="w">  CORP-PC-001  ServerAd   NO-PENDING    NO         True</span>
+<span class="w">  CORP-PC-002  ServerAd   NO-PENDING    NO         True</span>
+<span class="w">  CORP-PC-003  ServerAd   NO-PENDING    NO         True</span>
+<span class="w">  CORP-PC-004  ServerAd   NO-PENDING    NO         True</span>
+<span class="w">  CORP-PC-005  ServerAd   NO-PENDING    NO         True</span></code></pre>
+      <p>
+        Five devices, identical signature. The remediation is the same for all of them.
+      </p>
+
+      <div class="callout warn">
+        <strong>Watch out for <code>$matches</code>.</strong> If you ever see
+        <code>$matching.Count</code> return 35 when you know there are 5 devices, you used
+        <code>$matches</code> as the variable name. <code>$matches</code> is a reserved
+        PowerShell automatic populated by the <code>-match</code> operator. Use anything
+        else.
+      </div>
+
+      <h2>step 2 &middot; the two-restart fix on the device</h2>
+      <p>
+        The fix is to wipe the local registration state and force the
+        <code>Automatic-Device-Join</code> task to start from scratch.
+      </p>
+      <p>
+        <code>dsregcmd /leave</code> tells Windows to forget that it is hybrid joined. It
+        clears the local registration cache. Then a restart, and a fresh sign-in. Then
+        <code>dsregcmd /join</code> tells Windows to register again from a clean state.
+        Then one more restart to let the background process settle.
+      </p>
+      <p>
+        The user can keep working through the second restart; they do not need to be signed
+        out beyond the leave step. Two restarts feels excessive but each one matters: the
+        first ends the session that was using the broken state, the second lets the
+        background <code>Automatic-Device-Join</code> task start fresh.
+      </p>
+      <div class="code-label">// run this (as local administrator)</div>
+      <pre><code><span class="c">dsregcmd /leave</span></code></pre>
+      <div class="code-label">// output</div>
+      <pre><code><span class="m">  Successfully left.</span></code></pre>
+      <p>
+        Restart the device. Sign in normally. Then run:
+      </p>
+      <div class="code-label">// run this (as local administrator)</div>
+      <pre><code><span class="c">dsregcmd /join</span></code></pre>
+      <div class="code-label">// output</div>
+      <pre><code><span class="m">  Computer is pre-joined to Azure AD.</span>
+<span class="m">  Join completed: 0x00000000</span></code></pre>
+      <p>
+        Restart the device one more time. Done.
+      </p>
+
+      <h2>step 3 &middot; do nothing for 15 to 24 hours</h2>
+      <p>
+        This is the bit that catches people out. After the second restart,
+        <code>dsregcmd /status</code> will show <code>AzureAdJoined: NO</code>. The error
+        log will show <code>error_missing_device</code> from the foreground attempt. You
+        will be tempted to re-run the procedure. <strong>Do not.</strong>
+      </p>
+      <p>
+        The <code>Automatic-Device-Join</code> scheduled task retries in the background
+        on its own schedule. In the engagement this fix was validated against, every
+        device completed registration within roughly 15 hours of the second restart.
+        Re-running <code>dsregcmd /leave + /join</code> resets that retry clock and
+        delays recovery.
+      </p>
+      <div class="code-label">// run this (immediately after /join + restart, on the device)</div>
+      <pre><code><span class="c">dsregcmd /status</span></code></pre>
+      <div class="code-label">// output (this is normal, walk away)</div>
+      <pre><code><span class="w">  AzureAdJoined : NO</span></code></pre>
+
+      <div class="callout warn">
+        <strong>Do not re-run the procedure.</strong> Every time you re-run leave plus
+        join, the retry counter resets. The device gets stuck in a permanent
+        not-quite-joined state because background reconciliation never gets enough
+        uninterrupted time to complete.
+      </div>
+
+      <h2>step 4 &middot; verify the next morning</h2>
+      <p>
+        From the admin workstation, against Graph, check whether the device is now
+        escrowing. The device name appearing in the escrow list with a recent
+        <code>lastBackupDateTime</code> is the only proof you need.
+      </p>
+      <div class="code-label">// run this</div>
+      <pre><code><span class="c">$response = Invoke-MgGraphRequest -Method GET `</span>
+<span class="c">    -Uri "https://graph.microsoft.com/v1.0/directory/deviceLocalCredentials"</span>
+<span class="c">$response.value | Where-Object &#123; $_['deviceName'] -eq 'CORP-PC-001' &#125;</span></code></pre>
+      <div class="code-label">// output</div>
+      <pre><code><span class="m">  deviceName        : CORP-PC-001</span>
+<span class="ok">  lastBackupDateTime: 4/22/2026 1:10:23 AM</span></code></pre>
+      <p>
+        Confirmed. The Entra portal will also now show the device as hybrid joined with a
+        populated <code>registrationDateTime</code>. Same diagnostic query as step 1, but
+        the two empty fields are now populated.
+      </p>
+
+      <h2>common gotchas</h2>
+      <ul>
+        <li><strong>You re-ran the leave-join sequence because it "did not work".</strong> Already covered above, worth saying again here. <strong>Why it matters:</strong> every re-run resets the background retry clock. <strong>Fix:</strong> run the procedure once, then leave it alone. Verify 15 to 24 hours later. A fix that should take 15 hours ends up taking three days when you keep retrying.</li>
+        <li><strong>Multiple Entra objects share the same display name.</strong> Usually an old <code>Workplace</code> (BYOD-style) or pure <code>AzureAd</code> (cloud-only) registration coexisting with the correct <code>ServerAd</code> (hybrid) one. <strong>Why it matters:</strong> the leave-join sequence will not help while stale objects exist; they keep blocking registration. <strong>Fix:</strong> identify duplicates first using a duplicate detection script, delete the stale ones in the Entra portal, then run the leave-join sequence.</li>
+        <li><strong>Your "all devices" pull returns ~100 results.</strong> <strong>Why it happens:</strong> you forgot <code>@odata.nextLink</code>. <strong>Fix:</strong> follow the pagination link in a loop until it stops returning. Anything you build on a partial result is unreliable.</li>
+        <li><strong>You trust the Entra portal more than it deserves.</strong> The portal shows the device object whether or not it is properly registered. <strong>Why it matters:</strong> the portal cannot tell you that the device cannot authenticate. <strong>Fix:</strong> check <code>alternativeSecurityIds</code> via the Graph beta endpoint as shown in Step 1. That is the only field that confirms registration is complete.</li>
+        <li><strong>Connect-MgGraph prompts you for credentials twice.</strong> <strong>Why it happens:</strong> WAM (Web Account Manager) is enabled by default on PowerShell 5.1 and adds an extra prompt step. <strong>Fix:</strong> run <code>Set-MgGraphOption -DisableLoginByWAM $true</code> once, then <code>Connect-MgGraph</code> at session start with every scope you will need.</li>
+      </ul>
+
+      <h2>when not to use this fix</h2>
+      <p>
+        The leave-join procedure only fixes broken registration. Use a different approach if
+        any of these apply:
+      </p>
+      <ul>
+        <li><strong>Device has not synced with Intune in weeks.</strong> The device is offline or dormant, not broken. <strong>Fix:</strong> find out where the device is and power it on, or contact the user.</li>
+        <li><strong>OS build is below Windows 10 KB5025221 (April 2023) or Windows 11 22H2.</strong> LAPS is not supported on those builds. <strong>Fix:</strong> upgrade the OS or rebuild the device.</li>
+        <li><strong>Multiple Entra objects exist for the same device name.</strong> The leave-join sequence has nothing valid to register against. <strong>Fix:</strong> delete the stale objects first using a duplicate detection script, then run leave-join.</li>
+        <li><strong>No devices in the tenant are escrowing at all.</strong> Tenant-level toggle problem. <strong>Fix:</strong> in the Entra portal, go to <strong>Devices &gt; Device settings</strong> and turn on "Local administrator password solution (LAPS)". That is a one-click fix; no device-side work will help until that toggle is on.</li>
+      </ul>
+
+      <div class="callout">
+        Hybrid Entra is full of these "everything looks fine, nothing works" failure
+        modes. The diagnostic toolset for this specific one is on
+        <a href="https://github.com/hiaror/intune-laps-hybrid-registration-fix">GitHub</a>,
+        sanitized and ready to run. If you would rather hand the diagnostic and
+        remediation to someone who has done it on a live tenant,
+        <a href="/contact">book a 30-minute call</a> and we can talk through the
+        right approach for your environment.
+      </div>
+
+      <div class="post-foot">
+        <a href="/blog">&larr; all posts</a>
+        <span>// himanshu @ aroramsp</span>
+      </div>
+    </article>
+  </section>
+</Layout>

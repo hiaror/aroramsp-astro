@@ -1,0 +1,338 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+<Layout
+  title="Windows LAPS fleet audit with Microsoft Graph PowerShell · AroraMSP"
+  description="Windows LAPS fleet audit via Microsoft Graph PowerShell. Cross-references Intune inventory, OS eligibility, and per-device account name (WLapsAdmin vs Administrator)."
+  page="blog"
+  canonical="https://aroramsp.com/blog/laps-fleet-audit-graph"
+  ogTitle="Windows LAPS fleet audit with Microsoft Graph PowerShell"
+  ogDescription="Windows LAPS fleet audit via Microsoft Graph PowerShell. Cross-references Intune inventory, OS eligibility, and per-device account name (WLapsAdmin vs Administrator)."
+>
+  <Fragment slot="head">
+    <meta name="keywords" content="Windows LAPS, WLapsAdmin, Microsoft Graph PowerShell, Intune LAPS audit, Automatic Account Management, Entra ID device, Windows 11 24H2, deviceLocalCredentials" />
+    <script type="application/ld+json" is:raw>
+    {
+      "@context": "https://schema.org",
+      "@type": "TechArticle",
+      "headline": "Windows LAPS fleet audit with Microsoft Graph PowerShell",
+      "description": "Windows LAPS fleet audit via Microsoft Graph PowerShell. Cross-references Intune inventory, OS eligibility, and per-device account name (WLapsAdmin vs Administrator).",
+      "url": "https://aroramsp.com/blog/laps-fleet-audit-graph",
+      "datePublished": "2026-05-08",
+      "dateModified": "2026-05-08",
+      "author": { "@id": "https://aroramsp.com/#himanshu-arora" },
+      "publisher": { "@id": "https://aroramsp.com/#org" },
+      "image": "https://aroramsp.com/uploads/og-preview.png",
+      "proficiencyLevel": "Expert",
+      "about": [
+        { "@type": "Thing", "name": "Windows LAPS" },
+        { "@type": "Thing", "name": "Microsoft Graph PowerShell" },
+        { "@type": "Thing", "name": "Microsoft Intune" }
+      ],
+      "mainEntityOfPage": "https://aroramsp.com/blog/laps-fleet-audit-graph"
+    }
+    </script>
+    <script type="application/ld+json" is:raw>
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://aroramsp.com/" },
+        { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://aroramsp.com/blog" },
+        { "@type": "ListItem", "position": 3, "name": "Windows LAPS fleet audit with Microsoft Graph PowerShell", "item": "https://aroramsp.com/blog/laps-fleet-audit-graph" }
+      ]
+    }
+    </script>
+  </Fragment>
+
+  <section class="page wrap">
+    <article class="article">
+      <div class="post-meta">
+        <a href="/blog">&larr; all posts</a>
+        <span class="dot"></span>
+        <span class="post-author">
+          By <a href="/about" rel="author">Himanshu Arora</a>
+          &nbsp;&middot;&nbsp;11+ yrs Microsoft ecosystem
+          &nbsp;&middot;&nbsp;<a href="https://linkedin.com/in/himanshusac" target="_blank" rel="noopener">LinkedIn</a>
+          &nbsp;&middot;&nbsp;<a href="https://github.com/hiaror" target="_blank" rel="noopener">GitHub</a>
+          &nbsp;&middot;&nbsp;
+        </span>
+        <span>2026-05-08</span>
+        <span class="dot"></span>
+        <span class="tag">// laps &middot; graph</span>
+        <span class="dot"></span>
+        <span>11 min read</span>
+      </div>
+
+      <h1>WLapsAdmin or Administrator? Auditing Windows LAPS at fleet scale.</h1>
+      <p class="lede">
+        Windows LAPS (Local Administrator Password Solution) is the feature that auto-rotates
+        the local admin password on each PC and backs it up to Entra ID. An IT lead asked me
+        last week why some of his PCs showed <code>Administrator</code> in the LAPS recovery
+        portal while the rest showed <code>WLapsAdmin</code>. Same policy, same tenant,
+        identical assignments. Good question. The answer comes down to one Microsoft design
+        decision in Windows 11 24H2 that quietly creates a split fleet, and the only
+        practical way to see the full picture is via Microsoft Graph. Here is the audit I
+        run, end to end.
+      </p>
+
+      <h2>why this matters</h2>
+      <p>
+        The Intune recovery portal shows you the LAPS account name for one device at a time.
+        There is no fleet-wide view. The Graph v1.0 list endpoint will give you device names
+        and timestamps, but it will not give you the account name in bulk. Microsoft
+        deliberately blocks bulk account name retrieval with an HTTP 400 error, treating
+        password account names as sensitive metadata that should only be queried per device.
+        On any tenant of meaningful size, the only way to see the full picture is to write
+        the audit yourself.
+      </p>
+      <p>
+        On top of that, an Intune-enrolled, compliant device is not necessarily escrowing
+        LAPS. The portal happily shows the policy as applied while the device silently fails
+        to back up its password to Entra. The shape of a real LAPS audit on a hybrid tenant
+        is always the same three questions:
+      </p>
+      <ul>
+        <li><strong>How many devices are actually escrowing</strong>, versus how many should be?</li>
+        <li><strong>For the ones that are escrowing</strong>, what account name is being managed?</li>
+        <li><strong>For the ones that are not</strong>, why?</li>
+      </ul>
+
+      <h2>before you touch anything</h2>
+      <ul>
+        <li><strong>Microsoft.Graph PowerShell SDK installed.</strong> Latest version, not the v1 module that Microsoft has retired. Install with <code>Install-Module Microsoft.Graph -Scope CurrentUser</code>.</li>
+        <li><strong>An admin account with the right Graph scopes.</strong> You need read access to local credentials, devices, and managed devices: <code>DeviceLocalCredential.ReadBasic.All</code>, <code>DeviceLocalCredential.Read.All</code>, <code>Device.Read.All</code>, and <code>DeviceManagementManagedDevices.Read.All</code>. Connect once at the start of the session with all of them, so you do not get re-prompted halfway through a 90-second loop.</li>
+        <li><strong>WAM disabled if you are on PowerShell 5.1.</strong> WAM (Web Account Manager) is the Windows broker that handles login. On PowerShell 5.1 it sometimes triggers a double prompt when <code>Connect-MgGraph</code> runs. <strong>Fix:</strong> run <code>Set-MgGraphOption -DisableLoginByWAM $true</code> before connecting.</li>
+      </ul>
+      <div class="code-label">// run this</div>
+      <pre><code><span class="c">Set-MgGraphOption -DisableLoginByWAM $true</span>
+<span class="c">Connect-MgGraph -TenantId "00000000-0000-0000-0000-000000000000" `</span>
+<span class="c">    -Scopes "DeviceLocalCredential.ReadBasic.All", `</span>
+<span class="c">            "DeviceLocalCredential.Read.All", `</span>
+<span class="c">            "Device.Read.All", `</span>
+<span class="c">            "DeviceManagementManagedDevices.Read.All" `</span>
+<span class="c">    -NoWelcome</span></code></pre>
+
+      <h2>step 1 &middot; pull the escrow records</h2>
+      <p>
+        The list endpoint returns one record per escrowed device with the device name and
+        last backup timestamp. It does not return the account name. That comes later.
+      </p>
+      <div class="code-label">// run this</div>
+      <pre><code><span class="c">$response = Invoke-MgGraphRequest -Method GET `</span>
+<span class="c">    -Uri "https://graph.microsoft.com/v1.0/directory/deviceLocalCredentials"</span>
+<span class="c">$response.value.Count</span></code></pre>
+      <div class="code-label">// output</div>
+      <pre><code><span class="ok">  81</span></code></pre>
+      <p>
+        Hold onto that count. The next step compares it against the live Intune inventory
+        and almost never matches.
+      </p>
+
+      <h2>step 2 &middot; pull the Intune inventory</h2>
+      <p>
+        The escrow list is one number. The Intune inventory of currently active Windows
+        devices is another. Stale escrow records from retired devices stick around in the
+        v1.0 list. Live devices that should be escrowing but are not get hidden by the noise.
+        You need both.
+      </p>
+      <div class="code-label">// run this</div>
+      <pre><code><span class="c">$intune = Invoke-MgGraphRequest -Method GET `</span>
+<span class="c">    -Uri "https://graph.microsoft.com/v1.0/deviceManagement/managedDevices"</span>
+<span class="c">$winDevices = $intune.value | Where-Object &#123; $_['operatingSystem'] -eq 'Windows' &#125;</span>
+<span class="c">$winDevices.Count</span></code></pre>
+      <div class="code-label">// output</div>
+      <pre><code><span class="ok">  84</span></code></pre>
+
+      <h2>step 3 &middot; gap analysis</h2>
+      <p>
+        Cross-reference both lists by device name. Two outputs that you should care about:
+        devices in Intune but not escrowing, and escrow records with no matching Intune
+        device.
+      </p>
+      <div class="code-label">// run this</div>
+      <pre><code><span class="c">$intuneNames   = $winDevices | ForEach-Object &#123; $_['deviceName'] &#125;</span>
+<span class="c">$escrowedNames = $response.value | ForEach-Object &#123; $_['deviceName'] &#125;</span>
+
+<span class="c">$intuneNames | Where-Object &#123; $_ -notin $escrowedNames &#125;</span>
+<span class="c">$escrowedNames | Where-Object &#123; $_ -notin $intuneNames &#125;</span></code></pre>
+      <div class="code-label">// output (in Intune but not escrowing, then escrowing but not in Intune)</div>
+      <pre><code><span class="m">  CORP-PC-014</span>
+<span class="m">  CORP-PC-039</span>
+<span class="m">  CORP-PC-072</span>
+
+<span class="m">  (no results)</span></code></pre>
+      <p>
+        Three devices in Intune, not escrowing. No stale records on the escrow side this
+        time. Those three are the actual investigation targets, not the headline number.
+      </p>
+
+      <h2>step 4 &middot; OS eligibility, the boundary nobody talks about</h2>
+      <p>
+        Now the bit that explains the WLapsAdmin versus Administrator split. Microsoft's
+        Automatic Account Management feature, the one that creates and manages
+        <code>WLapsAdmin</code> instead of touching the built-in Administrator,
+        <strong>only applies on Windows 11 24H2 (build <code>10.0.26100</code>) or later</strong>.
+        On Windows 11 23H2 and below, the AAM CSP settings are silently ignored and LAPS
+        manages the built-in Administrator under its default name. Both are correct. The
+        password works. The portal just shows a different account name.
+      </p>
+      <div class="code-label">// run this</div>
+      <pre><code><span class="c">$threshold = [version]"10.0.26100"</span>
+<span class="c">$winDevices | ForEach-Object &#123;</span>
+<span class="c">    [pscustomobject]@&#123;</span>
+<span class="c">        DeviceName = $_['deviceName']</span>
+<span class="c">        OsVersion  = $_['osVersion']</span>
+<span class="c">        Eligible   = ([version]$_['osVersion'] -ge $threshold)</span>
+<span class="c">    &#125;</span>
+<span class="c">&#125; | Group-Object Eligible | Format-Table Name, Count</span></code></pre>
+      <div class="code-label">// output</div>
+      <pre><code><span class="m">  Name   Count</span>
+<span class="m">  ----   -----</span>
+<span class="ok">  True    72</span>
+<span class="w">  False   12</span></code></pre>
+      <p>
+        Twelve devices on 23H2 or below. Those will show <code>Administrator</code> in the
+        portal as long as they are on that build. They will flip to <code>WLapsAdmin</code>
+        the next time they upgrade to 24H2. No policy change required.
+      </p>
+
+      <div class="callout">
+        <strong>Reference table.</strong> Build <code>10.0.22621.x</code> = 22H2. Build
+        <code>10.0.22631.x</code> = 23H2. Build <code>10.0.26100.x</code> and above = 24H2.
+        Build <code>10.0.21996.x</code> is a Windows 10 Insider Preview from October 2021,
+        not a production release. If a device is on that build, do not patch it. Rebuild
+        or replace.
+      </div>
+
+      <h2>step 5 &middot; per-device account name confirmation</h2>
+      <p>
+        Now the part Microsoft will not let you shortcut. The v1.0 list endpoint does not
+        include <code>accountName</code> in its response. The natural thing to try is adding
+        <code>$select=credentials</code> to the list call to ask for it. That returns:
+      </p>
+      <div class="code-label">// the response</div>
+      <pre><code><span class="w">  HTTP/1.1 400 Bad Request</span>
+<span class="w">  &#123;"error":&#123;"code":"invalid_request",</span>
+<span class="w">    "message":"Querying local account passwords over multiple devices is unsupported."&#125;&#125;</span></code></pre>
+      <p>
+        <strong>Why this fails:</strong> Microsoft treats local credential account names
+        as sensitive metadata. The list endpoint will not return them in bulk by design.
+      </p>
+      <p>
+        <strong>Fix:</strong> a per-device <code>foreach</code> loop against the beta
+        endpoint. Around 60 to 90 seconds for 80 devices, with one Graph call per device.
+        The beta endpoint allows the <code>credentials</code> select on a single device
+        because it returns one record at a time.
+      </p>
+      <div class="code-label">// run this</div>
+      <pre><code><span class="c">$accountReport = foreach ($d in $response.value) &#123;</span>
+<span class="c">    $detail = Invoke-MgGraphRequest -Method GET `</span>
+<span class="c">        -Uri "https://graph.microsoft.com/beta/directory/deviceLocalCredentials/$($d['id'])?`$select=credentials"</span>
+<span class="c">    [pscustomobject]@&#123;</span>
+<span class="c">        DeviceName  = $d['deviceName']</span>
+<span class="c">        AccountName = $detail.credentials[0].accountName</span>
+<span class="c">    &#125;</span>
+<span class="c">&#125;</span>
+<span class="c">$accountReport | Group-Object AccountName | Format-Table Name, Count</span></code></pre>
+      <div class="code-label">// output</div>
+      <pre><code><span class="m">  Name           Count</span>
+<span class="m">  ----           -----</span>
+<span class="ok">  WLapsAdmin       70</span>
+<span class="m">  Administrator    11</span></code></pre>
+      <p>
+        Seventy WLapsAdmin, eleven Administrator. The eleven match the 23H2 list from step
+        4 exactly. There is no policy fault. Everything is working as designed.
+      </p>
+
+      <h2>step 6 &middot; the duplicate Entra object trap</h2>
+      <p>
+        For the three devices in Intune but not escrowing, the most common root cause on a
+        hybrid tenant is a duplicate Entra device object. A PC that has been re-imaged,
+        moved between domains, or had a security group reorganisation can end up with two
+        or three Entra objects sharing the same <code>displayName</code>.
+      </p>
+      <p>
+        Each Entra device object has a <code>TrustType</code> field that says how it was
+        joined: <code>ServerAd</code> (hybrid join from on-prem AD), <code>AzureAd</code>
+        (cloud-only join), or <code>Workplace</code> (BYOD-style registration). On a hybrid
+        tenant, the <code>ServerAd</code> object is the one that should be active. The other
+        two are stale leftovers.
+      </p>
+      <p>
+        <strong>What goes wrong:</strong> the correct <code>ServerAd</code> object cannot
+        complete its registration while stale <code>Workplace</code> or <code>AzureAd</code>
+        objects exist for the same name.
+      </p>
+      <p>
+        <strong>Why:</strong> registration writes a field called
+        <code>alternativeSecurityIds</code> on the Entra object. With duplicates blocking
+        the way, that field stays empty. LAPS cannot escrow without it because the device
+        cannot prove its identity to Entra.
+      </p>
+      <p>
+        <strong>Fix:</strong> identify the duplicates, confirm which is the correct
+        <code>ServerAd</code> object, then delete the stale ones via the Entra portal or
+        <code>Remove-MgDevice</code>. After cleanup, run <code>dsregcmd /leave</code>
+        followed by <code>dsregcmd /join</code> on the device itself to re-register cleanly.
+      </p>
+      <p>
+        The diagnostic is one Graph beta query per object. Pull all Entra devices with
+        pagination first, then group by name and inspect anything with a count above 1.
+      </p>
+      <div class="code-label">// run this</div>
+      <pre><code><span class="c">$all = @()</span>
+<span class="c">$u = "https://graph.microsoft.com/v1.0/devices"</span>
+<span class="c">do &#123;</span>
+<span class="c">    $r = Invoke-MgGraphRequest -Method GET -Uri $u</span>
+<span class="c">    $all += $r.value</span>
+<span class="c">    $u = $r.'@odata.nextLink'</span>
+<span class="c">&#125; while ($u)</span>
+<span class="c">$all | Group-Object &#123; $_['displayName'] &#125; | Where-Object Count -gt 1</span></code></pre>
+      <div class="code-label">// output</div>
+      <pre><code><span class="m">  Count Name</span>
+<span class="m">  ----- ----</span>
+<span class="w">      3 CORP-PC-039</span></code></pre>
+      <p>
+        Three Entra objects for one device. Pull the detail on each, look for the one
+        with <code>TrustType=ServerAd</code>, and check whether its
+        <code>registrationDateTime</code> and <code>alternativeSecurityIds</code> are
+        populated. If one is empty and the other two are old <code>Workplace</code> or
+        <code>AzureAd</code> entries, you have found the blocker.
+      </p>
+
+      <h2>common gotchas</h2>
+      <ul>
+        <li><strong>You only see the first 100-ish devices in your "all devices" pull.</strong> A tenant with thousands of Entra objects returns one page at a time. <strong>Fix:</strong> follow <code>@odata.nextLink</code> in a loop until it stops returning. The script in the repo does this; if you copy out a fragment, do not skip the loop. Skipping pagination is the most common silent failure on this whole audit.</li>
+        <li><strong>Escrow count is higher than expected.</strong> The v1.0 escrow list keeps records from devices that have been wiped, reprovisioned, or retired. <strong>Fix:</strong> run the gap analysis (Step 3) and quote the count of escrowed records that match a live Intune device. The raw escrow count is misleading.</li>
+        <li><strong>HTTP 400 on bulk credential queries.</strong> You added <code>$select=credentials</code> to the list endpoint. <strong>Fix:</strong> Microsoft blocks this by design. Do not retry. Use the per-device beta endpoint as shown in Step 5.</li>
+        <li><strong><code>$matching.Count</code> returns wildly wrong numbers.</strong> You used <code>$matches</code> as a variable name. <code>$matches</code> is a reserved PowerShell variable that the <code>-match</code> operator populates with regex capture groups. <strong>Fix:</strong> rename it to <code>$deviceMatches</code> or anything other than <code>$matches</code>.</li>
+        <li><strong>23H2 device shows <code>Administrator</code> instead of <code>WLapsAdmin</code>.</strong> Not a misconfiguration. <strong>This is by design:</strong> the WLapsAdmin account is created by a Windows 11 24H2 feature called Automatic Account Management. On 23H2 and below, LAPS just manages the built-in Administrator account and shows that name in the portal. The password works in both cases. The only "fix" is upgrading the device to 24H2.</li>
+      </ul>
+
+      <h2>when to skip this and just look at one device</h2>
+      <p>
+        For a one-off "why isn't this single device escrowing" question, you do not need
+        the fleet audit. Pull the Intune managed device record, pull the matching Entra
+        device object via the beta endpoint, look at <code>registrationDateTime</code> and
+        <code>alternativeSecurityIds</code>. Five minutes. The full audit earns its keep
+        when you are reporting fleet status to a customer, planning a 24H2 rollout, or
+        proving to compliance that 96% of the estate is escrowing as expected.
+      </p>
+
+      <div class="callout">
+        Need this run across your fleet, or want the script set as a starting point?
+        The full audit toolset is on
+        <a href="https://github.com/hiaror/intune-laps-fleet-audit-graph">GitHub</a>,
+        sanitized and ready to drop into a tenant. If you would rather hand the audit
+        over to someone who has done it before,
+        <a href="/contact">book a 30-minute call</a> and we can scope it.
+      </div>
+
+      <div class="post-foot">
+        <a href="/blog">&larr; all posts</a>
+        <span>// himanshu @ aroramsp</span>
+      </div>
+    </article>
+  </section>
+</Layout>

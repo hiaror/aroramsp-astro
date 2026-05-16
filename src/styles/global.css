@@ -466,3 +466,112 @@ h1.headline .accent { color: var(--accent); }
   margin: 8px 0 0; font-size: 11.5px; color: var(--fg-mute);
   text-align: center; line-height: 1.5;
 }
+
+/* === Blog post article styles (ported from each blog post's inline <style> block) === */
+.article { max-width: 760px; }
+.article .post-meta {
+  font-family: var(--mono); font-size: 11px; color: var(--fg-mute);
+  display: flex; flex-wrap: wrap; gap: 14px; align-items: center; margin-bottom: 14px;
+}
+.article .post-meta .tag { color: var(--cyan); }
+.article .post-meta .dot { width: 3px; height: 3px; border-radius: 50%; background: var(--line-2); display: inline-block; }
+.article h1 {
+  font-size: clamp(30px, 4.4vw, 44px); margin: 0 0 16px;
+  letter-spacing: -.02em; line-height: 1.12; font-weight: 600; text-wrap: balance;
+}
+.article .lede { color: var(--fg-dim); font-size: 17px; max-width: 60ch; margin: 0 0 28px; }
+.article h3 {
+  font-size: 20px; margin: 36px 0 10px; letter-spacing: -.01em;
+  font-weight: 600; color: var(--fg);
+}
+.article h3::before {
+  content: "// "; color: var(--cyan); font-family: var(--mono); font-weight: 500;
+}
+.article p, .article ul, .article ol { color: var(--fg-dim); font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+.article ul, .article ol { padding-left: 20px; }
+.article li { margin-bottom: 6px; }
+.article strong { color: var(--fg); font-weight: 600; }
+.article a { color: var(--accent); border-bottom: 1px dashed var(--accent-line); }
+.article a:hover { border-bottom-color: var(--accent); }
+.article code {
+  font-family: var(--mono); font-size: 13px;
+  background: var(--bg-2); border: 1px solid var(--line);
+  padding: 2px 6px; border-radius: 4px; color: var(--fg);
+}
+.article pre {
+  background: var(--bg-1); border: 1px solid var(--line);
+  border-radius: 10px; padding: 16px 18px; overflow-x: auto;
+  font-family: var(--mono); font-size: 13px; line-height: 1.65;
+  color: var(--fg-dim); margin: 0 0 18px;
+}
+.article pre code { background: none; border: none; padding: 0; color: inherit; font-size: inherit; }
+.code-label {
+  font-family: var(--mono); font-size: 11px; color: var(--cyan);
+  margin: 0 0 6px; font-weight: 500; letter-spacing: .02em;
+}
+.article pre .p { color: var(--accent); margin-right: 6px; }
+.article pre .c { color: var(--fg); }
+.article pre .m { color: var(--fg-mute); }
+.article pre .ok { color: var(--good); }
+.article pre .w { color: var(--warn); }
+
+.callout {
+  border: 1px solid var(--line); border-left: 3px solid var(--cyan);
+  background: var(--bg-1); border-radius: 8px;
+  padding: 14px 18px; margin: 0 0 18px;
+  font-size: 14px; color: var(--fg-dim);
+}
+.callout.warn { border-left-color: var(--warn); }
+.callout strong { color: var(--fg); }
+
+.post-foot {
+  margin-top: 48px; padding-top: 22px;
+  border-top: 1px dashed var(--line);
+  display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between;
+  font-family: var(--mono); font-size: 12px; color: var(--fg-mute);
+}
+.post-foot a { color: var(--fg-dim); }
+.post-foot a:hover { color: var(--fg); }
+
+.post-cta { margin-top: 32px; }
+.article .post-cta a {
+  color: #ffffff;
+  border-bottom: none;
+}
+
+/* Test matrix table (used by powershell-auth-clash post) */
+.table-scroll { overflow-x: auto; margin: 0 0 18px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg-1); }
+.test-matrix {
+  width: 100%; min-width: 720px;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.test-matrix thead th {
+  font-family: var(--mono); font-size: 10.5px;
+  color: var(--fg-mute); font-weight: 600;
+  text-transform: uppercase; letter-spacing: .04em;
+  text-align: left; padding: 12px 12px;
+  border-bottom: 1px solid var(--line-2);
+  background: var(--bg-2);
+}
+.test-matrix tbody td {
+  padding: 10px 12px; vertical-align: middle;
+  border-bottom: 1px solid var(--line);
+  color: var(--fg-dim);
+}
+.test-matrix tbody tr:last-child td { border-bottom: none; }
+.test-matrix tbody tr:hover td { background: var(--bg-2); }
+.test-matrix td.num {
+  font-family: var(--mono); color: var(--fg-mute); width: 36px;
+}
+.test-matrix td.shell, .test-matrix td.order, .test-matrix td.auth {
+  font-family: var(--mono); font-size: 12px;
+}
+.test-matrix td.pass { color: var(--good); font-weight: 600; }
+.test-matrix td.fail { color: var(--red); font-weight: 600; }
+.test-matrix td.na { color: var(--fg-mute); }
+.test-matrix td.unk { color: var(--fg-mute); font-style: italic; }
+.test-matrix td.result {
+  font-family: var(--mono); font-size: 12px;
+  letter-spacing: .04em;
+}

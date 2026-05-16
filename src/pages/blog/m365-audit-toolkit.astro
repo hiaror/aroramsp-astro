@@ -1,0 +1,126 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+<Layout
+  title="How I Built a PowerShell Toolkit That Audits Your Entire Microsoft 365 Tenant in Minutes · AroraMSP"
+  description="Two PowerShell scripts that audit Microsoft 365 tenant security and mailbox storage. Certificate-based app authentication, self-contained HTML reports, no third-party agents."
+  page="blog"
+  canonical="https://aroramsp.com/blog/m365-audit-toolkit"
+  ogTitle="How I Built a PowerShell Toolkit That Audits Your Microsoft 365 Tenant in Minutes"
+  ogDescription="Two PowerShell scripts that audit your Microsoft 365 tenant security and mailbox storage. Professional HTML reports, no third-party tools."
+>
+  <Fragment slot="head">
+    <meta name="keywords" content="M365 security audit, PowerShell, mailbox storage report, Microsoft Graph, app registration certificates, tenant security audit, Conditional Access, DMARC, DKIM, SPF" />
+    <script type="application/ld+json" is:raw>
+    {
+      "@context": "https://schema.org",
+      "@type": "TechArticle",
+      "headline": "How I Built a PowerShell Toolkit That Audits Your Entire Microsoft 365 Tenant in Minutes",
+      "description": "Two PowerShell scripts that audit Microsoft 365 tenant security and mailbox storage. Certificate-based app authentication, self-contained HTML reports, no third-party tools.",
+      "url": "https://aroramsp.com/blog/m365-audit-toolkit",
+      "datePublished": "2026-05-09",
+      "dateModified": "2026-05-09",
+      "author": { "@id": "https://aroramsp.com/#himanshu-arora" },
+      "publisher": { "@id": "https://aroramsp.com/#org" },
+      "image": "https://aroramsp.com/uploads/og-preview.png",
+      "proficiencyLevel": "Expert",
+      "about": [
+        { "@type": "Thing", "name": "Microsoft 365 security audit" },
+        { "@type": "Thing", "name": "PowerShell automation" },
+        { "@type": "Thing", "name": "Microsoft Graph PowerShell" }
+      ],
+      "mainEntityOfPage": "https://aroramsp.com/blog/m365-audit-toolkit"
+    }
+    </script>
+    <script type="application/ld+json" is:raw>
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://aroramsp.com/" },
+        { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://aroramsp.com/blog" },
+        { "@type": "ListItem", "position": 3, "name": "How I Built a PowerShell Toolkit That Audits Your Entire Microsoft 365 Tenant in Minutes", "item": "https://aroramsp.com/blog/m365-audit-toolkit" }
+      ]
+    }
+    </script>
+  </Fragment>
+
+  <section class="page wrap">
+    <article class="article">
+      <div class="post-meta">
+        <a href="/blog">← all posts</a>
+        <span class="dot"></span>
+        <span class="post-author">
+          By <a href="/about" rel="author">Himanshu Arora</a>
+          &nbsp;&middot;&nbsp;11+ yrs Microsoft ecosystem
+          &nbsp;&middot;&nbsp;<a href="https://linkedin.com/in/himanshusac" target="_blank" rel="noopener">LinkedIn</a>
+          &nbsp;&middot;&nbsp;<a href="https://github.com/hiaror" target="_blank" rel="noopener">GitHub</a>
+          &nbsp;&middot;&nbsp;
+        </span>
+        <span>2026-05-09</span>
+        <span class="dot"></span>
+        <span class="tag">// powershell · m365 · security</span>
+        <span class="dot"></span>
+        <span>7 min read</span>
+      </div>
+
+      <h1>How I Built a PowerShell Toolkit That Audits Your Entire Microsoft 365 Tenant in Minutes</h1>
+
+      <h2>the problem with most M365 audits</h2>
+      <p>Most M365 security audits fall into one of two categories. Either a consultant runs a manual checklist through the portal and produces a Word document, or an expensive third-party tool produces a 200-page PDF that nobody reads. Neither is useful for an SMB IT admin who needs to know what is broken and how to fix it.</p>
+
+      <h2>what the toolkit does</h2>
+      <p>Two PowerShell scripts that connect to your tenant using certificate-based app authentication, run a series of checks, and produce a clean HTML report you can open in any browser, share with your team, or export to PDF in one click.</p>
+
+      <h2>what the tenant audit checks</h2>
+      <p><strong>Identity and Access:</strong></p>
+      <ul>
+        <li>Legacy authentication blocked via Conditional Access</li>
+        <li>Tenant-wide MFA policy exists</li>
+        <li>Break-glass accounts excluded from CA policies</li>
+        <li>Global Administrator count</li>
+      </ul>
+      <p><strong>Email Security:</strong></p>
+      <ul>
+        <li>DMARC policy level (none, quarantine, or reject)</li>
+        <li>SPF hard fail vs soft fail</li>
+        <li>DKIM signing enabled</li>
+        <li>External auto-forwarding blocked</li>
+      </ul>
+      <p><strong>App Registrations:</strong></p>
+      <ul>
+        <li>Certificates expiring within 30 days</li>
+        <li>Client secrets expiring within 30 days</li>
+        <li>Apps holding high-privilege Graph permissions</li>
+        <li>App registrations with no owners assigned</li>
+      </ul>
+      <p><strong>Endpoint and Licensing:</strong></p>
+      <ul>
+        <li>Intune compliance policies deployed</li>
+        <li>App protection policies deployed</li>
+        <li>Unassigned licences by SKU</li>
+        <li>Shared mailboxes with paid licences</li>
+      </ul>
+
+      <h2>the mailbox report</h2>
+      <p>Pulls every mailbox in your tenant showing used storage, quota, available space, used percentage, archive status, and licence per mailbox. Sorted by storage descending. Highlights anything over 80% quota automatically. Export to PDF or CSV in one click.</p>
+
+      <h2>how authentication works</h2>
+      <p>Both scripts use certificate-based app-only authentication. No interactive login prompts. No browser windows. Set up an app registration once, run the scripts with three parameters, and the reports generate automatically. Full setup documentation is included covering every step of the app registration, certificate creation, and permission assignment.</p>
+
+      <h2>get the toolkit</h2>
+      <p>Available at <a href="/whatido">aroramsp.com/whatido</a>. Includes both scripts, full setup guide, prerequisites documentation, and sample reports so you know exactly what the output looks like before you run anything. USD 99 one-time payment.</p>
+
+      <p><a href="/resources/AroraMSP-M365-Audit-Sample.pdf" target="_blank" rel="noopener">Download a sample audit report to see exactly what you get</a>.</p>
+
+      <div class="post-cta">
+        <a href="https://aroramsp.lemonsqueezy.com/checkout/buy/c366ed46-07c7-4057-88db-5886b94b8ea7" class="btn btn-primary" target="_blank" rel="noopener">Buy Now · USD 99 <span class="arrow">→</span></a>
+      </div>
+
+      <div class="post-foot">
+        <a href="/blog">← all posts</a>
+        <span>// himanshu @ aroramsp</span>
+      </div>
+    </article>
+  </section>
+</Layout>

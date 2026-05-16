@@ -1,0 +1,260 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+<Layout
+  title="Bulk mailbox cleanup with Microsoft Graph PowerShell · AroraMSP"
+  description="CSV-driven Exchange Online mailbox cleanup using Microsoft Graph PowerShell. Dry-run first, multi-pass, throttle-aware deletes with audit reporting."
+  page="blog"
+  canonical="https://aroramsp.com/blog/graph-mailbox-cleanup"
+  ogTitle="Bulk mailbox cleanup with Microsoft Graph PowerShell"
+  ogDescription="CSV-driven Exchange Online mailbox cleanup using Microsoft Graph PowerShell. Dry-run first, multi-pass, throttle-aware deletes with audit reporting."
+>
+  <Fragment slot="head">
+    <meta name="keywords" content="Microsoft Graph PowerShell, Exchange Online cleanup, bulk email delete, mailbox cleanup script, Mail.ReadWrite, Compliance Search alternative, Graph throttling, application permissions" />
+    <script type="application/ld+json" is:raw>
+    {
+      "@context": "https://schema.org",
+      "@type": "TechArticle",
+      "headline": "Bulk mailbox cleanup with Microsoft Graph PowerShell",
+      "description": "CSV-driven Exchange Online mailbox cleanup using Microsoft Graph PowerShell. Dry-run first, multi-pass, throttle-aware deletes with audit reporting.",
+      "url": "https://aroramsp.com/blog/graph-mailbox-cleanup",
+      "datePublished": "2026-05-08",
+      "dateModified": "2026-05-08",
+      "author": { "@id": "https://aroramsp.com/#himanshu-arora" },
+      "publisher": { "@id": "https://aroramsp.com/#org" },
+      "image": "https://aroramsp.com/uploads/og-preview.png",
+      "proficiencyLevel": "Expert",
+      "about": [
+        { "@type": "Thing", "name": "Microsoft Graph PowerShell" },
+        { "@type": "Thing", "name": "Exchange Online" },
+        { "@type": "Thing", "name": "mailbox management" }
+      ],
+      "mainEntityOfPage": "https://aroramsp.com/blog/graph-mailbox-cleanup"
+    }
+    </script>
+    <script type="application/ld+json" is:raw>
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://aroramsp.com/" },
+        { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://aroramsp.com/blog" },
+        { "@type": "ListItem", "position": 3, "name": "Bulk mailbox cleanup with Microsoft Graph PowerShell", "item": "https://aroramsp.com/blog/graph-mailbox-cleanup" }
+      ]
+    }
+    </script>
+  </Fragment>
+
+  <section class="page wrap">
+    <article class="article">
+      <div class="post-meta">
+        <a href="/blog">← all posts</a>
+        <span class="dot"></span>
+        <span class="post-author">
+          By <a href="/about" rel="author">Himanshu Arora</a>
+          &nbsp;&middot;&nbsp;11+ yrs Microsoft ecosystem
+          &nbsp;&middot;&nbsp;<a href="https://linkedin.com/in/himanshusac" target="_blank" rel="noopener">LinkedIn</a>
+          &nbsp;&middot;&nbsp;<a href="https://github.com/hiaror" target="_blank" rel="noopener">GitHub</a>
+          &nbsp;&middot;&nbsp;
+        </span>
+        <span>2026-05-06</span>
+        <span class="dot"></span>
+        <span class="tag">// graph · exchange</span>
+        <span class="dot"></span>
+        <span>9 min read</span>
+      </div>
+
+      <h1>Bulk mailbox cleanup with Microsoft Graph: CSV-driven, dry-run first, throttle-aware.</h1>
+      <p class="lede">
+        Legal asks you to remove every message from a handful of senders, across two hundred
+        mailboxes, by Friday. The classic answer is Compliance Search plus PurgeRequest. It
+        works, but it cannot tell you exactly what got deleted, cannot be re-run safely, and
+        the older Security and Compliance PowerShell modules it relies on are being retired.
+        Here is the Graph-based approach I use instead, and why it ships with a dry run,
+        retry logic for throttling, and a built-in safety valve for noisy mailboxes.
+      </p>
+
+      <h2>why this matters</h2>
+      <p>
+        Compliance Search plus <code>New-ComplianceSearchAction</code> is the official way
+        to bulk-delete email across mailboxes. It works. It also has limits that bite when
+        an auditor is involved: terse summaries, a cap on items per action, no clear
+        per-message audit trail, and partial failures that are hard to investigate. Microsoft
+        is also retiring the old Security and Compliance PowerShell modules, so existing
+        scripts that rely on them are increasingly broken or gated.
+      </p>
+      <p>
+        For a one-off discovery export, Compliance Search is fine. For a repeatable cleanup
+        that an auditor needs to verify line by line, you want a real report and a process
+        you can re-run.
+      </p>
+      <p>
+        The script in
+        <a href="https://github.com/hiaror/graph-exchange-mailbox-cleanup">graph-exchange-mailbox-cleanup</a>
+        does exactly that. Two CSVs go in: mailboxes and senders. A timestamped report
+        comes out, one row per matched message, with the action taken and the result. It
+        runs against Graph using app-only auth, and it assumes throttling will happen
+        because in any tenant of consequence, it will.
+      </p>
+
+      <h2>before you touch anything</h2>
+      <ul>
+        <li><strong>An app registration with application permissions.</strong> In Entra, create an app registration and grant it the <code>Mail.ReadWrite</code> Graph permission as an <em>application</em> permission (not delegated). Application permissions act as the app itself rather than a signed-in user, which is what you need for unattended bulk operations. Click "Grant admin consent" after adding the permission.</li>
+        <li><strong>Scope the consent.</strong> Application permissions hit every mailbox in the tenant by default. Attach an <strong>Application Access Policy</strong> if you can, so the app can only touch the mailboxes you actually want it to. This is a separate setup step in Exchange Online PowerShell and limits the blast radius if anything goes wrong.</li>
+        <li><strong>Clean inputs.</strong> One CSV with a <code>UPN</code> column (the mailboxes to clean), one with a <code>Sender</code> column (the senders to remove). The script trims whitespace, lower-cases entries, and removes duplicates, but it will not guess what you meant. Distribution list addresses will not match, because Graph resolves <code>from:</code> against the actual sender header on each message. Use the real sending mailboxes in the senders list.</li>
+        <li><strong>Always start with a dry run.</strong> Same parameters, just set <code>-DeleteItems N</code>. The report tells you exactly which messages would have been touched, with no actual deletes.</li>
+      </ul>
+
+      <h2>step 1 · stage the inputs</h2>
+      <p>
+        Two flat CSVs, no headers beyond the one column each. The shape is intentionally
+        boring so you can hand it to a non-engineer and get it back uncorrupted.
+      </p>
+      <div class="code-label">// example CSV inputs</div>
+      <pre><code><span class="m"># Mailboxes.csv</span>
+<span class="c">UPN</span>
+<span class="c">itops@northshore.example</span>
+<span class="c">hr@northshore.example</span>
+<span class="c">shared-admin@northshore.example</span>
+
+<span class="m"># Senders.csv</span>
+<span class="c">Sender</span>
+<span class="c">ceo@northshore.example</span>
+<span class="c">cfo@northshore.example</span>
+<span class="c">executive.office@northshore.example</span></code></pre>
+
+      <h2>step 2 · dry run, every time</h2>
+      <p>
+        First pass is read-only. The script enumerates each mailbox, runs a Graph
+        <code>$search="from:&lt;sender&gt;"</code> for every entry in the senders CSV,
+        de-duplicates by message id, and writes a row per match into the timestamped report.
+        Nothing is deleted.
+      </p>
+      <div class="code-label">// run this</div>
+      <pre><code><span class="c">.\Cleanup-MailboxItemsBySender-Graph.ps1 `</span>
+<span class="c">    -TenantId "00000000-0000-0000-0000-000000000000" `</span>
+<span class="c">    -AppId    "00000000-0000-0000-0000-000000000000" `</span>
+<span class="c">    -AppSecret "&lt;secret&gt;" `</span>
+<span class="c">    -MailboxesCsv .\Mailboxes.csv `</span>
+<span class="c">    -SendersCsv   .\Senders.csv `</span>
+<span class="c">    -DeleteItems N `</span>
+<span class="c">    -MaxPasses 1</span></code></pre>
+      <div class="code-label">// output</div>
+      <pre><code><span class="m">  Total mailboxes loaded: 214</span>
+<span class="m">  Total senders loaded  : 6</span>
+<span class="m">  DeleteItems           : N</span>
+<span class="ok">  PASS 1 complete. Total matched this pass: 11,847</span></code></pre>
+      <p>
+        Open the report in Excel, sort by mailbox, sanity-check the subjects against what
+        legal actually asked for. If a sender on the list is generating false-positives,
+        most often a shared mailbox or a generic <code>noreply@</code>, pull it out of the
+        senders CSV and re-run. Cheaper to fix the input than the explanation later.
+      </p>
+
+      <h2>step 3 · soft delete vs permanent delete</h2>
+      <p>
+        Two delete paths, and the difference matters.
+      </p>
+      <ul>
+        <li><strong><code>DELETE /messages/&#123;id&#125;</code></strong>: the soft delete. Item moves to Deleted Items, then to Recoverable Items, and the user can pull it back from "Recover deleted items" until retention runs. This is the right default if there's any chance you've got a false-positive.</li>
+        <li><strong><code>POST /messages/&#123;id&#125;/permanentDelete</code></strong>: bypasses Recoverable Items entirely. Use it when legal has explicitly asked for an unrecoverable purge and you're confident in the matches. Once it runs, the item is gone short of an eDiscovery hold pulling it from Purges.</li>
+      </ul>
+      <p>
+        The script flips between the two with a single switch. It does not let you toggle
+        mid-run.
+      </p>
+      <div class="code-label">// run this</div>
+      <pre><code><span class="c">.\Cleanup-MailboxItemsBySender-Graph.ps1 `</span>
+<span class="c">    -TenantId  "..." -AppId "..." -AppSecret "..." `</span>
+<span class="c">    -MailboxesCsv .\Mailboxes.csv `</span>
+<span class="c">    -SendersCsv   .\Senders.csv `</span>
+<span class="c">    -DeleteItems Y `</span>
+<span class="c">    -UsePermanentDelete Y `</span>
+<span class="c">    -MaxPasses 10 `</span>
+<span class="c">    -WaitSecondsBetweenPasses 300</span></code></pre>
+
+      <h2>step 4 · why multi-pass exists</h2>
+      <p>
+        Graph's <code>$search</code> is fast but eventually-consistent. After a delete pass,
+        a re-run against the same mailbox can still surface a handful of items that the index
+        hadn't caught up on yet. Compounded across two hundred mailboxes, "almost zero" is
+        not "zero." <code>-MaxPasses 10 -WaitSecondsBetweenPasses 300</code> tells the script
+        to keep going until a pass returns zero matches, with a five-minute cool-off between
+        runs. Each pass appends to the same report, so you get a complete trail.
+      </p>
+
+      <h2>step 5 · the per-mailbox transient ceiling</h2>
+      <p>
+        <strong>What is throttling?</strong> When you call Graph too often, or hit one
+        mailbox too hard, Microsoft pushes back. The Graph response comes back as HTTP 429
+        (Too Many Requests) or a 5xx server error. Normally the right move is to back off
+        and retry a few seconds later.
+      </p>
+      <p>
+        The trap: a single noisy mailbox, usually one that has been a busy distribution
+        target for years, can sit on 429s for the entire run window and starve the rest of
+        the fleet. The script counts these transient errors (429, 500, 502, 503, 504) per
+        mailbox. When it crosses <code>-MaxTransientErrorsPerMailbox</code> (default 40),
+        the script gives up on that mailbox, marks it skipped, and moves on. The run keeps
+        going for everyone else.
+      </p>
+      <div class="code-label">// output (sample log)</div>
+      <pre><code><span class="m">  Transient error 429. Retry 3/8 in 6s</span>
+<span class="m">  Transient error 503. Retry 4/8 in 8s</span>
+<span class="m">  Transient error 429. Retry 5/8 in 10s</span>
+<span class="w">  ERROR in mailbox archive-2014@northshore.example:</span>
+<span class="w">      MailboxTransientThresholdExceeded transientCount=41 lastCode=429</span>
+<span class="m">  ===== Processing mailbox: hr@northshore.example =====</span></code></pre>
+      <p>
+        The skipped mailbox lands in the report as a <code>MailboxSkipped</code> row, so
+        nothing gets silently lost.
+      </p>
+      <p>
+        <strong>Fix for skipped mailboxes:</strong> re-run the script with just those
+        mailboxes in the input CSV, ideally outside business hours when Graph throttling is
+        less aggressive. They almost always complete on the second pass. This skip-and-move-on
+        behaviour is the single most useful thing in the script: without it, one bad mailbox
+        stalls a six-hour run.
+      </p>
+
+      <div class="callout">
+        <strong>The report is the deliverable.</strong> Per row: pass number, mailbox,
+        sender (header), sender (matched from list), subject, received timestamp, message id,
+        action requested, result. Hand it to compliance, attach it to the change ticket,
+        keep it. The script's value isn't the deletion: that's a <code>DELETE</code> call.
+        It's the audit trail.
+      </div>
+
+      <h2>common gotchas</h2>
+      <ul>
+        <li><strong>HTTP 403 on the very first mailbox.</strong> You wired up the app registration with <em>delegated</em> permissions instead of application. Delegated permissions act as the signed-in user, who almost certainly does not own all the target mailboxes. <strong>Fix:</strong> change the permission type to Application in the app registration, re-grant admin consent, and try again.</li>
+        <li><strong>Application Access Policy seems to do nothing.</strong> A new <code>New-ApplicationAccessPolicy</code> can take up to an hour to propagate. <strong>Fix:</strong> test with <code>Test-ApplicationAccessPolicy</code> before assuming the scope is enforced. If Test confirms the policy applies, give it the time it needs.</li>
+        <li><strong>The 250-result page limit on <code>$search</code>.</strong> Graph caps a single search response at 250 items, even if you ask for 1000. <strong>Fix:</strong> the script already paginates correctly using <code>@odata.nextLink</code>. Do not try to "fix" the page size up to 1000 yourself; Graph silently clamps it and you just rate-limit yourself faster.</li>
+        <li><strong>Distribution lists in the senders CSV.</strong> They will not match anything. The Graph <code>from:</code> filter resolves to the actual sender header on each message, which is the user mailbox, not the DL. <strong>Fix:</strong> put the real sending mailboxes in the senders list, not the distribution list addresses.</li>
+        <li><strong>Recoverable Items quota fills up.</strong> A soft-delete-heavy run on a small mailbox can fill the recoverable items dumpster. <strong>Fix:</strong> process those mailboxes with permanent delete instead, or wait for the dumpster retention to roll items out before re-running.</li>
+        <li><strong>Items still appear after delete on hold mailboxes.</strong> If a mailbox is on Litigation Hold or In-Place Hold, deleted items stay in the Purges folder regardless of which delete option you used. <strong>This is by design</strong> for compliance, not a fix you can apply: the items are not user-visible and they will not return to the inbox. They cannot be removed without an eDiscovery action by a compliance officer.</li>
+      </ul>
+
+      <h2>when to skip this and use Compliance Search</h2>
+      <p>
+        If the request is "find every message containing this phrase tenant-wide and purge
+        it," that's Compliance Search territory: content search syntax, hold-aware,
+        designed for the eDiscovery use case. The script in this repo is for the narrower,
+        more common ask: <em>these specific senders, these specific mailboxes, give me the
+        list of what got removed.</em> When that's the brief, a CSV in and a CSV out is the
+        right shape.
+      </p>
+
+      <div class="callout">
+        Got a similar request sitting in your inbox right now? Bulk mailbox cleanup,
+        tenant-wide policy work, app-only Graph automation, that's most of what I do.
+        <a href="/contact">Book a 30-minute call</a> and we can scope it.
+      </div>
+
+      <div class="post-foot">
+        <a href="/blog">← all posts</a>
+        <span>// himanshu @ aroramsp</span>
+      </div>
+    </article>
+  </section>
+</Layout>

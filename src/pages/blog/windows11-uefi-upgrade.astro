@@ -1,0 +1,233 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+<Layout
+  title="MBR2GPT and Legacy BIOS to UEFI: upgrade to Windows 11 25H2 without reinstall · AroraMSP"
+  description="Step-by-step MBR2GPT guide to convert MBR to GPT and switch from Legacy BIOS to UEFI without reinstalling Windows. Includes BitLocker handling and gotchas."
+  page="blog"
+  canonical="https://aroramsp.com/blog/windows11-uefi-upgrade"
+  ogTitle="MBR2GPT and Legacy BIOS to UEFI: upgrade to Windows 11 25H2 without reinstall"
+  ogDescription="Step-by-step MBR2GPT guide to convert MBR to GPT and switch from Legacy BIOS to UEFI without reinstalling Windows. Includes BitLocker handling and gotchas."
+>
+  <Fragment slot="head">
+    <meta name="keywords" content="MBR2GPT, Windows 11 25H2, Legacy BIOS to UEFI, MBR to GPT conversion, Secure Boot, TPM 2.0, in-place upgrade, BitLocker" />
+    <script type="application/ld+json" is:raw>
+    {
+      "@context": "https://schema.org",
+      "@type": "TechArticle",
+      "headline": "MBR2GPT and Legacy BIOS to UEFI: upgrade to Windows 11 25H2 without reinstall",
+      "description": "Step-by-step MBR2GPT guide to convert MBR to GPT and switch from Legacy BIOS to UEFI without reinstalling Windows. Includes BitLocker handling and the 46 percent Windows Update hang fix.",
+      "url": "https://aroramsp.com/blog/windows11-uefi-upgrade",
+      "datePublished": "2026-05-07",
+      "dateModified": "2026-05-07",
+      "author": { "@id": "https://aroramsp.com/#himanshu-arora" },
+      "publisher": { "@id": "https://aroramsp.com/#org" },
+      "image": "https://aroramsp.com/uploads/og-preview.png",
+      "proficiencyLevel": "Expert",
+      "about": [
+        { "@type": "Thing", "name": "Windows 11" },
+        { "@type": "Thing", "name": "MBR2GPT" },
+        { "@type": "Thing", "name": "UEFI" }
+      ],
+      "mainEntityOfPage": "https://aroramsp.com/blog/windows11-uefi-upgrade"
+    }
+    </script>
+    <script type="application/ld+json" is:raw>
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://aroramsp.com/" },
+        { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://aroramsp.com/blog" },
+        { "@type": "ListItem", "position": 3, "name": "MBR2GPT and Legacy BIOS to UEFI: upgrade to Windows 11 25H2 without reinstall", "item": "https://aroramsp.com/blog/windows11-uefi-upgrade" }
+      ]
+    }
+    </script>
+  </Fragment>
+
+  <section class="page wrap">
+    <article class="article">
+      <div class="post-meta">
+        <a href="/blog">← all posts</a>
+        <span class="dot"></span>
+        <span class="post-author">
+          By <a href="/about" rel="author">Himanshu Arora</a>
+          &nbsp;&middot;&nbsp;11+ yrs Microsoft ecosystem
+          &nbsp;&middot;&nbsp;<a href="https://linkedin.com/in/himanshusac" target="_blank" rel="noopener">LinkedIn</a>
+          &nbsp;&middot;&nbsp;<a href="https://github.com/hiaror" target="_blank" rel="noopener">GitHub</a>
+          &nbsp;&middot;&nbsp;
+        </span>
+        <span>2026-05-07</span>
+        <span class="dot"></span>
+        <span class="tag">// windows · endpoint</span>
+        <span class="dot"></span>
+        <span>11 min read</span>
+      </div>
+
+      <h1>Legacy BIOS to UEFI, then Windows 11 25H2, without nuking the disk.</h1>
+      <p class="lede">
+        Windows 10 is out of support and you have a PC still booting in <strong>CSM mode</strong>
+        (Compatibility Support Module, the legacy BIOS setting that Windows 11 will not accept).
+        You do not need a fresh install to fix it. Here is the path that keeps your data,
+        apps, and user profile in place: convert the disk format, switch one firmware setting,
+        then upgrade to Windows 11 25H2. Plus the steps you cannot skip if you want the
+        machine to actually boot afterwards.
+      </p>
+
+      <h2>why this matters</h2>
+      <p>
+        Windows 11 has three minimum requirements that are not negotiable:
+      </p>
+      <ul>
+        <li><strong>UEFI firmware.</strong> The modern way a PC starts up. UEFI replaced the older Legacy BIOS approach.</li>
+        <li><strong>Secure Boot capable.</strong> A firmware feature that blocks unauthorised boot code from loading. The PC just needs to support it, you do not have to enable it for the upgrade to pass.</li>
+        <li><strong>TPM 2.0.</strong> A small hardware chip that stores encryption keys, used by features like BitLocker and Windows Hello.</li>
+      </ul>
+      <p>
+        A PC that was set up in Legacy BIOS mode boots from a disk formatted as <strong>MBR
+        (Master Boot Record)</strong>, the old partition layout. Windows 11 needs the modern
+        <strong>GPT (GUID Partition Table)</strong> format instead. The upgrade check refuses
+        MBR disks even when the hardware is otherwise perfectly capable.
+      </p>
+      <p>
+        The good news: most PCs from around 2016 onwards already have hardware that supports
+        both modes. Nothing physical needs replacing. Two things need changing: the disk
+        format (MBR to GPT) and one firmware setting (Legacy BIOS to UEFI). That is the
+        whole job. No reinstall, no rebuilding the user profile.
+      </p>
+
+      <h2>before you touch anything</h2>
+      <ul>
+        <li><strong>Take a full image backup.</strong> This procedure is reversible in theory and unforgiving in practice.</li>
+        <li><strong>Confirm the hardware actually supports UEFI and TPM 2.0.</strong> Run <code>tpm.msc</code> and check the firmware setup. If TPM is "discrete" and disabled, enable it. On Intel, look for PTT; on AMD, fTPM.</li>
+        <li><strong>Note the current boot drive layout.</strong> <code>MBR2GPT</code> needs the OS disk to be MBR with at most three primary partitions, the system partition active, and no dynamic disk.</li>
+        <li><strong>Suspend BitLocker first.</strong> Conversion will trip the recovery prompt on next boot otherwise. <code>manage-bde -protectors -disable C: -RebootCount 2</code> buys you two reboots.</li>
+      </ul>
+
+      <h2>step 1 · validate the disk</h2>
+      <p>
+        Open an elevated PowerShell. <code>MBR2GPT</code> ships in-box; you don't need to download
+        anything. The validate flag is read-only and will tell you exactly why a disk isn't
+        eligible.
+      </p>
+      <div class="code-label">// run this</div>
+      <pre><code><span class="c">mbr2gpt /validate /allowFullOS</span></code></pre>
+      <div class="code-label">// output</div>
+      <pre><code><span class="m">  MBR2GPT: Attempting to validate disk 0</span>
+<span class="m">  MBR2GPT: Retrieving layout of disk</span>
+<span class="m">  MBR2GPT: Validating layout, disk sector size is: 512 bytes</span>
+<span class="ok">  MBR2GPT: Validation completed successfully</span></code></pre>
+      <p>
+        If you see <code>Disk layout validation failed</code>, three causes account for
+        almost all failures. None of them needs a wipe and reinstall.
+      </p>
+      <ul>
+        <li><strong>Cause: too many partitions.</strong> MBR2GPT only converts disks with three or fewer primary partitions. OEM recovery and vendor utility partitions often push you to four or five. <strong>Fix:</strong> delete one of the partitions you do not need (check what is on it first; safe deletion candidates are listed in the gotchas section).</li>
+        <li><strong>Cause: BitLocker is still active.</strong> MBR2GPT refuses to run on an encrypted disk. <strong>Fix:</strong> suspend BitLocker as shown in the prereqs above. Suspending is enough, you do not have to fully decrypt.</li>
+        <li><strong>Cause: the system reserved partition is missing.</strong> Rare, mostly happens on PCs built from custom images. <strong>Fix:</strong> re-create it with <code>bcdboot</code>, or take the image-and-restore route to a fresh layout.</li>
+      </ul>
+
+      <h2>step 2 · convert MBR to GPT</h2>
+      <p>
+        Same command, swap <code>/validate</code> for <code>/convert</code>. The tool shrinks
+        the existing system partition, carves out a 100 MB EFI System Partition, drops a
+        UEFI boot loader into it, and rewrites the partition table. It takes under a minute
+        on SSD and the OS keeps running.
+      </p>
+      <div class="code-label">// run this</div>
+      <pre><code><span class="c">mbr2gpt /convert /allowFullOS</span></code></pre>
+      <div class="code-label">// output</div>
+      <pre><code><span class="m">  MBR2GPT will now attempt to convert disk 0</span>
+<span class="m">  Creating the EFI system partition</span>
+<span class="m">  Installing the new boot files</span>
+<span class="m">  Performing the layout conversion</span>
+<span class="m">  Migrating default boot entry</span>
+<span class="ok">  Conversion completed successfully</span></code></pre>
+      <div class="callout warn">
+        <strong>Don't reboot yet.</strong> The disk is now GPT, but the firmware is still in
+        Legacy mode. If you reboot before flipping the firmware, the box will sit at a black
+        screen looking for an MBR boot sector that no longer exists.
+      </div>
+
+      <h2>step 3 · flip the firmware</h2>
+      <p>
+        Reboot into the firmware setup (usually <code>F2</code>, <code>F10</code>, <code>Del</code>,
+        or hold Shift while clicking Restart and choose UEFI Firmware Settings). What you're
+        looking for varies by vendor, but the three settings to change are consistent:
+      </p>
+      <ul>
+        <li><strong>Boot mode:</strong> Legacy / CSM → <strong>UEFI</strong>.</li>
+        <li><strong>Secure Boot:</strong> Enabled. If it's greyed out, save UEFI mode first, reboot back in, then enable.</li>
+        <li><strong>TPM:</strong> Enabled. PTT on Intel, fTPM on AMD, or a discrete header if it's a desktop board.</li>
+      </ul>
+      <p>
+        Save and exit. Windows boots normally, BitLocker resumes itself on the second boot
+        if you used <code>-RebootCount 2</code>, and the upgrade gates are now open.
+      </p>
+
+      <h2>step 4 · verify before you upgrade</h2>
+      <p>
+        Two quick checks confirm the conversion stuck:
+      </p>
+      <div class="code-label">// run this</div>
+      <pre><code><span class="c">Confirm-SecureBootUEFI</span>
+<span class="c">Get-Disk | Select Number, FriendlyName, PartitionStyle</span></code></pre>
+      <div class="code-label">// output</div>
+      <pre><code><span class="ok">  True</span>
+
+<span class="m">  Number  FriendlyName                  PartitionStyle</span>
+<span class="m">  ------  ------------                  --------------</span>
+<span class="ok">  0       Samsung SSD 870 EVO 500GB     GPT</span></code></pre>
+      <p>
+        If both come back clean, run the PC Health Check app once. It should now report the
+        machine eligible for Windows 11. If it still complains about the CPU, that's a
+        different conversation, and the answer is rarely "buy a new PC" if the box is on
+        the supported list.
+      </p>
+
+      <h2>step 5 · upgrade to 25H2</h2>
+      <p>
+        Windows 11 25H2 ships as a small <strong>enablement package</strong> layered on top
+        of 24H2. In plain terms: 24H2 and 25H2 share the same underlying code. The 25H2
+        install just flips a switch to turn on the new features. If the PC is already on a
+        current 24H2 build, the upgrade takes minutes instead of an hour.
+      </p>
+      <ol>
+        <li>Patch fully on the existing OS first. <code>Settings → Windows Update → Check for updates</code>, install everything, reboot.</li>
+        <li>If the device is on Windows 10, run the <strong>Installation Assistant</strong> or mount the 25H2 ISO and run <code>setup.exe</code> with <code>/Compat IgnoreWarning</code> only if you've already validated the hardware.</li>
+        <li>If the device is already on Windows 11 24H2, <code>Settings → Windows Update</code> will offer 25H2 as an enablement package. One reboot.</li>
+        <li>After the upgrade, re-enable BitLocker if it didn't resume itself: <code>manage-bde -protectors -enable C:</code>.</li>
+      </ol>
+
+      <h2>common gotchas</h2>
+      <ul>
+        <li><strong>Four primary partitions on a prebuilt PC.</strong> Most OEM images have System, OS, Recovery, and a vendor utility partition. That is one too many for <code>MBR2GPT</code>. <strong>Fix:</strong> delete the vendor utility partition, or the OEM recovery if you have install media to fall back on, before running <code>mbr2gpt</code>.</li>
+        <li><strong>Third-party disk encryption.</strong> Symantec PGP, McAfee Drive Encryption, and similar products do not survive a partition table change. <strong>Fix:</strong> fully decrypt the drive first, then convert.</li>
+        <li><strong>Dynamic disks.</strong> The old Windows feature for software RAID and spanned volumes. <code>MBR2GPT</code> does not support them. <strong>Fix:</strong> convert the disk back to basic, or take the image-and-restore path to a fresh layout.</li>
+        <li><strong>Secure Boot will not enable, even with the right firmware setting.</strong> Usually caused by a stale Platform Key (a stored security key from a previous setup) or a graphics card with an old VBIOS (the firmware on the GPU itself). <strong>Fix:</strong> in the firmware setup, reset Secure Boot keys to factory defaults, then enable Secure Boot again.</li>
+        <li><strong>Virtual machines on Hyper-V Gen 1 or VMware BIOS firmware.</strong> The firmware type is set when the VM is created and cannot be changed afterwards. <strong>Fix:</strong> rebuild the VM as Hyper-V Gen 2 or VMware EFI. If neither is an option, stay on Windows 10 with Extended Security Updates (ESU) until the VM is retired.</li>
+      </ul>
+
+      <h2>when to skip this and just rebuild</h2>
+      <p>
+        If the device is older than a 2017 chipset, has a failing disk, or carries seven years
+        of accumulated user-installed software cruft, an in-place upgrade is technically
+        possible and operationally a bad idea. A clean Autopilot enrolment with OneDrive
+        Known Folder Move is faster end-to-end and leaves you with a device you can actually
+        support. The conversion procedure is for fleets where the configuration is worth
+        preserving and the hardware has plenty of life left.
+      </p>
+
+      <div class="callout">
+        Need this done across a fleet rather than one box at a time? That's most of what I do.
+        <a href="/contact">Book a 30-minute call</a> and we can talk through the right
+        approach for your environment.
+      </div>
+
+      <div class="post-foot">
+        <a href="/blog">← all posts</a>
+        <span>// himanshu @ aroramsp</span>
+      </div>
+    </article>
+  </section>
+</Layout>

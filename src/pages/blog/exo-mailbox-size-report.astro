@@ -1,0 +1,234 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+<Layout
+  title="Sortable Exchange Online mailbox size report PowerShell script · AroraMSP"
+  description="PowerShell script to generate Exchange Online mailbox size reports with sortable numeric GB columns. Handles archive mailboxes and exports clean CSV."
+  page="blog"
+  canonical="https://aroramsp.com/blog/exo-mailbox-size-report"
+  ogTitle="Sortable Exchange Online mailbox size report PowerShell script"
+  ogDescription="PowerShell script to generate Exchange Online mailbox size reports with sortable numeric GB columns. Handles archive mailboxes and exports clean CSV."
+>
+  <Fragment slot="head">
+    <meta name="keywords" content="Exchange Online mailbox size, Get-EXOMailboxStatistics, mailbox migration sizing, archive mailbox detection, ByteQuantifiedSize, PowerShell CSV report, Get-EXOMailbox" />
+    <script type="application/ld+json" is:raw>
+    {
+      "@context": "https://schema.org",
+      "@type": "TechArticle",
+      "headline": "Sortable Exchange Online mailbox size report PowerShell script",
+      "description": "PowerShell script to generate Exchange Online mailbox size reports with sortable numeric GB columns. Handles archive mailboxes and exports clean CSV.",
+      "url": "https://aroramsp.com/blog/exo-mailbox-size-report",
+      "datePublished": "2026-05-08",
+      "dateModified": "2026-05-08",
+      "author": { "@id": "https://aroramsp.com/#himanshu-arora" },
+      "publisher": { "@id": "https://aroramsp.com/#org" },
+      "image": "https://aroramsp.com/uploads/og-preview.png",
+      "proficiencyLevel": "Expert",
+      "about": [
+        { "@type": "Thing", "name": "Exchange Online" },
+        { "@type": "Thing", "name": "PowerShell" },
+        { "@type": "Thing", "name": "mailbox reporting" }
+      ],
+      "mainEntityOfPage": "https://aroramsp.com/blog/exo-mailbox-size-report"
+    }
+    </script>
+    <script type="application/ld+json" is:raw>
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://aroramsp.com/" },
+        { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://aroramsp.com/blog" },
+        { "@type": "ListItem", "position": 3, "name": "Sortable Exchange Online mailbox size report PowerShell script", "item": "https://aroramsp.com/blog/exo-mailbox-size-report" }
+      ]
+    }
+    </script>
+  </Fragment>
+
+  <section class="page wrap">
+    <article class="article">
+      <div class="post-meta">
+        <a href="/blog">← all posts</a>
+        <span class="dot"></span>
+        <span class="post-author">
+          By <a href="/about" rel="author">Himanshu Arora</a>
+          &nbsp;&middot;&nbsp;11+ yrs Microsoft ecosystem
+          &nbsp;&middot;&nbsp;<a href="https://linkedin.com/in/himanshusac" target="_blank" rel="noopener">LinkedIn</a>
+          &nbsp;&middot;&nbsp;<a href="https://github.com/hiaror" target="_blank" rel="noopener">GitHub</a>
+          &nbsp;&middot;&nbsp;
+        </span>
+        <span>2026-05-05</span>
+        <span class="dot"></span>
+        <span class="tag">// exchange · migration</span>
+        <span class="dot"></span>
+        <span>7 min read</span>
+      </div>
+
+      <h1>Sortable mailbox size reports, without the Excel cleanup ritual.</h1>
+      <p class="lede">
+        Day one of a tenant-to-tenant migration and someone needs to know which mailboxes
+        are above 50&nbsp;GB, which have an archive, and how the long tail looks. Get-MailboxStatistics
+        will tell you, but it'll also hand you "12.43 GB (13,348,294,144 bytes)" as a
+        string. Here's the small script I keep on hand to skip the Excel cleanup and get
+        straight to a sortable CSV.
+      </p>
+
+      <h2>why this matters</h2>
+      <p>
+        Exchange Online does not return mailbox sizes as numbers. It returns
+        <code>TotalItemSize</code> as a <strong>ByteQuantifiedSize</strong>, which is
+        Microsoft's name for a pretty-printed string with the byte count tucked into
+        parentheses. It reads beautifully in the console: <code>"12.43 GB (13,348,294,144
+        bytes)"</code>. The trouble starts as soon as you export it.
+      </p>
+      <p>
+        Pipe it to <code>Export-Csv</code> and you get the whole "12.43 GB (13,348,294,144
+        bytes)" string in a single cell. Sort that column in Excel and 9 GB lands above
+        12 GB, because Excel sorts text alphabetically and "1" comes before "9". Every
+        consultant has a Find and Replace recipe to clean it up, but most of those recipes
+        silently break the moment one mailbox crosses a TB and the unit changes from GB to TB.
+      </p>
+      <p>
+        The script in
+        <a href="https://github.com/hiaror/exo-mailbox-size-report">exo-mailbox-size-report</a>
+        does the conversion in PowerShell where it belongs: pulls the bytes out of the
+        formatted string, divides by 1 GB, rounds to two decimals, and writes a real numeric
+        column you can sort, sum, and pivot on. It's small. That's the point.
+      </p>
+
+      <h2>before you run it</h2>
+      <ul>
+        <li><strong>ExchangeOnlineManagement v3 module installed.</strong> The script uses <code>Get-EXOMailbox</code> and <code>Get-EXOMailboxStatistics</code>, the REST-backed cmdlets, not the legacy ones. They're noticeably faster and they're what Microsoft is keeping current.</li>
+        <li><strong>An account that can read mailbox stats tenant-wide.</strong> View-Only Recipients is enough; you don't need anything write-capable for a size report.</li>
+        <li><strong>The input CSV.</strong> One column, header <code>UPN</code>. Trim, lower-case, deduplicate before you hand it over: the script does the same thing internally but it's easier to fix bad input than read past it in the report.</li>
+      </ul>
+
+      <h2>the trick that matters</h2>
+      <p>
+        <code>TotalItemSize</code> renders as text, but it always carries the byte count in
+        parentheses. Pull it out with a single regex and the rest is arithmetic.
+      </p>
+      <div class="code-label">// run this</div>
+      <pre><code><span class="c">function Get-BytesFromSizeString &#123;</span>
+<span class="c">    param([string]$SizeString)</span>
+<span class="c">    if ($SizeString -match "\(([\d,]+)\s+bytes\)") &#123;</span>
+<span class="c">        return [double]($matches[1] -replace ",", "")</span>
+<span class="c">    &#125;</span>
+<span class="c">    return 0</span>
+<span class="c">&#125;</span></code></pre>
+      <p>
+        That's the whole conversion. Once you have a real number of bytes, dividing by
+        <code>1GB</code> gives you a proper double, <code>Round</code> trims the noise, and
+        Excel sorts it correctly the first time. No formula tricks, no Power Query, no "split
+        on space and cast the first token."
+      </p>
+
+      <h2>running the report</h2>
+      <div class="code-label">// run this</div>
+      <pre><code><span class="c">.\Invoke-EXOMailboxSizeReport.ps1 `</span>
+<span class="c">    -InputCsv .\migrationmailboxes.csv `</span>
+<span class="c">    -CSVPath  .\MailboxSizeReport_20260505_1408.csv</span></code></pre>
+      <div class="code-label">// output</div>
+      <pre><code><span class="m">  Connecting to Exchange Online...</span>
+<span class="m">  Scanning mailboxes  10 / 412 : alex.lee@northshore.example</span>
+<span class="m">  Scanning mailboxes  20 / 412 : shared.finance@northshore.example</span>
+<span class="m">  ...</span>
+<span class="ok">  Completed. Report exported to: .\MailboxSizeReport_20260505_1408.csv</span></code></pre>
+      <p>
+        For each UPN the script pulls primary stats, then, only if the mailbox actually
+        has an archive, pulls archive stats with <code>-Archive</code>. Each mailbox is
+        wrapped in its own try/catch so a single failed lookup doesn't kill the run; the
+        error message lands on the row instead, with empty size columns. You get a clean
+        report and a list of the things that need a closer look, in the same file.
+      </p>
+
+      <h2>archive detection, the right way</h2>
+      <p>
+        Most homemade size reports get archive detection wrong, and the symptom is always
+        the same: the report shows zero archive GB across the entire fleet, even though
+        plenty of mailboxes have archives.
+      </p>
+      <p>
+        <strong>What goes wrong:</strong> the script checks <code>$mbx.ArchiveStatus</code>
+        and skips the archive size call when it comes back blank.
+      </p>
+      <p>
+        <strong>Why:</strong> by default, <code>Get-EXOMailbox</code> does not include
+        archive properties in its response. The field comes back empty whether or not an
+        archive actually exists.
+      </p>
+      <p>
+        <strong>Fix:</strong> ask explicitly for archive properties using
+        <code>-PropertySets Archive</code>, then check <code>ArchiveGuid</code> rather than
+        <code>ArchiveStatus</code>. <code>ArchiveGuid</code> is populated only when an
+        archive really exists, so it is a reliable signal.
+      </p>
+      <div class="code-label">// run this</div>
+      <pre><code><span class="c">$mbx = Get-EXOMailbox -Identity $upn -PropertySets Archive</span>
+<span class="c">if ($mbx.ArchiveGuid -and $mbx.ArchiveGuid -ne [guid]::Empty) &#123;</span>
+<span class="c">    $a = Get-EXOMailboxStatistics -Identity $upn -Archive</span>
+<span class="c">    # ... build report row using $a.TotalItemSize</span>
+<span class="c">&#125;</span></code></pre>
+      <p>
+        <code>ArchiveGuid</code> is the source of truth: present and non-empty means the
+        archive exists. Anything else (status, quota, displayname) is downstream of that.
+      </p>
+
+      <h2>what the output looks like</h2>
+      <div class="code-label">// output (sample report)</div>
+      <pre><code><span class="m">  UserPrincipalName              PrimaryTotalItemSize  PrimarySizeGB  ArchiveEnabled  ArchiveSizeGB</span>
+<span class="m">  ----------------               ---------------       ------         -----           ------</span>
+<span class="c">  alex.lee@northshore.example    48.21 GB              48.21          True            72.40</span>
+<span class="c">  shared.finance@northshore...   12.04 GB              12.04          False           0</span>
+<span class="c">  ops@northshore.example         3.88 GB               3.88           False           0</span>
+<span class="c">  ceo@northshore.example         84.62 GB              84.62          True            128.94</span></code></pre>
+      <p>
+        Two size columns per mailbox: a friendly text version for humans, and a numeric one
+        for sorting and summing. Drop it in Excel, sort by <code>PrimarySizeGB</code>
+        descending, and the conversation about migration batches writes itself: top 10 in
+        their own slow batch, the long tail in everything-at-once batches, the archives
+        flagged for the licensing review you didn't realise you needed.
+      </p>
+
+      <div class="callout">
+        <strong>One detail worth keeping.</strong> <code>TotalItemSize</code> includes
+        Recoverable Items in some configurations and not others depending on retention. For
+        migration sizing, what's actually moving over the wire, that usually doesn't
+        matter. For licensing decisions ("do they need a 100&nbsp;GB plan?"), it can. If the
+        number is borderline, pull <code>TotalDeletedItemSize</code> too and look at the
+        split.
+      </div>
+
+      <h2>common gotchas</h2>
+      <ul>
+        <li><strong>Slow runs or timeouts on large tenants.</strong> You used the legacy <code>Get-Mailbox</code> cmdlet instead of <code>Get-EXOMailbox</code>. The legacy cmdlet works for small tenants but falls over once you loop across a few thousand mailboxes. <strong>Fix:</strong> use the <code>Get-EXOMailbox</code> and <code>Get-EXOMailboxStatistics</code> cmdlets from the ExchangeOnlineManagement v3 module. They are REST-based and far faster.</li>
+        <li><strong>"User not found" errors mid-run.</strong> The input CSV contains soft-deleted mailboxes (mailboxes that have been removed but not fully purged). <strong>Fix:</strong> the script catches the error per row and keeps going, so the run completes regardless. To clean things up, filter soft-deleted mailboxes out of the input CSV before running.</li>
+        <li><strong>Shared mailboxes.</strong> No special handling needed. Same UPN shape, works identically. Just include them in the input CSV.</li>
+        <li><strong>Inactive mailboxes return nothing.</strong> <code>Get-EXOMailbox</code> only returns live mailboxes. Inactive ones (used for litigation-hold retention) need a separate query path. <strong>Fix:</strong> if you need inactive mailbox sizing for a hold review, run a parallel script with the <code>-InactiveMailboxOnly</code> flag. That is a different report.</li>
+        <li><strong>Throttled by Exchange Online on huge tenants.</strong> EXO PowerShell will throttle on long-running loops. <strong>Fix:</strong> split the input CSV into chunks of a few thousand UPNs and run them sequentially. The script does not bake in retry logic because, for sizing runs, throttling is rarely the bottleneck.</li>
+      </ul>
+
+      <h2>when to use this and when to use the portal</h2>
+      <p>
+        For a one-off "how big is this one mailbox" question, the admin centre's mailbox
+        usage tile or the Microsoft 365 Admin reports section will answer in three clicks.
+        The script earns its keep when you need the data <em>for</em> something: a
+        migration batch plan, a licensing analysis, a chargeback report, a quarterly review
+        of the largest mailboxes, and you want it sortable, scriptable, and reproducible
+        against the same input next month.
+      </p>
+
+      <div class="callout">
+        Sizing a tenant-to-tenant migration, or trying to make sense of which mailboxes are
+        eating your storage budget? That's most of what I do.
+        <a href="/contact">Book a 30-minute call</a> and we can talk through the
+        right approach for your environment.
+      </div>
+
+      <div class="post-foot">
+        <a href="/blog">← all posts</a>
+        <span>// himanshu @ aroramsp</span>
+      </div>
+    </article>
+  </section>
+</Layout>

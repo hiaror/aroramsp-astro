@@ -1,0 +1,421 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+<Layout
+  title="Microsoft 365 PowerShell Authentication Failures: Three Bugs, One Fix · AroraMSP"
+  description="Three distinct authentication failures when running Microsoft Graph SDK and Exchange Online together: MSAL assembly clash, Graph SDK module load failure, and the v2.34 DeviceCodeCredential token cache bug. A test matrix across PowerShell 5.1 and 7, and the certificate-based fix that works in every order."
+  page="blog"
+  canonical="https://aroramsp.com/blog/powershell-auth-clash"
+  ogTitle="Microsoft 365 PowerShell Authentication Failures: Three Bugs, One Fix"
+  ogDescription="Real-world testing across PowerShell 5.1 and 7, device code and certificate auth, eight combinations. Three bugs, one fix with actual error output and root cause analysis."
+>
+  <Fragment slot="head">
+    <meta name="keywords" content="PowerShell, Microsoft Graph, Exchange Online, certificate authentication, MSAL assembly clash, DeviceCodeCredential, msgraph-sdk-powershell, app-only authentication, Connect-MgGraph, Connect-ExchangeOnline" />
+    <script type="application/ld+json" is:raw>
+    {
+      "@context": "https://schema.org",
+      "@type": "TechArticle",
+      "headline": "Microsoft 365 PowerShell Authentication Failures: Three Bugs, One Fix",
+      "description": "Three distinct authentication failures when running Microsoft Graph SDK and Exchange Online together: MSAL assembly clash, Graph SDK module load failure, and DeviceCodeCredential token cache bug. Full test matrix across PowerShell 5.1 and 7.",
+      "url": "https://aroramsp.com/blog/powershell-auth-clash",
+      "datePublished": "2026-05-10",
+      "dateModified": "2026-05-10",
+      "author": { "@id": "https://aroramsp.com/#himanshu-arora" },
+      "publisher": { "@id": "https://aroramsp.com/#org" },
+      "image": "https://aroramsp.com/uploads/og-preview.png",
+      "proficiencyLevel": "Expert",
+      "about": [
+        { "@type": "Thing", "name": "Microsoft Graph PowerShell" },
+        { "@type": "Thing", "name": "Exchange Online Management" },
+        { "@type": "Thing", "name": "MSAL authentication" }
+      ],
+      "mainEntityOfPage": "https://aroramsp.com/blog/powershell-auth-clash"
+    }
+    </script>
+    <script type="application/ld+json" is:raw>
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://aroramsp.com/" },
+        { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://aroramsp.com/blog" },
+        { "@type": "ListItem", "position": 3, "name": "Microsoft 365 PowerShell Authentication Failures: Three Bugs, One Fix", "item": "https://aroramsp.com/blog/powershell-auth-clash" }
+      ]
+    }
+    </script>
+  </Fragment>
+
+  <section class="page wrap">
+    <article class="article">
+      <div class="post-meta">
+        <a href="/blog">&larr; all posts</a>
+        <span class="dot"></span>
+        <span class="post-author">
+          By <a href="/about" rel="author">Himanshu Arora</a>
+          &nbsp;&middot;&nbsp;11+ yrs Microsoft ecosystem
+          &nbsp;&middot;&nbsp;<a href="https://linkedin.com/in/himanshusac" target="_blank" rel="noopener">LinkedIn</a>
+          &nbsp;&middot;&nbsp;<a href="https://github.com/hiaror" target="_blank" rel="noopener">GitHub</a>
+          &nbsp;&middot;&nbsp;
+        </span>
+        <span>2026-05-10</span>
+        <span class="dot"></span>
+        <span class="tag">// powershell &middot; m365 &middot; exchange online &middot; microsoft graph</span>
+        <span class="dot"></span>
+        <span>8 min read</span>
+      </div>
+
+      <h1>Microsoft 365 PowerShell authentication failures: three bugs, one fix.</h1>
+      <p class="lede">
+        I was building a Microsoft 365 tenant security audit script that needed both
+        Microsoft Graph PowerShell SDK and Exchange Online Management running in the
+        same session. Simple enough on paper. In practice I hit three separate
+        authentication failures before finding a method that works reliably across
+        every combination I tested.
+      </p>
+
+      <h2>the background</h2>
+      <p>
+        Tony Redmond at <a href="https://office365itpros.com" target="_blank" rel="noopener">office365itpros.com</a>
+        has documented the MSAL assembly clash between these modules extensively. What I
+        found during testing goes further than connection order. There are three
+        distinct failure modes, each with a different root cause, and one
+        authentication method that eliminates all of them.
+      </p>
+      <p>
+        Here is the complete evidence from real tests run on a live tenant.
+      </p>
+
+      <h2>the test environment</h2>
+      <p>All tests were run on Windows 11 with:</p>
+      <ul>
+        <li>Exchange Online Management module v3.9.2</li>
+        <li>Microsoft Graph PowerShell SDK v2.35.1</li>
+        <li>PowerShell 7.6.1 (<code>pwsh</code>)</li>
+        <li>Windows PowerShell 5.1 (<code>powershell</code>)</li>
+      </ul>
+      <p>Two connection orders were tested for each scenario:</p>
+      <ul>
+        <li>Microsoft Graph connects first, then Exchange Online</li>
+        <li>Exchange Online connects first, then Microsoft Graph</li>
+      </ul>
+      <p>Two authentication methods were tested:</p>
+      <ul>
+        <li>Device code authentication (<code>-UseDeviceCode</code> and <code>-Device</code>)</li>
+        <li>Certificate based app-only authentication</li>
+      </ul>
+
+      <h2>the complete test matrix</h2>
+      <div class="table-scroll">
+        <table class="test-matrix">
+          <thead>
+            <tr>
+              <th>Test</th>
+              <th>Shell</th>
+              <th>Connection Order</th>
+              <th>Auth Method</th>
+              <th>EXO Login</th>
+              <th>Graph Login</th>
+              <th>EXO Cmdlets</th>
+              <th>Graph Cmdlets</th>
+              <th>Result</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="num">1</td>
+              <td class="shell">PS 7.6.1</td>
+              <td class="order">Graph first</td>
+              <td class="auth">Device code</td>
+              <td class="pass">Success</td>
+              <td class="pass">Success</td>
+              <td class="unk">Unknown</td>
+              <td class="fail">FAIL</td>
+              <td class="fail result">FAIL</td>
+            </tr>
+            <tr>
+              <td class="num">2</td>
+              <td class="shell">PS 7.6.1</td>
+              <td class="order">EXO first</td>
+              <td class="auth">Device code</td>
+              <td class="pass">Success</td>
+              <td class="pass">Success</td>
+              <td class="unk">Unknown</td>
+              <td class="fail">FAIL</td>
+              <td class="fail result">FAIL</td>
+            </tr>
+            <tr>
+              <td class="num">3</td>
+              <td class="shell">PS 5.1</td>
+              <td class="order">Graph first</td>
+              <td class="auth">Device code</td>
+              <td class="fail">FAIL</td>
+              <td class="pass">Success</td>
+              <td class="na">N/A</td>
+              <td class="na">N/A</td>
+              <td class="fail result">FAIL</td>
+            </tr>
+            <tr>
+              <td class="num">4</td>
+              <td class="shell">PS 5.1</td>
+              <td class="order">EXO first</td>
+              <td class="auth">Device code</td>
+              <td class="pass">Success</td>
+              <td class="fail">FAIL</td>
+              <td class="na">N/A</td>
+              <td class="na">N/A</td>
+              <td class="fail result">FAIL</td>
+            </tr>
+            <tr>
+              <td class="num">5</td>
+              <td class="shell">PS 5.1</td>
+              <td class="order">Graph first</td>
+              <td class="auth">Cert auth</td>
+              <td class="pass">Success</td>
+              <td class="pass">Success</td>
+              <td class="pass">Success</td>
+              <td class="pass">Success</td>
+              <td class="pass result">PASS</td>
+            </tr>
+            <tr>
+              <td class="num">6</td>
+              <td class="shell">PS 5.1</td>
+              <td class="order">EXO first</td>
+              <td class="auth">Cert auth</td>
+              <td class="pass">Success</td>
+              <td class="fail">FAIL</td>
+              <td class="na">N/A</td>
+              <td class="na">N/A</td>
+              <td class="fail result">FAIL</td>
+            </tr>
+            <tr>
+              <td class="num">7</td>
+              <td class="shell">PS 7.6.1</td>
+              <td class="order">Graph first</td>
+              <td class="auth">Cert auth</td>
+              <td class="pass">Success</td>
+              <td class="pass">Success</td>
+              <td class="pass">Success</td>
+              <td class="pass">Success</td>
+              <td class="pass result">PASS</td>
+            </tr>
+            <tr>
+              <td class="num">8</td>
+              <td class="shell">PS 7.6.1</td>
+              <td class="order">EXO first</td>
+              <td class="auth">Cert auth</td>
+              <td class="pass">Success</td>
+              <td class="pass">Success</td>
+              <td class="pass">Success</td>
+              <td class="pass">Success</td>
+              <td class="pass result">PASS</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        Three combinations pass end to end. All three use certificate based app-only
+        authentication. Two work on PowerShell 7 regardless of connection order. One
+        works on PowerShell 5.1, but only when Microsoft Graph connects before
+        Exchange Online.
+      </p>
+      <p>
+        Test 5 was verified end to end by running both the full 20-check tenant
+        audit script and the mailbox report script on Windows PowerShell 5.1
+        with certificate authentication. Both scripts completed successfully
+        with no errors. All 20 audit checks ran and the mailbox report
+        generated correctly.
+      </p>
+
+      <h2>bug one: the MSAL assembly clash</h2>
+      <p>
+        This is the failure Tony Redmond documented. In plain English, think of MSAL
+        as a shared key cutting machine that both modules need to make keys to get
+        into Microsoft 365. On PowerShell 5.1, the first module to run installs its
+        own version of that machine. When the second module arrives and tries to use
+        it, the machine is a slightly different model and the second module cannot
+        operate it.
+      </p>
+      <p>
+        On PowerShell 5.1 with Graph connecting first, Exchange Online fails with
+        this error:
+      </p>
+      <div class="code-label">// error</div>
+<pre><code><span class="w">Method not found: 'Microsoft.Identity.Client.PublicClientApplicationBuilder
+Microsoft.Identity.Client.Broker.BrokerExtension.WithBroker(
+    Microsoft.Identity.Client.PublicClientApplicationBuilder,
+    Microsoft.Identity.Client.BrokerOptions)'.</span></code></pre>
+      <p>
+        Graph SDK loaded its MSAL version first. Exchange Online V3 looked for a
+        specific method called <code>WithBroker</code> in that version and could not
+        find it.
+      </p>
+      <p>
+        Tony documented this in detail. His
+        <a href="https://office365itpros.com/2025/09/24/assembly-clash-microsoft-365-ps/" target="_blank" rel="noopener">September 2025 post</a>
+        covers the full history of the clash across module versions, and his
+        <a href="https://office365itpros.com/2026/01/22/automating-microsoft-365-20/" target="_blank" rel="noopener">January 2026 update</a>
+        references the same issue.
+      </p>
+
+      <h2>bug two: Graph SDK module load failure</h2>
+      <p>
+        Reversing the order on PowerShell 5.1 creates a completely different problem.
+        Exchange Online connects successfully. Then Graph SDK fails before even
+        authenticating:
+      </p>
+      <div class="code-label">// error</div>
+<pre><code><span class="w">The 'Connect-MgGraph' command was found in the module
+'Microsoft.Graph.Authentication', but the module could not be loaded.</span></code></pre>
+      <p>
+        In plain English, Exchange Online loaded its version of the shared key
+        machine. When Graph SDK arrived it could not even unpack its own tools
+        because the machine already installed was incompatible with what Graph SDK
+        needed to get started.
+      </p>
+      <p>
+        This is not an authentication error. The Graph SDK module cannot initialize
+        at all. Tony's documented fix of connecting Exchange Online before Graph
+        helps with Bug One but creates Bug Two instead. On PowerShell 5.1 with
+        device code auth, both connection orders fail. Just with different errors.
+      </p>
+
+      <h2>bug three: DeviceCodeCredential token cache failure</h2>
+      <p>
+        This one is the most confusing because everything appears to work at first.
+        On PowerShell 7 with the latest Graph SDK, both modules connect successfully
+        regardless of order. The device code flow completes, you authenticate in the
+        browser, no assembly errors. Then the first Graph cmdlet you run fails:
+      </p>
+      <div class="code-label">// error</div>
+<pre><code><span class="w">DeviceCodeCredential authentication failed: Object reference
+not set to an instance of an object.</span></code></pre>
+      <p>
+        In plain English, you successfully showed your ID at the front door and
+        received a visitor badge. But when you tried to use the badge to open the
+        first door inside the building, the badge reader said the badge was invalid.
+        The badge was issued correctly, but something went wrong when it was stored
+        in your pocket.
+      </p>
+      <div class="callout">
+        <strong>Confirmed Microsoft SDK bug.</strong> Tracked as GitHub issue
+        <a href="https://github.com/microsoftgraph/msgraph-sdk-powershell/issues/3495" target="_blank" rel="noopener">microsoftgraph/msgraph-sdk-powershell#3495</a>,
+        opened January 2026, with a regression re-reported in April 2026.
+      </div>
+      <p>
+        Root cause confirmed by SDK maintainer ramsessanchez:
+        <strong>Microsoft.Graph v2.34</strong> bumped Azure.Identity to enable WAM
+        as the default authentication broker. The new Azure.Identity changed how
+        tokens are cached. The DeviceCodeCredential code path no longer handles the
+        cache correctly. The token is acquired successfully at login but becomes
+        unusable the moment a cmdlet tries to use it.
+      </p>
+      <p>
+        This reproduces on v2.34, v2.35, and v2.35.1 on both PowerShell 7 and
+        PowerShell 5.1. Connection order does not fix this. It is a token cache bug,
+        not an assembly conflict.
+      </p>
+
+      <h2>the fix: certificate based app-only authentication</h2>
+      <p>
+        Tests 7 and 8 pass completely end to end. Test 5 also passes on
+        PowerShell 5.1 when Graph connects first. All three use certificate based
+        app-only authentication:
+      </p>
+      <div class="code-label">// powershell</div>
+<pre><code><span class="c"># Connect Microsoft Graph with certificate auth</span>
+<span class="c">Connect-MgGraph `</span>
+<span class="c">    -ClientId "your-app-id" `</span>
+<span class="c">    -TenantId "your-tenant-id" `</span>
+<span class="c">    -CertificateThumbprint "your-cert-thumbprint"</span>
+
+<span class="c"># Connect Exchange Online with certificate auth</span>
+<span class="c">Connect-ExchangeOnline `</span>
+<span class="c">    -AppId "your-app-id" `</span>
+<span class="c">    -Organization "yourtenant.onmicrosoft.com" `</span>
+<span class="c">    -CertificateThumbprint "your-cert-thumbprint"</span></code></pre>
+      <p><strong>Why cert auth fixes all three bugs:</strong></p>
+      <p>
+        <strong>Bug One and Two.</strong> Certificate auth does not use the MSAL
+        interactive broker at all. It authenticates directly using the certificate
+        without needing the shared key cutting machine. No broker. No
+        <code>WithBroker</code> method. No assembly conflict.
+      </p>
+      <p>
+        <strong>Bug Three.</strong> Certificate auth uses a completely different
+        token acquisition path. The token cache bug in SDK v2.34 only affects the
+        DeviceCodeCredential flow. Cert auth bypasses it entirely.
+      </p>
+      <p><strong>Additional benefits over device code auth:</strong></p>
+      <ul>
+        <li>No interactive prompts or browser windows</li>
+        <li>No device codes to copy and paste</li>
+        <li>Scripts run fully unattended and can be scheduled</li>
+        <li>Connection order does not matter on PowerShell 7</li>
+        <li>Works on PowerShell 5.1 when Graph connects first</li>
+      </ul>
+
+      <h2>setting up certificate authentication</h2>
+      <p>
+        You need an Entra ID app registration with the following Microsoft Graph API
+        permissions granted as <strong>application</strong> permissions, not
+        delegated:
+      </p>
+      <ul>
+        <li><code>Directory.Read.All</code></li>
+        <li><code>User.Read.All</code></li>
+        <li><code>Policy.Read.All</code></li>
+        <li><code>AuditLog.Read.All</code></li>
+        <li><code>DeviceManagementConfiguration.Read.All</code></li>
+        <li><code>DeviceManagementApps.Read.All</code></li>
+        <li><code>Application.Read.All</code></li>
+      </ul>
+      <p>
+        The app registration also needs the <strong>Exchange Administrator</strong>
+        role assigned at the tenant level via Entra ID roles.
+      </p>
+      <p>
+        Create a self-signed certificate and upload the public key to the app
+        registration. Store the certificate in your local Windows certificate store
+        and reference it by thumbprint when connecting.
+      </p>
+      <p>
+        A full step by step setup guide with PowerShell commands for certificate
+        creation, app registration, and permission assignment is included with the
+        <a href="/whatido">AroraMSP M365 Audit Toolkit</a>.
+      </p>
+
+      <h2>key takeaways</h2>
+      <ul>
+        <li>PowerShell 5.1 cannot run Graph SDK and Exchange Online V3 together with device code auth in any connection order.</li>
+        <li>PowerShell 7 device code auth connects successfully but Graph cmdlets fail due to confirmed SDK bug #3495 in v2.34 and later.</li>
+        <li>Certificate based app-only auth on PowerShell 7 works reliably in any connection order.</li>
+        <li>On PowerShell 5.1 with cert auth, Graph must connect before Exchange Online.</li>
+        <li>Upgrade to PowerShell 7 if you are still running M365 automation on PowerShell 5.1.</li>
+      </ul>
+
+      <h2>further reading</h2>
+      <ul>
+        <li>Tony Redmond: <a href="https://office365itpros.com/2025/09/24/assembly-clash-microsoft-365-ps/" target="_blank" rel="noopener">Assembly Clashes Make Microsoft 365 PowerShell Frustrating</a> (September 2025)</li>
+        <li>Tony Redmond: <a href="https://office365itpros.com/2026/01/22/automating-microsoft-365-20/" target="_blank" rel="noopener">Automating Microsoft 365 with PowerShell, Update 20</a> (January 2026)</li>
+        <li>Microsoft Graph SDK bug report: <a href="https://github.com/microsoftgraph/msgraph-sdk-powershell/issues/3495" target="_blank" rel="noopener">microsoftgraph/msgraph-sdk-powershell #3495</a></li>
+        <li>AroraMSP M365 Audit Scripts repository: <a href="https://github.com/hiaror/aroramsp-audit-scripts" target="_blank" rel="noopener">github.com/hiaror/aroramsp-audit-scripts</a></li>
+        <li>Test scripts used in this post are available on GitHub: <a href="https://github.com/hiaror/aroramsp-audit-scripts/tree/main/tests" target="_blank" rel="noopener">github.com/hiaror/aroramsp-audit-scripts/tree/main/tests</a></li>
+      </ul>
+
+      <div class="callout">
+        Running into authentication issues with your own M365 PowerShell scripts?
+        The <a href="/whatido">AroraMSP M365 Audit Toolkit</a> uses
+        certificate based app-only authentication by design, eliminating all three
+        failure modes documented in this post. View the toolkit at
+        <a href="/whatido">aroramsp.com/whatido</a> or
+        <a href="/contact">book a free 30-minute call</a>
+        to discuss your environment.
+      </div>
+
+      <div class="post-foot">
+        <a href="/blog">&larr; all posts</a>
+        <span>// himanshu @ aroramsp</span>
+      </div>
+    </article>
+  </section>
+</Layout>
