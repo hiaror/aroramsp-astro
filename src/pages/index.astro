@@ -1,17 +1,182 @@
 ---
-
+import Layout from '../layouts/Layout.astro';
 ---
+<Layout
+  title="Himanshu Arora | AroraMSP · M365 Security & Entra ID"
+  description="Microsoft 365 security, Intune, and Entra ID for enterprise IT teams. Real production experience, documented from the field — scripts, fixes, and root causes from 11+ years in the Microsoft ecosystem."
+  page="home"
+  canonical="https://aroramsp.com/"
+  ogTitle="AroraMSP - Microsoft 365 Consulting"
+  ogDescription="Independent Microsoft 365 consulting. Tenant security audits, Entra ID, Conditional Access, Exchange Online, and Intune for organizations globally."
+>
+  <script type="application/ld+json" slot="head" is:raw>
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Person",
+        "@id": "https://aroramsp.com/#himanshu-arora",
+        "name": "Himanshu Arora",
+        "url": "https://aroramsp.com/",
+        "jobTitle": "Independent Microsoft 365 Consultant",
+        "description": "Independent Microsoft 365 consultant with 11+ years in the Microsoft ecosystem. Specialising in tenant security audits, Entra ID, Conditional Access, Exchange Online, Intune, and PowerShell automation.",
+        "knowsAbout": [
+          "Microsoft 365 security",
+          "Microsoft Intune",
+          "Microsoft Entra ID",
+          "Conditional Access",
+          "Exchange Online",
+          "Microsoft Graph PowerShell",
+          "Windows LAPS",
+          "Tenant security audits",
+          "Hybrid identity",
+          "AD Connect"
+        ],
+        "sameAs": [
+          "https://linkedin.com/in/himanshusac",
+          "https://github.com/hiaror"
+        ]
+      },
+      {
+        "@type": "ProfessionalService",
+        "@id": "https://aroramsp.com/#org",
+        "name": "AroraMSP",
+        "url": "https://aroramsp.com/",
+        "logo": "https://aroramsp.com/uploads/arora_msp_favicon.svg",
+        "image": "https://aroramsp.com/uploads/og-preview.png",
+        "description": "Independent Microsoft 365 consulting. Tenant security audits, Entra ID, Conditional Access, Exchange Online, Intune deployment, and PowerShell automation for organisations globally.",
+        "founder": { "@id": "https://aroramsp.com/#himanshu-arora" },
+        "areaServed": "Worldwide",
+        "serviceType": [
+          "Microsoft 365 tenant security audit",
+          "Microsoft Intune deployment",
+          "Microsoft Entra ID configuration",
+          "Conditional Access policy design",
+          "Exchange Online migration",
+          "PowerShell automation"
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://aroramsp.com/#website",
+        "url": "https://aroramsp.com/",
+        "name": "AroraMSP",
+        "publisher": { "@id": "https://aroramsp.com/#org" }
+      }
+    ]
+  }
+  </script>
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+  <section class="hero-page wrap" style="min-height: calc(100vh - var(--nav-h) - 150px); display:flex; align-items:center; padding-top: 12px; padding-bottom: 12px;">
+    <div class="hero-grid">
+      <div>
+        <div class="eyebrow">
+          <span class="pulse"></span>
+          <span>Available worldwide · accepting new clients</span>
+        </div>
+        <picture>
+          <source srcset="/himanshu-arora.webp" type="image/webp" />
+          <img src="/himanshu-arora.png" alt="Himanshu Arora" class="hero-headshot" width="111" height="111" />
+        </picture>
+        <h1 class="headline">
+          Microsoft 365 security, Intune, and Entra ID<br />
+          for <span class="accent">enterprise IT</span> teams.
+        </h1>
+        <p class="hero-tag">// real production experience, documented from the field, so you skip the trial and error.</p>
+        <p class="hero-lede">
+          Himanshu Arora has spent 11+ years in the Microsoft ecosystem — from frontline
+          cloud support at a Microsoft vendor to delivering enterprise-grade M365 security,
+          Intune, and Entra ID projects for organisations globally. He documents everything:
+          the real fixes, the actual scripts, and the root causes that never make it into
+          the official docs.
+        </p>
+        <div class="cta-row">
+          <a href="https://outlook.office.com/bookwithme/user/583f5a3aa6e24f3fa36ea6bf9f4d2ba5@aroramsp.com/meetingtype/Vz8AH2J0jkiWmYCcAuw7bw2?anonymous&ismsaljsauthenabled&ep=mcard" class="btn btn-primary" target="_blank" rel="noopener">Book a free 30-min call <span class="arrow">→</span></a>
+          <a href="/whatido" class="btn btn-ghost">What I do</a>
+        </div>
+        <div class="trust-row">
+          <span class="t">11+ yrs Microsoft ecosystem</span>
+          <span class="t">Senior Project Delivery Engineer</span>
+          <span class="t">M365 / Intune / Entra ID</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="terminal">
+          <div class="terminal-bar">
+            <div class="tb-dots"><span></span><span></span><span></span></div>
+            <div class="tb-title">himanshu@aroramsp ~ %</div>
+          </div>
+          <div class="terminal-body" set:html={`<span class="m"># run a tenant health check</span>
+<span class="line"><span class="p">$</span><span class="c">Connect-<span class="k">MgGraph</span> -Scopes <span class="s">"Directory.Read.All"</span></span></span>
+<span class="line"><span class="m">  → auth ok · tenant: </span><span class="hl">contoso.onmicrosoft.com</span></span>
+
+<span class="line"><span class="p">$</span><span class="c">Invoke-<span class="k">AroraAudit</span> -Scope <span class="s">All</span></span></span>
+<span class="line"><span class="m">  ├─</span> <span class="ok">✓</span> MFA enforced              <span class="m">100%</span></span>
+<span class="line"><span class="m">  ├─</span> <span class="w">!</span> Legacy auth enabled       <span class="w">3 users</span></span>
+<span class="line"><span class="m">  ├─</span> <span class="w">!</span> SPF/DKIM/DMARC incomplete <span class="w">2 domains</span></span>
+<span class="line"><span class="m">  ├─</span> <span class="ok">✓</span> Conditional access         <span class="ok">12 policies</span></span>
+<span class="line"><span class="m">  └─</span> <span class="w">!</span> Unused E3 licenses         <span class="w">$4,320/yr</span></span>
+
+<span class="line"><span class="m">→ generated report · </span><span class="hl">47 findings</span><span class="m"> · </span><span class="hl">12 quick wins</span></span>
+<span class="line"><span class="p">$</span><span class="c">_</span><span class="cursor"></span></span>`} />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="home-posts wrap">
+    <div class="page-head">
+      <div class="sec-label">// recent posts</div>
+      <h2>From the blog.</h2>
+      <p>Field notes from real production work on Microsoft 365, Intune, and Entra ID. Short, practical, no marketing fluff.</p>
+    </div>
+    <div class="post-list">
+      <a href="/blog/powershell-auth-clash" class="post-card">
+        <div class="post-meta">
+          <span>2026-05-10</span>
+          <span class="dot"></span>
+          <span class="tag">// powershell · m365 · exchange online · microsoft graph</span>
+          <span class="dot"></span>
+          <span>8 min read</span>
+        </div>
+        <h3>Microsoft 365 PowerShell authentication failures: three bugs, one fix.</h3>
+        <p>The Graph SDK and Exchange Online module fight each other in three different ways: an MSAL assembly clash on PowerShell 5.1, a Graph SDK module load failure when the order is reversed, and a confirmed SDK bug where v2.34+ device-code tokens cache as null. A test matrix across PS 5.1 and PS 7, and the certificate-based fix that works in every order.</p>
+        <span class="read">read post <span class="arrow">→</span></span>
+      </a>
+
+      <a href="/blog/m365-audit-toolkit" class="post-card">
+        <div class="post-meta">
+          <span>2026-05-09</span>
+          <span class="dot"></span>
+          <span class="tag">// powershell · m365 · security</span>
+          <span class="dot"></span>
+          <span>7 min read</span>
+        </div>
+        <h3>How I Built a PowerShell Toolkit That Audits Your Entire Microsoft 365 Tenant in Minutes</h3>
+        <p>Two PowerShell scripts that connect to your tenant via certificate-based app authentication and produce self-contained HTML reports. Tenant audit covers identity, email, endpoint, app registrations, and licensing. Mailbox report shows per-mailbox storage with quota tracking.</p>
+        <span class="read">read post <span class="arrow">→</span></span>
+      </a>
+
+      <a href="/blog/laps-fleet-audit-graph" class="post-card">
+        <div class="post-meta">
+          <span>2026-05-08</span>
+          <span class="dot"></span>
+          <span class="tag">// laps · graph</span>
+          <span class="dot"></span>
+          <span>11 min read</span>
+        </div>
+        <h3>WLapsAdmin or Administrator? Auditing Windows LAPS at fleet scale.</h3>
+        <p>The reason some devices show Administrator instead of WLapsAdmin in the recovery portal is one Windows 11 build number nobody talks about. The end-to-end Microsoft Graph PowerShell audit, with cross-reference, OS eligibility, and the per-device account name lookup Microsoft blocks in bulk.</p>
+        <span class="read">read post <span class="arrow">→</span></span>
+      </a>
+
+      <a href="/whatido" class="toolkit-promo">
+        <span class="badge">New</span>
+        <span>· M365 Audit Toolkit: PowerShell scripts for tenant security and mailbox auditing</span>
+        <span class="arrow">→</span>
+      </a>
+    </div>
+    <a href="/blog" class="view-all">view all posts <span class="arrow">→</span></a>
+  </section>
+</Layout>
