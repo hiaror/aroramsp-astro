@@ -1,0 +1,125 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+<Layout
+  title="What I do · AroraMSP"
+  description="Microsoft 365 service areas: Intune deployment, Entra ID and Conditional Access, Exchange Online migrations, Windows LAPS, PowerShell automation, hybrid Entra environments."
+  page="whatido"
+  canonical="https://aroramsp.com/whatido"
+  ogTitle="What I Do - AroraMSP Microsoft 365 Consulting"
+  ogDescription="Microsoft 365 security audits, Entra ID, Conditional Access, Exchange Online, Intune deployment, and PowerShell automation for organizations globally."
+>
+  <meta slot="head" name="keywords" content="Intune deployment, Entra ID Conditional Access, Exchange Online migration, Windows LAPS, PowerShell automation, hybrid Entra ID, Microsoft 365 consulting" />
+
+  <section class="page wrap">
+    <div class="page-head">
+      <div class="sec-label">// what I do</div>
+      <h1>Service areas.</h1>
+      <p>Six focus areas where I do most of my engagements. Hands-on engineering rather than advisory: I write the scripts, run the migrations, and stay on the line through cutover.</p>
+    </div>
+
+    <div class="layout-2col">
+      <div class="service-list">
+        <div class="service-card">
+          <span class="tag">// endpoint management</span>
+          <h3>Intune Deployment and Management</h3>
+          <ul>
+            <li>Device compliance policies for Windows, iOS, Android, macOS</li>
+            <li>App protection policies for managed and unmanaged devices</li>
+            <li>Autopilot enrollment and zero-touch provisioning</li>
+            <li>Windows Update for Business rings and patch management</li>
+            <li>Defender for Endpoint integration and baseline policies</li>
+          </ul>
+        </div>
+
+        <div class="service-card">
+          <span class="tag">// identity and access</span>
+          <h3>Entra ID and Conditional Access</h3>
+          <ul>
+            <li>Conditional Access policy design and implementation</li>
+            <li>MFA enforcement and authentication strength policies</li>
+            <li>Privileged Identity Management and role assignments</li>
+            <li>External identities, guest access, and B2B collaboration</li>
+            <li>Break-glass account configuration and monitoring</li>
+          </ul>
+        </div>
+
+        <div class="service-card">
+          <span class="tag">// email and collaboration</span>
+          <h3>Exchange Online and Email Security</h3>
+          <ul>
+            <li>SPF, DKIM, DMARC configuration and verification</li>
+            <li>Anti-phishing, anti-spam, and safe links policies</li>
+            <li>Shared mailbox governance and licence optimization</li>
+            <li>Mailbox migration from on-premises Exchange</li>
+            <li>External forwarding controls and audit logging</li>
+          </ul>
+        </div>
+
+        <div class="service-card">
+          <span class="tag">// endpoint security</span>
+          <h3>Windows LAPS</h3>
+          <ul>
+            <li>LAPS policy deployment via Intune</li>
+            <li>Entra ID LAPS escrow configuration</li>
+            <li>Hybrid Entra registration troubleshooting</li>
+            <li>Account name compatibility across OS versions</li>
+            <li>Post-deployment escrow verification via Graph</li>
+          </ul>
+        </div>
+
+        <div class="service-card">
+          <span class="tag">// automation</span>
+          <h3>PowerShell and Graph API Automation</h3>
+          <ul>
+            <li>Microsoft Graph PowerShell automation scripts</li>
+            <li>Tenant health audit and reporting scripts</li>
+            <li>Mailbox storage and quota reporting</li>
+            <li>Bulk user and licence management</li>
+            <li>Scheduled automation via Azure Automation or Logic Apps</li>
+          </ul>
+        </div>
+
+        <div class="service-card">
+          <span class="tag">// hybrid infrastructure</span>
+          <h3>Hybrid Entra Environments</h3>
+          <ul>
+            <li>Entra Connect installation and configuration</li>
+            <li>Hybrid Entra join troubleshooting and remediation</li>
+            <li>Password hash sync and seamless SSO setup</li>
+            <li>Staged rollout planning for cloud-only migration</li>
+            <li>AD Connect health monitoring and alerting</li>
+          </ul>
+        </div>
+      </div>
+
+      <aside class="toolkit-aside">
+        <div class="sec-label">// get the toolkit</div>
+        <h3>AroraMSP M365 Audit Toolkit</h3>
+        <div class="price"><span class="currency">USD</span>99</div>
+        <ul class="includes-list">
+          <li>M365 tenant security audit script (20 checks)</li>
+          <li>Mailbox storage and quota report script</li>
+          <li>Full app registration setup guide</li>
+          <li>Sample HTML reports showing actual output</li>
+          <li>PowerShell 5.1 and 7 compatible</li>
+          <li>Certificate-based authentication, no password prompts</li>
+        </ul>
+        <a href="https://aroramsp.lemonsqueezy.com/checkout/buy/c366ed46-07c7-4057-88db-5886b94b8ea7" class="btn btn-primary" style="width:100%" target="_blank" rel="noopener">
+          Buy Now · USD 99
+        </a>
+        <div class="sample-links">
+          <a href="/blog/samples/M365-Audit-Report-Sample" class="sample-link" target="_blank" rel="noopener">View sample audit report <span class="arrow">→</span></a>
+          <a href="/blog/samples/Mailbox-Report-Sample" class="sample-link" target="_blank" rel="noopener">View sample mailbox report <span class="arrow">→</span></a>
+        </div>
+        <div class="consult-box">
+          <div class="consult-label">// included with every purchase</div>
+          <p>Every purchase includes a free 30-minute onboarding call. We set up the app registration together, run the scripts against your tenant, and confirm the output is correct.</p>
+          <p>Book via Microsoft Bookings after purchase. Link provided in your download.</p>
+        </div>
+        <a href="/resources/AroraMSP-M365-Audit-Sample.pdf" class="btn btn-ghost download-pdf" target="_blank" rel="noopener">Download sample audit report (PDF) <span class="arrow">→</span></a>
+        <p class="download-note">See exactly what a real audit delivers. 20 pages. No email required.</p>
+      </aside>
+    </div>
+  </section>
+</Layout>

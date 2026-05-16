@@ -1,0 +1,123 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+<Layout
+  title="Blog · AroraMSP"
+  description="Field notes from a senior Microsoft 365 consultant. Migrations, security, licensing, and the Windows fleet."
+  page="blog"
+  canonical="https://aroramsp.com/blog"
+  ogTitle="Field notes - AroraMSP blog"
+  ogDescription="Field notes from a senior Microsoft 365 consultant. Migrations, security, licensing, and the Windows fleet."
+>
+  <script type="application/ld+json" slot="head" is:raw>
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://aroramsp.com/" },
+      { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://aroramsp.com/blog" }
+    ]
+  }
+  </script>
+
+  <section class="page wrap">
+    <div class="page-head">
+      <div class="sec-label">01 · blog</div>
+      <h1>Field notes.</h1>
+      <p>Short, practical write-ups from real client work. Migrations, security hardening, licensing fixes, and the occasional Windows fleet headache.</p>
+    </div>
+
+    <div class="post-list">
+      <a href="/blog/powershell-auth-clash" class="post-card">
+        <div class="post-meta">
+          <span>2026-05-10</span>
+          <span class="dot"></span>
+          <span class="tag">// powershell · m365 · exchange online · microsoft graph</span>
+          <span class="dot"></span>
+          <span>8 min read</span>
+        </div>
+        <h3>Microsoft 365 PowerShell authentication failures: three bugs, one fix.</h3>
+        <p>The Graph SDK and Exchange Online module fight each other in three different ways: an MSAL assembly clash on PowerShell 5.1, a Graph SDK module load failure when the order is reversed, and a confirmed SDK bug (#3495) where v2.34+ device-code tokens cache as null and break the next cmdlet. A test matrix across PS 5.1 and PS 7, and the certificate-based fix that works in every order.</p>
+        <span class="read">read post <span class="arrow">→</span></span>
+      </a>
+
+      <a href="/blog/m365-audit-toolkit" class="post-card">
+        <div class="post-meta">
+          <span>2026-05-09</span>
+          <span class="dot"></span>
+          <span class="tag">// powershell · m365 · security</span>
+          <span class="dot"></span>
+          <span>7 min read</span>
+        </div>
+        <h3>How I Built a PowerShell Toolkit That Audits Your Entire Microsoft 365 Tenant in Minutes</h3>
+        <p>Two PowerShell scripts that connect to your tenant via certificate-based app authentication and produce self-contained HTML reports. Tenant audit covers identity, email, endpoint, app registrations, and licensing. Mailbox report shows per-mailbox storage with quota tracking. No agents, no SaaS, no monthly fees.</p>
+        <span class="read">read post <span class="arrow">→</span></span>
+      </a>
+
+      <a href="/blog/laps-fleet-audit-graph" class="post-card">
+        <div class="post-meta">
+          <span>2026-05-08</span>
+          <span class="dot"></span>
+          <span class="tag">// laps · graph</span>
+          <span class="dot"></span>
+          <span>11 min read</span>
+        </div>
+        <h3>WLapsAdmin or Administrator? Auditing Windows LAPS at fleet scale.</h3>
+        <p>The reason some devices show Administrator instead of WLapsAdmin in the recovery portal is one Windows 11 build number nobody talks about. The end-to-end Microsoft Graph PowerShell audit, with cross-reference, OS eligibility, and the per-device account name lookup Microsoft blocks in bulk.</p>
+        <span class="read">read post <span class="arrow">→</span></span>
+      </a>
+
+      <a href="/blog/windows11-uefi-upgrade" class="post-card">
+        <div class="post-meta">
+          <span>2026-05-07</span>
+          <span class="dot"></span>
+          <span class="tag">// windows · endpoint</span>
+          <span class="dot"></span>
+          <span>11 min read</span>
+        </div>
+        <h3>Legacy BIOS to UEFI, then on to Windows 11 25H2, without nuking the disk.</h3>
+        <p>A non-destructive upgrade path for the boxes still running CSM. MBR2GPT, the firmware switch, and the actual 25H2 install, including the gotchas that brick the boot loader if you skip a step.</p>
+        <span class="read">read post <span class="arrow">→</span></span>
+      </a>
+
+      <a href="/blog/graph-mailbox-cleanup" class="post-card">
+        <div class="post-meta">
+          <span>2026-05-06</span>
+          <span class="dot"></span>
+          <span class="tag">// graph · exchange</span>
+          <span class="dot"></span>
+          <span>9 min read</span>
+        </div>
+        <h3>Bulk mailbox cleanup with Microsoft Graph: CSV-driven, dry-run first, throttle-aware.</h3>
+        <p>When legal asks you to remove specific senders from two hundred mailboxes by Friday. App-only Graph, a sender allowlist, multi-pass deletes, and the per-mailbox transient ceiling that stops one bad mailbox stalling a six-hour run.</p>
+        <span class="read">read post <span class="arrow">→</span></span>
+      </a>
+
+      <a href="/blog/exo-mailbox-size-report" class="post-card">
+        <div class="post-meta">
+          <span>2026-05-05</span>
+          <span class="dot"></span>
+          <span class="tag">// exchange · migration</span>
+          <span class="dot"></span>
+          <span>7 min read</span>
+        </div>
+        <h3>Sortable mailbox size reports, without the Excel cleanup ritual.</h3>
+        <p>Get-MailboxStatistics returns sizes as text and Excel sorts them lexically. A small PowerShell script that does the byte-string conversion in PowerShell where it belongs and hands you a real numeric GB column for migration planning.</p>
+        <span class="read">read post <span class="arrow">→</span></span>
+      </a>
+
+      <a href="/blog/laps-hybrid-registration-fix" class="post-card">
+        <div class="post-meta">
+          <span>2026-04-25</span>
+          <span class="dot"></span>
+          <span class="tag">// laps · entra</span>
+          <span class="dot"></span>
+          <span>12 min read</span>
+        </div>
+        <h3>When LAPS silently refuses to escrow on hybrid Entra devices.</h3>
+        <p>Five compliant Intune-enrolled PCs that quietly refused to escrow LAPS passwords. The diagnostic field the Entra portal never shows. The two-restart fix that takes 15 hours to confirm, and the one thing you must not do during the wait.</p>
+        <span class="read">read post <span class="arrow">→</span></span>
+      </a>
+    </div>
+  </section>
+</Layout>
