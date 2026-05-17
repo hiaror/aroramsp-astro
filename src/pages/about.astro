@@ -26,7 +26,7 @@ import Layout from '../layouts/Layout.astro';
     </div>
 
     <div class="about">
-      <div class="about-lead">
+      <div class="about-lead reveal">
         <p>
           I started in Microsoft cloud support in 2014, working escalations across Exchange
           Online, Entra ID, and Intune for enterprise customers across North America, Europe,
@@ -43,21 +43,21 @@ import Layout from '../layouts/Layout.astro';
 
         <div class="sec-label engage-head">// recent engagements</div>
         <div class="cases">
-          <div class="case">
+          <div class="case reveal reveal-delay-1">
             <h4>Windows LAPS Escrow Failure - Hybrid Entra Environment</h4>
             <p>340 devices silently failing to escrow LAPS passwords. Helpdesk locked out of local admin credentials during incidents.</p>
             <p>Root cause: stale alternativeSecurityIds breaking Hybrid Entra trust at the authentication layer. Diagnosed via dsregcmd and Graph beta API. Resolved via controlled leave/join remediation cycle across all affected devices.</p>
             <p class="outcome">Outcome: full escrow restored, zero helpdesk calls after remediation.</p>
           </div>
           <hr class="case-divider" />
-          <div class="case">
+          <div class="case reveal reveal-delay-1">
             <h4>Autopilot Deployment with Custom LOB App Packaging</h4>
             <p>180 devices needing to move from manual imaging to fully automated Autopilot. LOB applications undocumented, never packaged for Intune.</p>
             <p>Packaged all apps as Win32 with dependency chaining, designed Autopilot profiles with ESP, compliance policies, and Conditional Access enforcement.</p>
             <p class="outcome">Outcome: completed in 3 weeks, zero reimaging, technician touchtime down from 3 hours to under 20 minutes per device.</p>
           </div>
           <hr class="case-divider" />
-          <div class="case">
+          <div class="case reveal reveal-delay-1">
             <h4>Legacy Authentication Eliminated Before ISO Audit</h4>
             <p>500-seat tenant with 23% of sign-ins still on basic auth. ISO audit deadline approaching with no enforcement policy in place.</p>
             <p>Analysed 30 days of sign-in logs, identified every legacy auth source, executed phased Conditional Access rollout using report-only mode first to avoid disruption.</p>
@@ -65,7 +65,7 @@ import Layout from '../layouts/Layout.astro';
           </div>
         </div>
 
-        <div class="certs">
+        <div class="certs reveal">
           <div class="cert">
             <img src="/badges/microsoft-certified-expert-badge.svg" alt="Microsoft Certified Expert badge" class="cert-badge" />
             <div><div class="n">M365 Certified</div><div class="t">Administrator Expert</div></div>
@@ -85,7 +85,7 @@ import Layout from '../layouts/Layout.astro';
         </div>
       </div>
 
-      <div class="about-card">
+      <div class="about-card reveal">
         <div class="head"><span>// profile</span><span>v.arora</span></div>
         <div class="row"><span class="k">name</span><span class="v">Himanshu Arora</span></div>
         <div class="row"><span class="k">role</span><span class="v">founder · AroraMSP</span></div>
