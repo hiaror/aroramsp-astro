@@ -102,16 +102,8 @@ const {
   const mobileMenu = document.getElementById('navMobileMenu');
 
   if (hamburger && mobileMenu) {
-    hamburger.addEventListener('click', (e) => {
-      e.stopPropagation();
+    hamburger.addEventListener('click', () => {
       mobileMenu.classList.toggle('open');
-    });
-
-    // Close menu when clicking outside
-    document.addEventListener('click', (e) => {
-      if (!hamburger.contains(e.target) && !mobileMenu.contains(e.target)) {
-        mobileMenu.classList.remove('open');
-      }
     });
 
     // Close menu when a nav link is clicked
