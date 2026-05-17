@@ -70,27 +70,27 @@ import Layout from '../layouts/Layout.astro';
   <section class="hero-page wrap" style="min-height: calc(100vh - var(--nav-h) - 150px); display:flex; align-items:center; padding-top: 12px; padding-bottom: 12px;">
     <div class="hero-grid">
       <div>
-        <div class="eyebrow">
+        <div class="eyebrow reveal">
           <span class="pulse"></span>
           <span>Available worldwide · accepting new clients</span>
         </div>
-        <picture>
+        <picture class="reveal reveal-delay-1">
           <source srcset="/himanshu-arora.webp" type="image/webp" />
           <img src="/himanshu-arora.png" alt="Himanshu Arora" class="hero-headshot" width="111" height="111" />
         </picture>
         <h1 class="headline">
           Microsoft 365 security, Intune, and Entra ID<br />
-          for <span class="accent">enterprise IT</span> teams.
+          for <span class="accent accent-gradient">enterprise IT</span> teams.
         </h1>
-        <p class="hero-tag">// real production experience, documented from the field, so you skip the trial and error.</p>
-        <p class="hero-lede">
+        <p class="hero-tag reveal reveal-delay-2">// real production experience, documented from the field, so you skip the trial and error.</p>
+        <p class="hero-lede reveal reveal-delay-3">
           Himanshu Arora has spent 11+ years in the Microsoft ecosystem — from frontline
           cloud support at a Microsoft vendor to delivering enterprise-grade M365 security,
           Intune, and Entra ID projects for organisations globally. He documents everything:
           the real fixes, the actual scripts, and the root causes that never make it into
           the official docs.
         </p>
-        <div class="cta-row">
+        <div class="cta-row reveal reveal-delay-4">
           <a href="https://outlook.office.com/bookwithme/user/583f5a3aa6e24f3fa36ea6bf9f4d2ba5@aroramsp.com/meetingtype/Vz8AH2J0jkiWmYCcAuw7bw2?anonymous&ismsaljsauthenabled&ep=mcard" class="btn btn-primary" target="_blank" rel="noopener">Book a free 30-min call <span class="arrow">→</span></a>
           <a href="/whatido" class="btn btn-ghost">What I do</a>
         </div>
@@ -132,7 +132,7 @@ import Layout from '../layouts/Layout.astro';
       <p>Field notes from real production work on Microsoft 365, Intune, and Entra ID. Short, practical, no marketing fluff.</p>
     </div>
     <div class="post-list">
-      <a href="/blog/powershell-auth-clash" class="post-card">
+      <a href="/blog/powershell-auth-clash" class="post-card reveal reveal-delay-1">
         <div class="post-meta">
           <span>2026-05-10</span>
           <span class="dot"></span>
@@ -145,7 +145,7 @@ import Layout from '../layouts/Layout.astro';
         <span class="read">read post <span class="arrow">→</span></span>
       </a>
 
-      <a href="/blog/m365-audit-toolkit" class="post-card">
+      <a href="/blog/m365-audit-toolkit" class="post-card reveal reveal-delay-2">
         <div class="post-meta">
           <span>2026-05-09</span>
           <span class="dot"></span>
@@ -158,7 +158,7 @@ import Layout from '../layouts/Layout.astro';
         <span class="read">read post <span class="arrow">→</span></span>
       </a>
 
-      <a href="/blog/laps-fleet-audit-graph" class="post-card">
+      <a href="/blog/laps-fleet-audit-graph" class="post-card reveal reveal-delay-3">
         <div class="post-meta">
           <span>2026-05-08</span>
           <span class="dot"></span>
@@ -171,7 +171,7 @@ import Layout from '../layouts/Layout.astro';
         <span class="read">read post <span class="arrow">→</span></span>
       </a>
 
-      <a href="/whatido" class="toolkit-promo">
+      <a href="/whatido" class="toolkit-promo reveal">
         <span class="badge">New</span>
         <span>· M365 Audit Toolkit: PowerShell scripts for tenant security and mailbox auditing</span>
         <span class="arrow">→</span>
