@@ -164,6 +164,16 @@ a { color: inherit; text-decoration: none; }
 body[data-grid="off"] .grid-bg { display: none; }
 
 .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 var(--pad); position: relative; z-index: 1; width: 100%; }
+@media (max-width: 600px) {
+  .wrap {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  .hero-page {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+}
 
 *, *::before, *::after {
   max-width: 100%;
