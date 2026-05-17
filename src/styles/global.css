@@ -1319,6 +1319,12 @@ html:not([data-theme]) .theme-picker-btn .icon-moon { display: block; }
   color: var(--fg-dim);
   line-height: 1.5;
 }
+.home-tool-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
 @media (max-width: 768px) {
   .home-tools-grid { grid-template-columns: 1fr; }
 }

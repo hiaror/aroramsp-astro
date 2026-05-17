@@ -182,17 +182,21 @@ import Layout from '../layouts/Layout.astro';
       <p>Open source PowerShell tools for Microsoft 365 administrators. Free to use, documented, and published on GitHub.</p>
     </div>
     <div class="home-tools-grid">
-      <a href="https://github.com/hiaror/aroramsp-audit-scripts" target="_blank" rel="noopener" class="home-tool-card reveal">
+      <div class="home-tool-card reveal">
         <span class="tool-badge paid">Paid</span>
         <h3>M365 Audit Toolkit</h3>
         <p>Tenant security and mailbox audit. Self-contained HTML reports, certificate-based auth.</p>
-      </a>
-      <a href="https://github.com/hiaror/graph-exchange-mailbox-cleanup" target="_blank" rel="noopener" class="home-tool-card reveal reveal-delay-1">
+        <div class="home-tool-actions">
+          <a href="/blog/m365-audit-toolkit" class="btn btn-ghost" style="font-size:12px; padding: 8px 14px;">Read the post</a>
+          <a href="https://aroramsp.lemonsqueezy.com/checkout/buy/c366ed46-07c7-4057-88db-5886b94b8ea7" target="_blank" rel="noopener" class="btn btn-primary" style="font-size:12px; padding: 8px 14px;">Buy Now · USD 99</a>
+        </div>
+      </div>
+      <a href="/blog/graph-mailbox-cleanup" class="home-tool-card reveal reveal-delay-1">
         <span class="tool-badge free">Free</span>
         <h3>Mailbox Cleanup</h3>
         <p>Graph-based Exchange Online mailbox cleanup. CSV-driven, dry-run supported.</p>
       </a>
-      <a href="https://github.com/hiaror/intune-laps-fleet-audit-graph" target="_blank" rel="noopener" class="home-tool-card reveal reveal-delay-2">
+      <a href="/blog/laps-fleet-audit-graph" class="home-tool-card reveal reveal-delay-2">
         <span class="tool-badge free">Free</span>
         <h3>LAPS Fleet Audit</h3>
         <p>Audit Windows LAPS account names at fleet scale using Microsoft Graph.</p>
