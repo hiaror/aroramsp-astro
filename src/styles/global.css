@@ -1442,19 +1442,16 @@ pre {
 
 /* === About page mobile centering === */
 @media (max-width: 768px) {
-  .about-lead {
-    text-align: center;
-  }
   body[data-page="about"] .hero-headshot {
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0 auto;
     display: block;
+  }
+  .about-pills,
+  .about-links {
+    justify-content: center;
   }
   .about-card {
     text-align: center;
-  }
-  .about-links {
-    justify-content: center;
   }
 }
 

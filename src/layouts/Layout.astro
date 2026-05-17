@@ -215,8 +215,13 @@ const {
     reveals.forEach(el => observer.observe(el));
   }
 
-  // Code block copy buttons
+  // Code block copy buttons - input blocks only
   document.querySelectorAll('pre').forEach((pre) => {
+    const hasPrompt = pre.querySelector('.p') !== null;
+    const hasCode = pre.querySelector('code') !== null;
+
+    if (!hasPrompt && !hasCode) return;
+
     const wrapper = document.createElement('div');
     wrapper.className = 'code-wrapper';
 
@@ -236,9 +241,20 @@ const {
     header.appendChild(copyBtn);
 
     copyBtn.addEventListener('click', async () => {
-      const code = pre.querySelector('code')?.innerText || pre.innerText;
+      let textToCopy;
+      if (hasPrompt) {
+        const promptLines = pre.querySelectorAll('.p');
+        const commands = Array.from(promptLines).map(el => {
+          const line = el.closest('.line') || el.parentElement;
+          return line ? line.innerText.replace(/^\$\s*/, '').trim() : el.innerText.trim();
+        });
+        textToCopy = commands.filter(Boolean).join('\n');
+      } else {
+        textToCopy = pre.querySelector('code')?.innerText || pre.innerText;
+      }
+
       try {
-        await navigator.clipboard.writeText(code);
+        await navigator.clipboard.writeText(textToCopy);
         copyBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 18 4 13"/></svg> Copied`;
         copyBtn.classList.add('copied');
         setTimeout(() => {
