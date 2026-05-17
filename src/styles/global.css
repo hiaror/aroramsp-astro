@@ -954,11 +954,13 @@ html { scroll-behavior: smooth; overflow-x: clip; }
   --bg-1: #f1f5f9;
   --bg-2: #e2e8f0;
   --bg-3: #cbd5e1;
-  --line: #e2e8f0;
-  --line-2: #cbd5e1;
+  --line: #cbd5e1;
+  --line-2: #94a3b8;
   --fg: #0f172a;
   --fg-dim: #1e293b;
   --fg-mute: #475569;
+  --accent: #0065b8;
+  --cyan: #0891b2;
 }
 
 /* === Theme picker dropdown === */

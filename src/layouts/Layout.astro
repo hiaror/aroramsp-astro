@@ -24,6 +24,15 @@ const {
 <!doctype html>
 <html lang="en">
 <head>
+<script is:inline>
+  (function() {
+    const theme = localStorage.getItem('theme') || 'dark';
+    const resolved = theme === 'system'
+      ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+      : theme;
+    document.documentElement.setAttribute('data-theme', resolved);
+  })();
+</script>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>{title}</title>
