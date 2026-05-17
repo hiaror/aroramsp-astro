@@ -966,8 +966,9 @@ html { scroll-behavior: smooth; overflow-x: clip; }
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
+  gap: 6px;
   height: 36px;
+  padding: 0 12px;
   border-radius: 8px;
   background: var(--bg-1);
   border: 1px solid var(--line-2);
@@ -975,6 +976,9 @@ html { scroll-behavior: smooth; overflow-x: clip; }
   cursor: pointer;
   transition: all .15s ease;
   margin-right: 8px;
+  font-family: var(--mono);
+  font-size: 12px;
+  white-space: nowrap;
 }
 .theme-toggle:hover { color: var(--fg); border-color: var(--accent); }
 .theme-toggle .icon-sun,
@@ -984,6 +988,36 @@ html { scroll-behavior: smooth; overflow-x: clip; }
 [data-theme="light"] .theme-toggle .icon-sun { display: block; }
 [data-theme="system"] .theme-toggle .icon-system { display: block; }
 html:not([data-theme]) .theme-toggle .icon-moon { display: block; }
+@media (max-width: 820px) {
+  .theme-label { display: none; }
+  .theme-toggle {
+    width: 36px;
+    padding: 0;
+    margin-right: 4px;
+  }
+  .nav-cta {
+    padding: 8px 10px;
+    font-size: 14px;
+  }
+}
+
+/* === Homepage certs row === */
+.certs-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 32px;
+  flex-wrap: wrap;
+}
+.cert-badge-stat {
+  opacity: 0.85;
+  transition: opacity .2s, transform .2s;
+  filter: drop-shadow(0 2px 8px var(--accent-soft));
+}
+.cert-badge-stat:hover {
+  opacity: 1;
+  transform: translateY(-2px);
+}
 
 /* === Mobile centering for hero === */
 @media (max-width: 768px) {
