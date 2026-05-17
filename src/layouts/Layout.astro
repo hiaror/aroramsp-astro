@@ -58,15 +58,22 @@ const {
     <div class="nav-links" id="navLinks">
       <a href="/whatido" data-page="whatido" aria-current={page === "whatido" ? "page" : undefined}>What I Do</a>
       <a href="/blog" data-page="blog" aria-current={page === "blog" ? "page" : undefined}>Blog</a>
+      <a href="/tools" data-page="tools" aria-current={page === "tools" ? "page" : undefined}>Tools</a>
       <a href="/resources" data-page="resources" aria-current={page === "resources" ? "page" : undefined}>Resources</a>
       <a href="/about" data-page="about" aria-current={page === "about" ? "page" : undefined}>About</a>
     </div>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme" title="Toggle theme">
+      <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg class="icon-system" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+    </button>
     <button class="nav-hamburger" id="navHamburger" aria-label="Open menu" type="button"><span></span><span></span><span></span></button><a href="/contact" class="nav-cta" data-page="contact" aria-current={page === "contact" ? "page" : undefined}>Contact →</a>
   </div>
 </nav>
 <div class="nav-mobile-menu" id="navMobileMenu">
   <a href="/whatido">What I Do</a>
   <a href="/blog">Blog</a>
+  <a href="/tools">Tools</a>
   <a href="/resources">Resources</a>
   <a href="/about">About</a>
   <a href="/contact">Contact</a>
@@ -84,6 +91,7 @@ const {
       <div class="foot-links">
         <a href="/whatido">What I Do</a>
         <a href="/blog">Blog</a>
+        <a href="/tools">Tools</a>
         <a href="/resources">Resources</a>
         <a href="/about">About</a>
         <a href="/contact">Contact</a>
@@ -97,6 +105,33 @@ const {
   </div>
 </footer>
 <script>
+  // Theme toggle
+  const themes = ['dark', 'light', 'system'];
+  const savedTheme = localStorage.getItem('theme') || 'dark';
+  const applyTheme = (theme) => {
+    if (theme === 'system') {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+    } else {
+      document.documentElement.setAttribute('data-theme', theme);
+    }
+    document.documentElement.setAttribute('data-theme-pref', theme);
+    localStorage.setItem('theme', theme);
+  };
+  applyTheme(savedTheme);
+  const themeToggle = document.getElementById('themeToggle');
+  if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+      const current = localStorage.getItem('theme') || 'dark';
+      const next = themes[(themes.indexOf(current) + 1) % themes.length];
+      applyTheme(next);
+      document.documentElement.setAttribute('data-theme', next === 'system'
+        ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+        : next);
+      document.documentElement.setAttribute('data-theme-pref', next);
+    });
+  }
+
   // Hamburger toggle
   const hamburger = document.getElementById('navHamburger');
   const mobileMenu = document.getElementById('navMobileMenu');

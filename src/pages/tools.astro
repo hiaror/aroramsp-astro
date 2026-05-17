@@ -1,0 +1,118 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+<Layout
+  title="Tools | AroraMSP"
+  description="Open source PowerShell tools for Microsoft 365 administrators. Built from real production work, documented, and published on GitHub."
+  page="tools"
+  canonical="https://aroramsp.com/tools"
+  ogTitle="Tools - AroraMSP"
+  ogDescription="Open source PowerShell tools for Microsoft 365 administrators. Built from real production work, documented, and published on GitHub."
+>
+  <section class="page wrap">
+    <div class="page-head">
+      <div class="sec-label">// tools</div>
+      <h1>Free M365 tools, built from the field.</h1>
+      <p>Open source PowerShell tools for Microsoft 365 administrators. Built from real production work, documented, and published.</p>
+    </div>
+
+    <div class="tools-grid">
+      <div class="tool-card featured reveal reveal-delay-1">
+        <span class="tool-badge paid">Paid</span>
+        <h3>AroraMSP M365 Audit Toolkit</h3>
+        <p>PowerShell suite producing self-contained HTML reports for Microsoft 365 tenant security and Exchange Online mailbox storage.</p>
+        <ul class="tool-caps">
+          <li>Tenant security audit across 5 categories</li>
+          <li>Mailbox size report with quota tracking</li>
+          <li>Certificate-based app-only auth</li>
+          <li>Export to PDF and CSV</li>
+          <li>Zero external dependencies</li>
+        </ul>
+        <div class="tool-actions">
+          <a href="https://github.com/hiaror/aroramsp-audit-scripts" target="_blank" rel="noopener" class="btn btn-ghost">View on GitHub <span class="arrow">→</span></a>
+          <a href="https://aroramsp.lemonsqueezy.com/checkout/buy/c366ed46-07c7-4057-88db-5886b94b8ea7" target="_blank" rel="noopener" class="btn btn-primary">Buy Now · USD 99 <span class="arrow">→</span></a>
+        </div>
+      </div>
+
+      <div class="tool-card reveal reveal-delay-2">
+        <span class="tool-badge free">Free</span>
+        <h3>Graph Exchange Mailbox Cleanup</h3>
+        <p>PowerShell automation for Exchange Online mailbox cleanup using Microsoft Graph. CSV-driven, dry-run supported.</p>
+        <ul class="tool-caps">
+          <li>Microsoft Graph message search by sender</li>
+          <li>Dry-run mode before deletion</li>
+          <li>Multi-pass execution</li>
+          <li>Detailed CSV audit report</li>
+          <li>Throttling and error handling</li>
+        </ul>
+        <div class="tool-actions">
+          <a href="https://github.com/hiaror/graph-exchange-mailbox-cleanup" target="_blank" rel="noopener" class="btn btn-ghost">View on GitHub <span class="arrow">→</span></a>
+        </div>
+      </div>
+
+      <div class="tool-card reveal reveal-delay-3">
+        <span class="tool-badge free">Free</span>
+        <h3>EXO Mailbox Size Report</h3>
+        <p>PowerShell script to export Exchange Online mailbox and archive sizes using CSV input. Migration-ready output.</p>
+        <ul class="tool-caps">
+          <li>Primary and archive mailbox statistics</li>
+          <li>Numeric GB column for sorting</li>
+          <li>CSV-driven UPN input</li>
+          <li>Per-mailbox error handling</li>
+          <li>Migration batch planning ready</li>
+        </ul>
+        <div class="tool-actions">
+          <a href="https://github.com/hiaror/exo-mailbox-size-report" target="_blank" rel="noopener" class="btn btn-ghost">View on GitHub <span class="arrow">→</span></a>
+        </div>
+      </div>
+
+      <div class="tool-card reveal reveal-delay-4">
+        <span class="tool-badge free">Free</span>
+        <h3>Intune LAPS Fleet Audit</h3>
+        <p>Microsoft Graph PowerShell audit for Windows LAPS at fleet scale. Identifies WLapsAdmin vs Administrator account name discrepancies.</p>
+        <ul class="tool-caps">
+          <li>Fleet-scale LAPS account name audit</li>
+          <li>OS eligibility cross-reference</li>
+          <li>Per-device account name lookup</li>
+          <li>Graph-based bulk query</li>
+          <li>CSV export</li>
+        </ul>
+        <div class="tool-actions">
+          <a href="https://github.com/hiaror/intune-laps-fleet-audit-graph" target="_blank" rel="noopener" class="btn btn-ghost">View on GitHub <span class="arrow">→</span></a>
+        </div>
+      </div>
+
+      <div class="tool-card reveal reveal-delay-1">
+        <span class="tool-badge free">Free</span>
+        <h3>Intune LAPS Hybrid Registration Fix</h3>
+        <p>Fixes Windows LAPS hybrid device registration failures for AD-joined devices not appearing in Entra ID.</p>
+        <ul class="tool-caps">
+          <li>Diagnoses hybrid join failures</li>
+          <li>Repairs device registration</li>
+          <li>Validates LAPS eligibility post-fix</li>
+          <li>PowerShell based</li>
+          <li>No third-party dependencies</li>
+        </ul>
+        <div class="tool-actions">
+          <a href="https://github.com/hiaror/intune-laps-hybrid-registration-fix" target="_blank" rel="noopener" class="btn btn-ghost">View on GitHub <span class="arrow">→</span></a>
+        </div>
+      </div>
+
+      <div class="tool-card reveal reveal-delay-2">
+        <span class="tool-badge free">Free</span>
+        <h3>Windows 11 UEFI Upgrade Guide</h3>
+        <p>Step-by-step guide and scripts for upgrading legacy BIOS devices to UEFI to meet Windows 11 TPM and Secure Boot requirements.</p>
+        <ul class="tool-caps">
+          <li>BIOS to UEFI conversion scripts</li>
+          <li>TPM and Secure Boot validation</li>
+          <li>Intune deployment ready</li>
+          <li>Pre and post-upgrade checks</li>
+          <li>Fleet-scale tested</li>
+        </ul>
+        <div class="tool-actions">
+          <a href="https://github.com/hiaror/windows11-uefi-upgrade-guide" target="_blank" rel="noopener" class="btn btn-ghost">View on GitHub <span class="arrow">→</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
