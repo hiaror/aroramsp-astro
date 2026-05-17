@@ -104,8 +104,7 @@ const {
   if (hamburger && mobileMenu) {
     hamburger.addEventListener('click', (e) => {
       e.stopPropagation();
-      const isOpen = mobileMenu.classList.contains('open');
-      mobileMenu.classList.toggle('open', !isOpen);
+      mobileMenu.classList.toggle('open');
     });
 
     // Close menu when clicking outside
@@ -121,11 +120,6 @@ const {
         mobileMenu.classList.remove('open');
       });
     });
-
-    // Close menu on scroll
-    window.addEventListener('scroll', () => {
-      mobileMenu.classList.remove('open');
-    }, { passive: true });
   }
 
   // Nav scroll effect
