@@ -202,6 +202,37 @@ body[data-grid="off"] .grid-bg { display: none; }
     padding-left: 20px !important;
     padding-right: 20px !important;
   }
+  .hero-grid > div {
+    padding-left: 0;
+    padding-right: 0;
+    width: 100%;
+    min-width: 0;
+  }
+  h1.headline {
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+  .page-head,
+  .home-posts,
+  .home-tools,
+  .stats-row,
+  .certs-row,
+  section.wrap {
+    padding-left: 20px;
+    padding-right: 20px;
+    box-sizing: border-box;
+  }
+  .home-posts .wrap,
+  .home-tools .wrap {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+/* === Global text overflow safety === */
+p, h1, h2, h3, h4, li {
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 *, *::before, *::after {
