@@ -144,7 +144,7 @@ body {
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  overflow-x: hidden;
+  overflow-x: clip;
   display: flex; flex-direction: column;
   min-height: 100vh;
 }
@@ -818,7 +818,7 @@ body[data-page="about"] .hero-headshot { margin: 16px 0 14px; }
 .response-line { font-family: var(--mono); font-size: 12px; color: var(--fg-mute); margin: 8px 0 0; }
 
 /* === Resources page styles === */
-html { scroll-behavior: smooth; overflow-x: hidden; }
+html { scroll-behavior: smooth; overflow-x: clip; }
 .resource-anchors { display: flex; flex-wrap: wrap; gap: 10px; margin: 24px 0 36px; }
 .resource-anchor-pill {
   display: inline-flex; align-items: center; padding: 8px 16px;
