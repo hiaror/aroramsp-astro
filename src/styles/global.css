@@ -226,6 +226,8 @@ pre, code {
   border-radius: 6px;
   background: none;
   border: none;
+  position: relative;
+  z-index: 60;
 }
 .nav-hamburger span {
   display: block;
