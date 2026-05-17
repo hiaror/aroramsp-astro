@@ -272,6 +272,9 @@ pre, code {
   background: var(--accent); color: white;
   border: 1px solid color-mix(in oklab, white 15%, var(--accent));
   transition: filter .15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 .nav-cta:hover { filter: brightness(1.1); }
 .nav-hamburger {
@@ -1375,4 +1378,91 @@ html:not([data-theme]) .theme-picker-btn .icon-moon { display: block; }
 }
 @media (max-width: 768px) {
   .home-tools-grid { grid-template-columns: 1fr; }
+}
+
+/* === Code block copy buttons === */
+.code-wrapper {
+  position: relative;
+}
+.code-wrapper .copy-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--fg-mute);
+  background: var(--bg-3);
+  border: 1px solid var(--line-2);
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all .15s ease;
+  z-index: 2;
+}
+.code-wrapper .copy-btn:hover {
+  color: var(--fg);
+  border-color: var(--accent);
+}
+.code-wrapper .copy-btn.copied {
+  color: var(--good);
+  border-color: var(--good);
+}
+.code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  background: var(--bg-3);
+  border: 1px solid var(--line);
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--fg-mute);
+}
+.code-header .code-lang {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+.code-header + pre {
+  border-radius: 0 0 8px 8px;
+  margin-top: 0;
+}
+.article pre,
+pre {
+  border-radius: 8px;
+  position: relative;
+}
+
+/* === About page mobile centering === */
+@media (max-width: 768px) {
+  .about-lead {
+    text-align: center;
+  }
+  body[data-page="about"] .hero-headshot {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+  }
+  .about-card {
+    text-align: center;
+  }
+  .about-links {
+    justify-content: center;
+  }
+}
+
+/* === Button arrow alignment === */
+.btn .arrow,
+.nav-cta .arrow {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+  vertical-align: middle;
 }
