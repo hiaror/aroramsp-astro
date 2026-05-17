@@ -1085,7 +1085,18 @@ html:not([data-theme]) .theme-picker-btn .icon-moon { display: block; }
 }
 @media (max-width: 768px) {
   .certs-row {
-    gap: 16px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    justify-items: center;
+  }
+  .cert-stat {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .cert-stat-text {
+    align-items: center;
   }
 }
 
