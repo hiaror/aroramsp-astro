@@ -1451,7 +1451,15 @@ pre {
     justify-content: center;
   }
   .about-card {
-    text-align: center;
+    text-align: left;
+  }
+  .about-card .row {
+    flex-direction: column;
+    gap: 2px;
+    align-items: flex-start;
+  }
+  .about-card .row .k {
+    min-width: unset;
   }
 }
 
