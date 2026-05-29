@@ -1,15 +1,16 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { expYears, expYearsPlus } from '../consts';
 ---
 <Layout
   title="Himanshu Arora | AroraMSP · M365 Security & Entra ID"
-  description="Microsoft 365 security, Intune, and Entra ID for enterprise IT teams. Real production experience, documented from the field. Scripts, fixes, and root causes from 11+ years in the Microsoft ecosystem."
+  description={`Microsoft 365 security, Intune, and Entra ID for enterprise IT teams. Real production experience, documented from the field. Scripts, fixes, and root causes from ${expYearsPlus} years in the Microsoft ecosystem.`}
   page="home"
   canonical="https://aroramsp.com/"
   ogTitle="AroraMSP - Microsoft 365 Consulting"
   ogDescription="Independent Microsoft 365 consulting. Tenant security audits, Entra ID, Conditional Access, Exchange Online, and Intune for organizations globally."
 >
-  <script type="application/ld+json" slot="head" is:raw>
+  <script type="application/ld+json" slot="head" set:html={`
   {
     "@context": "https://schema.org",
     "@graph": [
@@ -19,7 +20,7 @@ import Layout from '../layouts/Layout.astro';
         "name": "Himanshu Arora",
         "url": "https://aroramsp.com/",
         "jobTitle": "Independent Microsoft 365 Consultant",
-        "description": "Independent Microsoft 365 consultant with 11+ years in the Microsoft ecosystem. Specialising in tenant security audits, Entra ID, Conditional Access, Exchange Online, Intune, and PowerShell automation.",
+        "description": "Independent Microsoft 365 consultant with ${expYearsPlus} years in the Microsoft ecosystem. Specialising in tenant security audits, Entra ID, Conditional Access, Exchange Online, Intune, and PowerShell automation.",
         "knowsAbout": [
           "Microsoft 365 security",
           "Microsoft Intune",
@@ -65,7 +66,7 @@ import Layout from '../layouts/Layout.astro';
       }
     ]
   }
-  </script>
+  `}></script>
 
   <section class="hero-page wrap" style="min-height: calc(100vh - var(--nav-h) - 150px); display:flex; align-items:center; padding-top: 12px; padding-bottom: 12px;">
     <div class="hero-grid">
@@ -84,7 +85,7 @@ import Layout from '../layouts/Layout.astro';
         </h1>
         <p class="hero-tag reveal reveal-delay-2">// real production experience, documented from the field, so you skip the trial and error.</p>
         <p class="hero-lede reveal reveal-delay-3">
-          Himanshu Arora has spent 11+ years in the Microsoft ecosystem, from frontline
+          Himanshu Arora has spent {expYearsPlus} years in the Microsoft ecosystem, from frontline
           cloud support at a Microsoft vendor to delivering enterprise-grade M365 security,
           Intune, and Entra ID projects for organisations globally. He documents everything:
           the real fixes, the actual scripts, and the root causes that never make it into
@@ -95,7 +96,7 @@ import Layout from '../layouts/Layout.astro';
           <a href="/whatido" class="btn btn-ghost">What I do</a>
         </div>
         <div class="trust-row">
-          <span class="t">11+ yrs Microsoft ecosystem</span>
+          <span class="t">{expYearsPlus} yrs Microsoft ecosystem</span>
           <span class="t">Senior Project Delivery Engineer</span>
           <span class="t">M365 / Intune / Entra ID</span>
         </div>
@@ -127,7 +128,7 @@ import Layout from '../layouts/Layout.astro';
 
   <section class="stats-row wrap">
     <div class="stat-card reveal">
-      <div class="stat-number">11+</div>
+      <div class="stat-number">{expYearsPlus}</div>
       <div class="stat-label">Years in Microsoft ecosystem</div>
     </div>
     <div class="stat-card reveal reveal-delay-1">

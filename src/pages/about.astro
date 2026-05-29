@@ -1,13 +1,14 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { expYears, expYearsPlus } from '../consts';
 ---
 <Layout
   title="About · AroraMSP"
-  description="Himanshu Arora is an independent Microsoft 365 consultant with 11+ years in the Microsoft ecosystem. Serving 50 to 500 seat organisations globally. Specialising in Intune, Entra ID, Conditional Access, Exchange Online, and PowerShell automation."
+  description={`Himanshu Arora is an independent Microsoft 365 consultant with ${expYearsPlus} years in the Microsoft ecosystem. Serving 50 to 500 seat organisations globally. Specialising in Intune, Entra ID, Conditional Access, Exchange Online, and PowerShell automation.`}
   page="about"
   canonical="https://aroramsp.com/about"
   ogTitle="About AroraMSP"
-  ogDescription="11 years in the Microsoft ecosystem. Independent Microsoft 365 consulting practice run by Himanshu Arora, focused on tenant audits, identity, and PowerShell automation."
+  ogDescription={`${expYears} years in the Microsoft ecosystem. Independent Microsoft 365 consulting practice run by Himanshu Arora, focused on tenant audits, identity, and PowerShell automation.`}
 >
   <section class="page wrap">
     <div class="page-head">
@@ -34,7 +35,7 @@ import Layout from '../layouts/Layout.astro';
           Book a free call
         </a>
       </div>
-      <h1>11 years in the Microsoft ecosystem. Still in the thick of it.</h1>
+      <h1>{expYears} years in the Microsoft ecosystem. Still in the thick of it.</h1>
     </div>
 
     <div class="about">
@@ -101,7 +102,7 @@ import Layout from '../layouts/Layout.astro';
         <div class="head"><span>// profile</span><span>v.arora</span></div>
         <div class="row"><span class="k">name</span><span class="v">Himanshu Arora</span></div>
         <div class="row"><span class="k">role</span><span class="v">founder · AroraMSP</span></div>
-        <div class="row"><span class="k">experience</span><span class="v"><span class="hl">11+ yrs</span> Microsoft ecosystem</span></div>
+        <div class="row"><span class="k">experience</span><span class="v"><span class="hl">{expYearsPlus} yrs</span> Microsoft ecosystem</span></div>
         <div class="row"><span class="k">depth</span><span class="v">Exchange · Entra · Intune · LAPS</span></div>
         <div class="row"><span class="k">stack</span><span class="v">PowerShell · Graph API · Intune · Entra</span></div>
         <div class="row"><span class="k">regions</span><span class="v">worldwide</span></div>
