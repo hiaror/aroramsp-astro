@@ -1443,7 +1443,7 @@ pre {
 /* === About page mobile centering === */
 @media (max-width: 768px) {
   body[data-page="about"] .hero-headshot {
-    margin: 0 auto;
+    margin: 0 auto 28px;
     display: block;
   }
   .about-pills,
