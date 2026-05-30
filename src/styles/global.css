@@ -387,41 +387,43 @@ main { flex: 1; display: flex; flex-direction: column; position: relative; z-ind
 /* Footer */
 footer {
   border-top: 1px solid var(--line);
-  padding: 22px 0 20px; font-family: var(--mono); font-size: 12px; color: var(--fg-mute);
+  padding: 40px 0 20px; font-family: var(--mono); font-size: 12px; color: var(--fg-mute);
   flex-shrink: 0; margin-top: auto;
 }
 body[data-page="home"] footer { display: block; }
 .foot-top {
-  display: flex; flex-wrap: wrap; gap: 18px;
-  justify-content: space-between; align-items: center;
-  padding-bottom: 14px; margin-bottom: 14px;
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 40px;
+  padding-bottom: 24px; margin-bottom: 16px;
   border-bottom: 1px dashed var(--line);
+  align-items: start;
 }
-.foot-copy { display: flex; flex-direction: column; gap: 4px; color: var(--fg-dim); }
+.foot-copy { display: flex; flex-direction: column; gap: 6px; color: var(--fg-dim); padding-top: 2px; }
+.foot-copy div:first-child { font-size: 13px; font-weight: 600; color: var(--fg); }
 .foot-copy .sm { color: var(--fg-mute); font-size: 11px; }
-.foot-links { display: flex; flex: 1; justify-content: space-between; gap: 40px; font-size: 13px; align-items: flex-start; }
-.foot-col { display: flex; flex-direction: column; gap: 8px; }
-.foot-col-label { font-size: 11px; color: var(--fg-dim); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 2px; font-weight: 600; }
-.foot-links a:hover { color: var(--fg); }
+.foot-links { display: flex; justify-content: space-between; gap: 32px; align-items: flex-start; }
+.foot-col { display: flex; flex-direction: column; gap: 10px; min-width: 100px; }
+.foot-col-label { font-size: 10px; color: var(--cyan); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 4px; font-weight: 700; font-family: var(--mono); }
+.foot-col a { color: var(--fg-mute); font-size: 12px; text-decoration: none; transition: color .2s; }
+.foot-col a:hover { color: var(--fg); }
 .foot-bottom {
   text-align: center; color: var(--fg-mute); font-size: 11px;
   letter-spacing: .06em; text-transform: uppercase;
 }
 .foot-bottom .dot { color: var(--good); }
-@media (max-width: 600px) {
+@media (max-width: 760px) {
+  .foot-top {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
   .foot-links {
-    display: flex;
     flex-wrap: wrap;
-    gap: 24px 32px;
-    font-size: 13px;
+    gap: 24px 40px;
+    justify-content: flex-start;
   }
   .foot-col {
-    min-width: 100px;
-  }
-  .foot-top {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
+    min-width: 120px;
   }
 }
 
