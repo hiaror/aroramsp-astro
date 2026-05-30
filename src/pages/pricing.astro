@@ -3,58 +3,66 @@ import Layout from '../layouts/Layout.astro';
 ---
 <Layout
   title="Pricing · AroraMSP"
-  description="Fixed-fee Microsoft 365 consulting. Two scoped offers cover 90 percent of engagements; custom work quoted after the discovery call."
+  description="Fixed-fee Microsoft 365 consulting. Tenant Health Check at $1,500. Migration and rebuild projects from $4,500. You know the cost before work begins."
   page="pricing"
   canonical="https://aroramsp.com/pricing"
   ogTitle="Pricing - AroraMSP"
-  ogDescription="Fixed-fee Microsoft 365 consulting. Two scoped offers cover 90 percent of engagements; custom work quoted after the discovery call."
+  ogDescription="Fixed-fee Microsoft 365 consulting. Tenant Health Check at $1,500. Migration and rebuild projects from $4,500. You know the cost before work begins."
 >
   <section class="page no-center wrap">
     <div class="page-head">
       <div class="sec-label">03 · pricing</div>
-      <h2>Fixed-fee projects. No hourly games.</h2>
-      <p>Two scoped offers that cover 90% of engagements. Anything custom gets quoted after the discovery call.</p>
+      <h2>Fixed-fee projects. You know the cost before work begins.</h2>
+      <p>Every engagement is scoped and priced upfront. You approve the cost in writing before any work starts. No hourly billing, no change orders, no invoices for work you did not explicitly approve.</p>
     </div>
 
     <div class="pricing">
       <div class="tier reveal reveal-delay-1">
         <div class="tier-name">// audit</div>
         <h3>Tenant Health Check</h3>
-        <div class="sub">A full read-only audit of your M365 tenant with a prioritised action list.</div>
+        <div class="sub">A complete read-only audit of your Microsoft 365 tenant with a prioritized action plan, written in plain English for both technical and non-technical stakeholders.</div>
         <div class="price">
           <span class="amt">$1,500</span>
-          <span class="per">· one-time</span>
-          <span class="note">USD · delivered in 5 business days</span>
+          <span class="per">· fixed fee</span>
+          <span class="note">USD · delivered in 5 business days from access grant</span>
         </div>
         <ul>
-          <li>Security and identity review</li>
-          <li>License utilization map</li>
-          <li>Mail flow and DNS review</li>
-          <li>Prioritised findings doc</li>
-          <li>60-minute walkthrough call</li>
+          <li>Security posture and identity review</li>
+          <li>Conditional Access and MFA gap analysis</li>
+          <li>License utilization map by user and SKU</li>
+          <li>Mail flow, DNS, and email security review</li>
+          <li>Admin role and privileged access audit</li>
+          <li>Prioritized findings document in plain English</li>
+          <li>60-minute walkthrough call with your team</li>
         </ul>
-        <a href="/contact" class="btn btn-ghost">Start an audit →</a>
+        <a href="/contact" class="btn btn-ghost">Start with an audit →</a>
       </div>
 
       <div class="tier featured reveal reveal-delay-2">
         <div class="badge">MOST POPULAR</div>
         <div class="tier-name">// project</div>
         <h3>Migration or Rebuild</h3>
-        <div class="sub">End-to-end M365 migration or tenant rebuild. Scoped and fixed-fee.</div>
+        <div class="sub">End-to-end Microsoft 365 migration or tenant rebuild. Scoped after the audit so the price reflects your actual environment, not a generic estimate.</div>
         <div class="price">
           <span class="amt">from $4,500</span>
-          <span class="note">scoped after audit · typically $4.5k to $18k</span>
+          <span class="note">scoped after audit · most projects fall between $4,500 and $18,000</span>
         </div>
         <ul>
-          <li>Everything in the Health Check</li>
-          <li>Migration or clean rebuild</li>
-          <li>Security baseline and Intune</li>
-          <li>SPF / DKIM / DMARC enforced</li>
-          <li>Documentation and training session</li>
-          <li>30 days post-launch support</li>
+          <li>Everything included in the Health Check</li>
+          <li>Full migration or clean tenant rebuild</li>
+          <li>Security baseline and Conditional Access policies</li>
+          <li>Intune device enrollment and compliance</li>
+          <li>SPF, DKIM, DMARC, and MTA-STS enforced</li>
+          <li>Configuration documentation you own</li>
+          <li>Team training and handover session</li>
+          <li>30 days of post-launch support</li>
         </ul>
-        <a href="/contact" class="btn btn-primary">Scope a project →</a>
+        <a href="/contact" class="btn btn-primary">Discuss your project →</a>
       </div>
+    </div>
+
+    <div class="pricing-note">
+      <b>Why fixed fees?</b> Hourly billing misaligns incentives. A slower consultant charges more. A faster one charges less. Fixed-fee projects mean I am motivated to scope accurately and execute efficiently, and you know your budget before you commit. If scope changes materially after agreement, we discuss it before any additional work happens, not after.
     </div>
   </section>
 </Layout>
