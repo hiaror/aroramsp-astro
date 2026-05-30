@@ -239,6 +239,15 @@ STATUS: Completed successfully on DEVICE-NAME</code></pre>
 
       <p>Platform scripts execute once per device. To re-run a script that has already completed, add or update a version comment at the top of the script file and save. Changing the content changes the hash, which the IME treats as a new version and re-evaluates. The script ID does not change. For anything requiring scheduled or repeated verification, a Remediation is the better architecture: detect/remediate split, runs on a defined schedule, supports on-demand execution from the portal.</p>
 
+      <h2>Microsoft references</h2>
+
+      <ul>
+        <li><a href="https://learn.microsoft.com/en-us/mem/intune/apps/intune-management-extension" target="_blank" rel="noopener">Intune Management Extension and PowerShell platform scripts</a></li>
+        <li><a href="https://learn.microsoft.com/en-us/windows/security/operating-system-security/data-protection/bitlocker/backup-bitlocker-recovery-keys-to-azure-ad" target="_blank" rel="noopener">Back up BitLocker recovery keys to Azure AD and Entra ID</a></li>
+        <li><a href="https://learn.microsoft.com/en-us/powershell/module/bitlocker/backup-bitlockerrecoverypasswordtoaad" target="_blank" rel="noopener">BackupToAAD-BitLockerKeyProtector cmdlet reference</a></li>
+        <li><a href="https://learn.microsoft.com/en-us/windows/security/operating-system-security/data-protection/bitlocker/bitlocker-group-policy-settings" target="_blank" rel="noopener">BitLocker CSP and group policy settings</a></li>
+      </ul>
+
       <div class="callout">
         <p>Both platform scripts, the admin-side Graph helpers, and a sanitized sample survey output are in the GitHub repository.</p>
         <a href="https://github.com/hiaror/intune-bitlocker-entra-escrow" target="_blank" rel="noopener" class="btn btn-ghost">View on GitHub →</a>
