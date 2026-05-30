@@ -1,19 +1,24 @@
 ---
 import Layout from '../layouts/Layout.astro';
+
+const startDate = new Date('2014-04-01');
+const today = new Date();
+const yearsExp = Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24 * 365.25));
+const expLabel = `${yearsExp}+ years`;
 ---
 <Layout
   title="Microsoft 365 Services · AroraMSP"
-  description="M365 migrations, tenant setup, security hardening, and license optimization. Fixed-fee consulting from a senior engineer with 9 years inside Microsoft supporting enterprise tenants."
+  description={`M365 migrations, tenant setup, security hardening, and license optimization. Fixed-fee consulting from a senior Microsoft engineer with ${expLabel} of hands-on experience.`}
   page="services"
   canonical="https://aroramsp.com/services"
   ogTitle="Microsoft 365 Services - AroraMSP"
-  ogDescription="M365 migrations, tenant setup, security hardening, and license optimization. Fixed-fee consulting from a senior engineer with 9 years inside Microsoft supporting enterprise tenants."
+  ogDescription={`M365 migrations, tenant setup, security hardening, and license optimization. Fixed-fee consulting from a senior Microsoft engineer with ${expLabel} of hands-on experience.`}
 >
   <section class="page wrap">
     <div class="page-head">
       <div class="sec-label">01 · services</div>
       <h2>Microsoft 365 expertise, without the overhead of a large firm.</h2>
-      <p>Four focused services covering every stage of your M365 environment. Fixed fees, no reselling, and direct access to a senior consultant who spent 9 years inside Microsoft supporting enterprise tenants globally.</p>
+      <p>Four focused services covering every stage of your M365 environment. Fixed fees, no reselling, and direct access to a senior Microsoft engineer with {expLabel} of hands-on experience supporting enterprise tenants globally.</p>
     </div>
 
     <div class="services">
