@@ -943,6 +943,8 @@ html { scroll-behavior: smooth; overflow-x: clip; }
 .pricing-note b { color: var(--fg-dim); font-weight: 500; }
 
 /* === FAQ page styles === */
+.faq-controls { display: flex; gap: 8px; margin-bottom: 14px; max-width: 820px; }
+.btn-sm { padding: 5px 12px; font-size: 12px; }
 .faq-list { display: flex; flex-direction: column; gap: 6px; max-width: 820px; }
 .faq-item { padding: 18px 22px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg-1); cursor: pointer; transition: all .25s; }
 .faq-item[aria-expanded="true"] { background: var(--bg-2); border-color: var(--accent-line); }

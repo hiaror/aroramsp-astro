@@ -16,6 +16,10 @@ import Layout from '../layouts/Layout.astro';
       <p>No ambiguity about what happens next, what it costs, or what you will receive. Four stages with fixed fees and documentation you own at the end, written to be maintained by your internal team or any future IT provider.</p>
     </div>
 
+    <div class="faq-controls">
+      <button class="btn btn-ghost btn-sm" id="stepsExpandAll">Expand all</button>
+      <button class="btn btn-ghost btn-sm" id="stepsCollapseAll">Collapse all</button>
+    </div>
     <div class="process-steps" id="steps">
       <div class="step reveal reveal-delay-1" data-step="1" aria-expanded="true">
         <div class="step-head">
@@ -70,6 +74,12 @@ import Layout from '../layouts/Layout.astro';
         const isOpen = step.getAttribute('aria-expanded') === 'true';
         step.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
       });
+    });
+    document.getElementById('stepsExpandAll')?.addEventListener('click', () => {
+      document.querySelectorAll('.step').forEach((s) => s.setAttribute('aria-expanded', 'true'));
+    });
+    document.getElementById('stepsCollapseAll')?.addEventListener('click', () => {
+      document.querySelectorAll('.step').forEach((s) => s.setAttribute('aria-expanded', 'false'));
     });
   </script>
 </Layout>

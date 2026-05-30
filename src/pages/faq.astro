@@ -16,6 +16,10 @@ import Layout from '../layouts/Layout.astro';
       <p>Straightforward answers about how engagements work, what access is needed, and what you get at the end.</p>
     </div>
 
+    <div class="faq-controls">
+      <button class="btn btn-ghost btn-sm" id="faqExpandAll">Expand all</button>
+      <button class="btn btn-ghost btn-sm" id="faqCollapseAll">Collapse all</button>
+    </div>
     <div class="faq-list" id="faqList">
 
       <div class="faq-item reveal reveal-delay-1" aria-expanded="true">
@@ -220,6 +224,12 @@ import Layout from '../layouts/Layout.astro';
         const isOpen = item.getAttribute('aria-expanded') === 'true';
         item.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
       });
+    });
+    document.getElementById('faqExpandAll')?.addEventListener('click', () => {
+      document.querySelectorAll('#faqList .faq-item').forEach((i) => i.setAttribute('aria-expanded', 'true'));
+    });
+    document.getElementById('faqCollapseAll')?.addEventListener('click', () => {
+      document.querySelectorAll('#faqList .faq-item').forEach((i) => i.setAttribute('aria-expanded', 'false'));
     });
   </script>
 </Layout>
