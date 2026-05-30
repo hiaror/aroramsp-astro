@@ -1,10 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
-
-const startDate = new Date('2014-04-01');
-const today = new Date();
-const yearsExp = Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24 * 365.25));
-const expLabel = `${yearsExp}+ years`;
+import { expYearsPlus } from '../consts';
+const expLabel = `${expYearsPlus} years`;
 ---
 <Layout
   title="Microsoft 365 Services · AroraMSP"
