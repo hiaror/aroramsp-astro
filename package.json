@@ -16,5 +16,11 @@
     "@tailwindcss/vite": "^4.3.0",
     "astro": "^6.3.3",
     "tailwindcss": "^4.3.0"
-  }
+  },
+  "browserslist": [
+    "Chrome >= 111",
+    "Safari >= 16.2",
+    "Firefox >= 113",
+    "Edge >= 111"
+  ]
 }
