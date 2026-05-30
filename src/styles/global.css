@@ -399,7 +399,7 @@ body[data-page="home"] footer { display: block; }
 }
 .foot-copy { display: flex; flex-direction: column; gap: 4px; color: var(--fg-dim); }
 .foot-copy .sm { color: var(--fg-mute); font-size: 11px; }
-.foot-links { display: flex; gap: 40px; font-size: 13px; align-items: flex-start; }
+.foot-links { display: flex; flex: 1; justify-content: space-between; gap: 40px; font-size: 13px; align-items: flex-start; }
 .foot-col { display: flex; flex-direction: column; gap: 8px; }
 .foot-col-label { font-size: 11px; color: var(--fg-dim); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 2px; font-weight: 600; }
 .foot-links a:hover { color: var(--fg); }
