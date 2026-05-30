@@ -68,6 +68,10 @@ import Layout from '../layouts/Layout.astro';
     <div class="pricing-faq">
       <div class="sec-label" style="margin-top: 40px;">Common Questions</div>
 
+      <div class="faq-controls">
+        <button class="btn-icon" id="pricingExpandAll" data-tip="Expand all" aria-label="Expand all">+</button>
+        <button class="btn-icon" id="pricingCollapseAll" data-tip="Collapse all" aria-label="Collapse all">−</button>
+      </div>
       <div class="faq-list" id="pricingFaq">
 
         <div class="faq-item reveal reveal-delay-1" aria-expanded="false">
@@ -121,6 +125,12 @@ import Layout from '../layouts/Layout.astro';
         const isOpen = item.getAttribute('aria-expanded') === 'true';
         item.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
       });
+    });
+    document.getElementById('pricingExpandAll')?.addEventListener('click', () => {
+      document.querySelectorAll('#pricingFaq .faq-item').forEach((i) => i.setAttribute('aria-expanded', 'true'));
+    });
+    document.getElementById('pricingCollapseAll')?.addEventListener('click', () => {
+      document.querySelectorAll('#pricingFaq .faq-item').forEach((i) => i.setAttribute('aria-expanded', 'false'));
     });
   </script>
 </Layout>
