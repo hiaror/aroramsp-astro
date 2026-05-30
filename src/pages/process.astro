@@ -20,7 +20,12 @@ import Layout from '../layouts/Layout.astro';
       <button class="btn btn-ghost btn-sm" id="stepsExpandAll">Expand all</button>
       <button class="btn btn-ghost btn-sm" id="stepsCollapseAll">Collapse all</button>
     </div>
-    <div class="process-steps" id="steps">
+    <div class="faq-controls-wrap">
+      <div class="faq-controls">
+        <button class="btn-icon" id="stepsExpandAll" title="Expand all">+</button>
+        <button class="btn-icon" id="stepsCollapseAll" title="Collapse all">−</button>
+      </div>
+      <div class="process-steps" id="steps">
       <div class="step reveal reveal-delay-1" data-step="1" aria-expanded="true">
         <div class="step-head">
           <span class="step-num">01</span>
@@ -65,6 +70,7 @@ import Layout from '../layouts/Layout.astro';
           <span class="dur">1 to 3 weeks · scope-dependent</span>
         </div>
       </div>
+    </div>
     </div>
   </section>
 

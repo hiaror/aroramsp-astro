@@ -16,11 +16,12 @@ import Layout from '../layouts/Layout.astro';
       <p>Straightforward answers about how engagements work, what access is needed, and what you get at the end.</p>
     </div>
 
-    <div class="faq-controls">
-      <button class="btn btn-ghost btn-sm" id="faqExpandAll">Expand all</button>
-      <button class="btn btn-ghost btn-sm" id="faqCollapseAll">Collapse all</button>
-    </div>
-    <div class="faq-list" id="faqList">
+    <div class="faq-controls-wrap">
+      <div class="faq-controls">
+        <button class="btn-icon" id="faqExpandAll" title="Expand all">+</button>
+        <button class="btn-icon" id="faqCollapseAll" title="Collapse all">−</button>
+      </div>
+      <div class="faq-list" id="faqList">
 
       <div class="faq-item reveal reveal-delay-1" aria-expanded="true">
         <div class="faq-head">
@@ -122,6 +123,7 @@ import Layout from '../layouts/Layout.astro';
         </div>
       </div>
 
+    </div>
     </div>
 
     <div class="faq-cta">
