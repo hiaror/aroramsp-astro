@@ -947,10 +947,11 @@ html { scroll-behavior: smooth; overflow-x: clip; }
 .faq-item { padding: 18px 22px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg-1); cursor: pointer; transition: all .25s; }
 .faq-item[aria-expanded="true"] { background: var(--bg-2); border-color: var(--accent-line); }
 .faq-head { display: flex; align-items: center; gap: 16px; }
-.faq-head h3 { margin: 0; font-size: 15px; font-weight: 500; flex: 1; letter-spacing: -.01em; color: var(--fg); }
+.faq-head h3 { margin: 0; font-size: 15px; font-weight: 600; flex: 1; letter-spacing: -.01em; color: var(--fg); }
+.faq-item[aria-expanded="true"] .faq-head h3 { color: var(--cyan); }
 .faq-chev { color: var(--fg-mute); transition: transform .2s; font-family: var(--mono); flex-shrink: 0; }
 .faq-item[aria-expanded="true"] .faq-chev { transform: rotate(90deg); color: var(--cyan); }
-.faq-body { max-height: 0; overflow: hidden; transition: max-height .35s ease, margin .35s ease, opacity .2s; color: var(--fg-dim); font-size: 14px; line-height: 1.65; opacity: 0; }
+.faq-body { max-height: 0; overflow: hidden; transition: max-height .35s ease, margin .35s ease, opacity .2s; color: var(--fg-dim); font-size: 14px; line-height: 1.65; opacity: 0; border-left: 2px solid var(--accent-line); padding-left: 14px; }
 .faq-item[aria-expanded="true"] .faq-body { max-height: 300px; margin-top: 14px; padding-left: 0; opacity: 1; }
 .faq-cta { margin-top: 32px; max-width: 820px; padding: 24px; border: 1px dashed var(--line); border-radius: 10px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
 .faq-cta p { margin: 0; color: var(--fg-dim); font-size: 15px; }

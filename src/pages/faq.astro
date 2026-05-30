@@ -215,11 +215,10 @@ import Layout from '../layouts/Layout.astro';
   })}></script>
 
   <script>
-    document.querySelectorAll('.faq-item').forEach((item) => {
+    document.querySelectorAll('#faqList .faq-item').forEach((item) => {
       item.addEventListener('click', () => {
         const isOpen = item.getAttribute('aria-expanded') === 'true';
-        document.querySelectorAll('.faq-item').forEach((i) => i.setAttribute('aria-expanded', 'false'));
-        if (!isOpen) item.setAttribute('aria-expanded', 'true');
+        item.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
       });
     });
   </script>

@@ -114,4 +114,13 @@ import Layout from '../layouts/Layout.astro';
     </div>
 
   </section>
+
+  <script>
+    document.querySelectorAll('#pricingFaq .faq-item').forEach((item) => {
+      item.addEventListener('click', () => {
+        const isOpen = item.getAttribute('aria-expanded') === 'true';
+        item.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
+      });
+    });
+  </script>
 </Layout>

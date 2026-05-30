@@ -68,8 +68,7 @@ import Layout from '../layouts/Layout.astro';
     document.querySelectorAll('.step').forEach((step) => {
       step.addEventListener('click', () => {
         const isOpen = step.getAttribute('aria-expanded') === 'true';
-        document.querySelectorAll('.step').forEach((s) => s.setAttribute('aria-expanded', 'false'));
-        if (!isOpen) step.setAttribute('aria-expanded', 'true');
+        step.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
       });
     });
   </script>
