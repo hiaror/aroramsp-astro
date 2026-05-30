@@ -738,6 +738,10 @@ h1.headline .accent { color: var(--accent); }
 }
 .callout.warn { border-left-color: var(--warn); }
 .callout strong { color: var(--fg); }
+.callout p { margin: 0 0 14px; }
+.callout .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+.callout .btn-ghost { color: var(--fg); border-color: var(--line-2); }
+.callout .btn-ghost:hover { background: var(--bg-2); color: var(--fg); }
 
 .post-foot {
   margin-top: 48px; padding-top: 22px;
