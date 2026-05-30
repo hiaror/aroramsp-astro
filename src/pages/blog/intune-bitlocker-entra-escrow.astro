@@ -1,0 +1,254 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { expYearsPlus } from '../../consts';
+---
+<Layout
+  title="BitLocker Recovery Keys Missing from Entra ID After Removing a Third-Party Agent · AroraMSP"
+  description="When you remove a third-party disk encryption agent, BitLocker stays active but the recovery key is not in Entra ID. The two-path platform script approach, and why the Sync button will not help."
+  page="blog"
+  canonical="https://aroramsp.com/blog/intune-bitlocker-entra-escrow"
+  ogTitle="BitLocker Recovery Keys Missing from Entra ID After Removing a Third-Party Agent"
+  ogDescription="When you remove a third-party disk encryption agent, BitLocker stays active but the recovery key is not in Entra ID. The two-path platform script approach, and why the Sync button will not help."
+>
+  <Fragment slot="head">
+    <meta name="keywords" content="BitLocker, Intune, Entra ID, platform scripts, IME, Microsoft Graph, PowerShell, disk encryption, recovery key escrow, Windows endpoint management" />
+    <script type="application/ld+json" is:inline set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "TechArticle",
+      "headline": "BitLocker Recovery Keys Missing from Entra ID After Removing a Third-Party Agent",
+      "description": "When you remove a third-party disk encryption agent, BitLocker stays active but the recovery key is not in Entra ID. The two-path platform script approach, and why the Sync button will not help.",
+      "author": {
+        "@type": "Person",
+        "name": "Himanshu Arora",
+        "@id": "https://aroramsp.com/about"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "AroraMSP",
+        "@id": "https://aroramsp.com"
+      },
+      "datePublished": "2026-05-31",
+      "dateModified": "2026-05-31",
+      "url": "https://aroramsp.com/blog/intune-bitlocker-entra-escrow",
+      "image": "https://aroramsp.com/og-preview.png",
+      "mainEntityOfPage": "https://aroramsp.com/blog/intune-bitlocker-entra-escrow",
+      "wordCount": 1600,
+      "keywords": ["BitLocker", "Intune", "Entra ID", "platform scripts", "IME", "Microsoft Graph", "PowerShell", "disk encryption"]
+    })}></script>
+    <script type="application/ld+json" is:inline set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://aroramsp.com" },
+        { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://aroramsp.com/blog" },
+        { "@type": "ListItem", "position": 3, "name": "BitLocker Recovery Keys Missing from Entra ID After Removing a Third-Party Agent", "item": "https://aroramsp.com/blog/intune-bitlocker-entra-escrow" }
+      ]
+    })}></script>
+  </Fragment>
+
+  <section class="page wrap">
+    <article class="article">
+      <div class="post-meta">
+        <a href="/blog" class="back">← blog</a>
+        <span class="author">
+          <a href="https://github.com/hiaror" target="_blank" rel="noopener">Himanshu Arora</a>
+          · {expYearsPlus} yrs Microsoft ecosystem
+        </span>
+        <span>2026-05-31</span>
+        <span class="dot">·</span>
+        <span class="tag">intune · bitlocker</span>
+        <span class="dot">·</span>
+        <span>12 min read</span>
+      </div>
+
+      <h1>BitLocker recovery keys missing from Entra ID after removing a third-party agent.</h1>
+
+      <p class="lede">The encryption is still active. The key is not in Entra ID. Clicking Sync does nothing. Here is the two-path fix and the one IME timing fact that explains why nobody's script runs when they expect it to.</p>
+
+      <h2>The problem state</h2>
+
+      <p>When you remove a third-party disk encryption agent such as Sophos from a Windows device, the BitLocker encryption it provisioned stays active. The volume is fully encrypted. But the recovery key was never escrowed to Microsoft Entra ID, and on agent removal it is now nowhere central.</p>
+
+      <p>Run this on an affected device:</p>
+
+      <div class="code-label">// run this</div>
+      <pre><code>Get-BitLockerVolume -MountPoint C: | Select-Object MountPoint, VolumeStatus, EncryptionPercentage, KeyProtector</code></pre>
+
+      <div class="code-label">// output</div>
+      <pre><code>MountPoint           : C:
+VolumeStatus         : FullyEncrypted
+EncryptionPercentage : 100
+KeyProtector         : &#123;&#125;</code></pre>
+
+      <p>Fully encrypted. Zero key protectors. <code>BackupToAAD-BitLockerKeyProtector</code> has nothing to work with because no <code>RecoveryPassword</code> protector exists. The agent provisioned BitLocker, held the key internally, and on removal left the volume encrypted with no recoverable protector from an Entra perspective. If a user gets locked out by a TPM change, a firmware update, or a boot integrity failure, the device is unrecoverable.</p>
+
+      <p>The manual fix is the Entra portal: find each device, click "Backup recovery key." That works on one device. It does not work on a fleet.</p>
+
+      <h2>The two-path approach</h2>
+
+      <p>Not every device has the same problem. Some are fully encrypted with no Entra-escrowed protector. Some were never encrypted at all because the agent was installed before BitLocker ran. You need to classify the fleet before changing anything.</p>
+
+      <p><strong>Path 1</strong>, already encrypted with no Entra escrow: an Intune platform script adds a <code>RecoveryPassword</code> protector if missing, then escrows every <code>RecoveryPassword</code> protector to Entra ID. Idempotent and safe to re-run.</p>
+
+      <p><strong>Path 2</strong>, not yet encrypted: a native Endpoint Security BitLocker configuration policy handles encryption and escrow natively via the BitLocker CSP. No script needed for these devices.</p>
+
+      <p>Start with a read-only survey.</p>
+
+      <h2>Step 1: deploy the survey script</h2>
+
+      <p>This script makes no changes. It reports the BitLocker state per device so you know which path each device needs before anything is modified.</p>
+
+      <div class="code-label">// run this</div>
+      <pre><code>$vol = Get-BitLockerVolume -MountPoint C:
+$protectors = $vol.KeyProtector
+
+Write-Host "Device: $env:COMPUTERNAME"
+Write-Host "VolumeStatus: $($vol.VolumeStatus)"
+Write-Host "EncryptionPercentage: $($vol.EncryptionPercentage)"
+Write-Host "KeyProtectorCount: $($protectors.Count)"
+
+foreach ($p in $protectors) &#123;
+    Write-Host "ProtectorType: $($p.KeyProtectorType) | ID: $($p.KeyProtectorId)"
+&#125;
+
+if ($protectors.Count -eq 0) &#123;
+    Write-Host "STATUS: No key protectors found. Recovery key escrow not possible yet."
+&#125; else &#123;
+    Write-Host "STATUS: Key protectors present. Ready for escrow."
+&#125;</code></pre>
+
+      <p>Deploy as an Intune platform script with these settings. Run this script using the logged on credentials: No. Enforce script signature check: No. Run script in 64 bit PowerShell Host: Yes. Assign to All devices.</p>
+
+      <p>The 64-bit host setting is not optional. In the 32-bit PowerShell host on 64-bit Windows, <code>Get-BitLockerVolume</code> returns missing or unreliable data. That was the first thing that went wrong in the lab.</p>
+
+      <h2>Step 2: read results via Graph</h2>
+
+      <p>The Intune Device status tab shows only Succeeded or Failed. To see what the script actually reported per device, read <code>resultMessage</code> via Graph:</p>
+
+      <div class="code-label">// run this</div>
+      <pre><code>$scriptId = "your-script-id-here"
+
+$results = Invoke-MgGraphRequest -Method GET `
+    -Uri "https://graph.microsoft.com/beta/deviceManagement/deviceManagementScripts/$scriptId/deviceRunStates"
+
+$results["value"] | ForEach-Object &#123;
+    Write-Host "================================"
+    Write-Host "RunState: $($_.runState)"
+    Write-Host "LastUpdated: $($_.lastStateUpdateDateTime)"
+    Write-Host "Output:"
+    Write-Host $_.resultMessage
+    Write-Host ""
+&#125;</code></pre>
+
+      <p>Requires <code>Connect-MgGraph</code> with <code>DeviceManagementScripts.Read.All</code>. Note that <code>Invoke-MgGraphRequest</code> returns hashtables: index with <code>$results["value"]</code>, not <code>Select-Object -ExpandProperty value</code>.</p>
+
+      <p>Devices reporting <code>KeyProtectorCount: 0</code> go to Path 1. Deploy the escrow script to those.</p>
+
+      <h2>Step 3: deploy the escrow script</h2>
+
+      <p>Same deployment settings as the survey. The script checks for an existing <code>RecoveryPassword</code> protector, adds one if missing, then escrows every <code>RecoveryPassword</code> protector to Entra ID.</p>
+
+      <div class="code-label">// run this</div>
+      <pre><code>try &#123;
+    $drive = $env:SystemDrive
+
+    $vol = Get-BitLockerVolume -MountPoint $drive
+    $existing = $vol.KeyProtector |
+        Where-Object &#123; $_.KeyProtectorType -eq 'RecoveryPassword' &#125;
+
+    if ($existing) &#123;
+        Write-Host 'Recovery password protector already exists. Proceeding to escrow.'
+    &#125; else &#123;
+        Write-Host 'No recovery password protector found. Adding one now.'
+        Add-BitLockerKeyProtector -MountPoint $drive -RecoveryPasswordProtector
+        Write-Host 'Recovery password protector added successfully.'
+    &#125;
+
+    $vol = Get-BitLockerVolume -MountPoint $drive
+    $protectors = $vol.KeyProtector |
+        Where-Object &#123; $_.KeyProtectorType -eq 'RecoveryPassword' &#125;
+
+    foreach ($protector in $protectors) &#123;
+        BackupToAAD-BitLockerKeyProtector -MountPoint $drive `
+            -KeyProtectorId $protector.KeyProtectorId
+        Write-Host "Recovery key escrowed to Entra ID. KeyProtectorId: $($protector.KeyProtectorId)"
+    &#125;
+
+    Write-Host "STATUS: Completed successfully on $env:COMPUTERNAME"
+
+&#125; catch &#123;
+    Write-Host "ERROR: $($_.Exception.Message)"
+    exit 1
+&#125;</code></pre>
+
+      <p>The recovery password itself is never written to output. Only the <code>KeyProtectorId</code> is logged. The script exits 1 on exception so Intune records a failure rather than a false Succeeded.</p>
+
+      <h2>The part that took the longest: why Sync does nothing</h2>
+
+      <p>After assigning the escrow script to All devices in the lab, nothing happened for hours. Every device showed the script as Pending. Clicking Sync in the Intune portal did nothing. Running <code>syncDevice</code> via Graph did nothing.</p>
+
+      <p>The Intune portal Sync button and the Graph <code>syncDevice</code> action wake the Windows MDM OMA-DM client. They do not trigger Intune Management Extension PowerShell platform scripts. The IME evaluates PowerShell platform scripts on its own internal timer of roughly eight hours. The widely quoted sixty-minute figure is the Win32 app workload, which is a different mechanism entirely.</p>
+
+      <p>On an idle device with no logon or unlock events, a newly assigned platform script will not run for hours. That is not a failure. It is expected timer behaviour. Watch the IME log and you will see the timer set with no immediate execution:</p>
+
+      <div class="code-label">// output</div>
+      <pre><code>set timer, start the timer for workload PowerShell</code></pre>
+
+      <p>Then nothing for up to eight hours, unless something triggers early evaluation.</p>
+
+      <h2>What actually triggers a platform script</h2>
+
+      <p>Session-change events are first-class triggers. A user logon, logoff, or unlock causes the IME to evaluate platform scripts immediately. Actively used machines run the script within minutes of assignment. Idle locked machines wait the full eight hours.</p>
+
+      <p>To force immediate evaluation during testing, restart the IME service as a local administrator:</p>
+
+      <div class="code-label">// run this</div>
+      <pre><code>Restart-Service IntuneManagementExtension -Force</code></pre>
+
+      <p>After restart, the IME log shows <code>Delaying PS and Win32 app workload checkins by seconds = 237</code>. Execution begins roughly four minutes later. Watch the AgentExecutor log to confirm the script ran:</p>
+
+      <div class="code-label">// run this</div>
+      <pre><code>Get-Content "C:\ProgramData\Microsoft\IntuneManagementExtension\Logs\AgentExecutor.log" -Tail 30 | Where-Object &#123;
+    $_ -like "*BitLocker*" -or
+    $_ -like "*recovery*" -or
+    $_ -like "*Completed*" -or
+    $_ -like "*ERROR*"
+&#125;</code></pre>
+
+      <p>For production rollout: plan for up to eight hours on idle devices. The "is this working?" question will come up. "Wait for a logon event or restart the IME service" is the answer.</p>
+
+      <h2>Step 4: validate</h2>
+
+      <p>Read the escrow script's <code>resultMessage</code> via the same Graph call as the survey. A successful run shows the <code>KeyProtectorId</code> confirmation line:</p>
+
+      <div class="code-label">// output</div>
+      <pre><code>No recovery password protector found. Adding one now.
+Recovery password protector added successfully.
+Recovery key escrowed to Entra ID. KeyProtectorId: &#123;XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX&#125;
+STATUS: Completed successfully on DEVICE-NAME</code></pre>
+
+      <p>Then open the Entra admin centre. Devices > All devices > select the device > BitLocker keys. A key entry for the OS drive confirms the escrow landed. That entry is what your IT team retrieves if a user gets locked out.</p>
+
+      <h2>Graph scopes and the MSAL token cache</h2>
+
+      <p>If you add scopes to an existing Graph session without disconnecting first, you get 403 errors on every call. A bare <code>Connect-MgGraph</code> with new scope parameters reuses the cached MSAL token and does not acquire the new permissions. Always <code>Disconnect-MgGraph</code> before reconnecting with additional scopes.</p>
+
+      <p>The <code>syncDevice</code> action requires <code>DeviceManagementManagedDevices.PrivilegedOperations.All</code>. The device-list read scope is not sufficient. Missing that scope returns 403 Forbidden on the sync call even after a fresh connect if you did not disconnect first.</p>
+
+      <h2>Platform scripts run once</h2>
+
+      <p>Platform scripts execute once per device. To re-run a script that has already completed, add or update a version comment at the top of the script file and save. Changing the content changes the hash, which the IME treats as a new version and re-evaluates. The script ID does not change. For anything requiring scheduled or repeated verification, a Remediation is the better architecture: detect/remediate split, runs on a defined schedule, supports on-demand execution from the portal.</p>
+
+      <div class="callout">
+        <p>Both platform scripts, the admin-side Graph helpers, and a sanitized sample survey output are in the GitHub repository.</p>
+        <a href="https://github.com/hiaror/intune-bitlocker-entra-escrow" target="_blank" rel="noopener" class="btn btn-ghost">View on GitHub →</a>
+        <a href="/contact" class="btn btn-ghost">Work with me →</a>
+      </div>
+
+      <div class="post-foot">
+        <span>Himanshu Arora · AroraMSP</span>
+        <span>2026-05-31</span>
+      </div>
+    </article>
+  </section>
+</Layout>
