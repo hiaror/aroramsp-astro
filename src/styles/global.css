@@ -408,9 +408,12 @@ body[data-page="home"] footer { display: block; }
 .foot-col a { color: var(--fg-mute); font-size: 12px; text-decoration: none; transition: color .2s; }
 .foot-col a:hover { color: var(--fg); }
 .foot-bottom {
-  text-align: center; color: var(--fg-mute); font-size: 11px;
-  letter-spacing: .06em; text-transform: uppercase;
+  display: flex; justify-content: space-between; align-items: center;
+  color: var(--fg-mute); font-size: 11px; letter-spacing: .06em;
+  flex-wrap: wrap; gap: 8px;
 }
+.foot-sig { font-family: var(--mono); color: var(--cyan); font-size: 11px; letter-spacing: .04em; }
+.foot-status { text-transform: uppercase; letter-spacing: .08em; }
 .foot-bottom .dot { color: var(--good); }
 @media (max-width: 760px) {
   .foot-top {
