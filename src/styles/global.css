@@ -1217,26 +1217,6 @@ html:not([data-theme]) .theme-picker-btn .icon-moon { display: block; }
   }
 }
 
-/* === Stack row === */
-.stack-row { padding: 0 0 32px; }
-.stack-label { font-family: var(--mono); font-size: 11px; color: var(--fg-mute); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 14px; }
-.stack-tags { display: flex; flex-wrap: wrap; gap: 8px; }
-.stack-tag {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--cyan);
-  border: 1px solid var(--cyan-line);
-  padding: 4px 10px;
-  border-radius: 4px;
-  transition: background .2s, border-color .2s, color .2s;
-  cursor: default;
-}
-.stack-tag:hover {
-  background: color-mix(in oklab, var(--cyan) 10%, transparent);
-  border-color: var(--cyan);
-  color: var(--fg);
-}
-
 /* === Stats row === */
 .stats-row {
   display: grid;
