@@ -331,7 +331,7 @@ main { flex: 1; display: flex; flex-direction: column; position: relative; z-ind
   font-family: var(--mono); font-size: 12px; color: var(--cyan);
   display: inline-flex; align-items: center; gap: 8px; margin-bottom: 12px;
 }
-.sec-label::before { content: "·"; font-size: 16px; line-height: 1; color: var(--cyan); width: auto; height: auto; background: none; }
+.sec-label::before { content: "•"; font-size: 18px; line-height: 1; color: var(--cyan); width: auto; height: auto; background: none; }
 .page-head h1,
 .page-head h2 {
   font-size: clamp(28px, 3.8vw, 44px); margin: 0 0 12px;
