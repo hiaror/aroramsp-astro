@@ -65,7 +65,7 @@ import { expYearsPlus } from '../../consts';
 
       <h1>BitLocker recovery keys missing from Entra ID after removing a third-party agent.</h1>
 
-      <p class="lede">The encryption is still active. The key is not in Entra ID. Clicking Sync does nothing. Here is the two-path fix and the one IME timing fact that explains why nobody's script runs when they expect it to.</p>
+      <p class="lede">When a third-party disk encryption agent like Sophos is removed, it leaves BitLocker active but with no <code>RecoveryPassword</code> protector, so <code>BackupToAAD-BitLockerKeyProtector</code> has nothing to escrow. The fix is to add the protector first, then escrow it via an Intune platform script. The encryption is still active. The key is not in Entra ID. Clicking Sync does nothing. Here is the two-path fix and the one IME timing fact that explains why nobody's script runs when they expect it to.</p>
 
       <h2>The problem state</h2>
 
