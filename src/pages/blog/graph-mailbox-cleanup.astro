@@ -77,6 +77,7 @@ import { expYearsPlus } from '../../consts';
 
       <h1>Bulk mailbox cleanup with Microsoft Graph: CSV-driven, dry-run first, throttle-aware.</h1>
       <p class="lede">
+        This script deletes messages matching a sender list across any number of mailboxes using Microsoft Graph app-only authentication. It runs a dry run first, retries on throttling, caps per-mailbox deletion to prevent a noisy mailbox stalling the run, and writes a timestamped CSV of every action taken.
         Legal asks you to remove every message from a handful of senders, across two hundred
         mailboxes, by Friday. The classic answer is Compliance Search plus PurgeRequest. It
         works, but it cannot tell you exactly what got deleted, cannot be re-run safely, and

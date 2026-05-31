@@ -77,6 +77,7 @@ import { expYearsPlus } from '../../consts';
 
       <h1>Legacy BIOS to UEFI, then Windows 11 25H2, without nuking the disk.</h1>
       <p class="lede">
+        You can convert a Windows 10 PC from Legacy BIOS to UEFI and upgrade to Windows 11 25H2 without reinstalling. The process is: run MBR2GPT to convert the disk, switch the firmware from CSM to UEFI, then run the Windows 11 upgrade. Your data, apps, and user profile stay intact. The steps you cannot skip are the BitLocker suspension before disk conversion and the boot repair if the firmware switch leaves you with a blank screen.
         Windows 10 is out of support and you have a PC still booting in <strong>CSM mode</strong>
         (Compatibility Support Module, the legacy BIOS setting that Windows 11 will not accept).
         You do not need a fresh install to fix it. Here is the path that keeps your data,

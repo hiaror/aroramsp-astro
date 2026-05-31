@@ -77,6 +77,7 @@ import { expYearsPlus } from '../../consts';
 
       <h1>When LAPS silently refuses to escrow on hybrid Entra devices.</h1>
       <p class="lede">
+        If a hybrid Entra device is enrolled in Intune, shows compliant, and has LAPS policy applied but is not escrowing its password, the cause is almost always an empty <code>alternativeSecurityIds</code> field on the Entra device object. This field is not visible in the Entra portal. The fix is a leave-and-rejoin sequence that takes two restarts and 15 hours.
         Five PCs in a hybrid Intune tenant. All enrolled, all compliant, LAPS policy
         applied. Not one of them escrowing. No alerts. No errors in any portal. The
         diagnostic signal is one Graph beta endpoint field that the Entra UI does not

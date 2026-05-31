@@ -77,6 +77,7 @@ import { expYearsPlus } from '../../consts';
 
       <h1>Microsoft 365 PowerShell authentication failures: three bugs, one fix.</h1>
       <p class="lede">
+        When you load Microsoft Graph PowerShell SDK and Exchange Online Management in the same session, you get authentication failures caused by assembly version conflicts. The only method that works reliably across PowerShell 5.1 and 7 is certificate-based app-only authentication with Graph connected before Exchange Online. Interactive and device code auth both fail in at least one combination.
         I was building a Microsoft 365 tenant security audit script that needed both
         Microsoft Graph PowerShell SDK and Exchange Online Management running in the
         same session. Simple enough on paper. In practice I hit three separate

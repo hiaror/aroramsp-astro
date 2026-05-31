@@ -77,6 +77,7 @@ import { expYearsPlus } from '../../consts';
 
       <h1>Sortable mailbox size reports, without the Excel cleanup ritual.</h1>
       <p class="lede">
+        <code>Get-MailboxStatistics</code> returns mailbox size as a formatted string, not a number. You cannot sort or sum a string in Excel without a cleanup step that silently breaks when any mailbox crosses a terabyte. This script pulls the bytes directly and writes a real numeric GB column you can sort, filter, and pivot on immediately.
         Day one of a tenant-to-tenant migration and someone needs to know which mailboxes
         are above 50&nbsp;GB, which have an archive, and how the long tail looks. Get-MailboxStatistics
         will tell you, but it'll also hand you "12.43 GB (13,348,294,144 bytes)" as a

@@ -1,1 +1,10 @@
 /sitemap.xml /sitemap-index.xml 301
+/whatido.html /whatido 301
+/blog/m365-audit-toolkit.html /blog/m365-audit-toolkit 301
+/blog/windows11-uefi-upgrade.html /blog/windows11-uefi-upgrade 301
+/blog/laps-fleet-audit-graph.html /blog/laps-fleet-audit-graph 301
+/blog/laps-hybrid-registration-fix.html /blog/laps-hybrid-registration-fix 301
+/blog/exo-mailbox-size-report.html /blog/exo-mailbox-size-report 301
+/blog/graph-mailbox-cleanup.html /blog/graph-mailbox-cleanup 301
+/blog/powershell-auth-clash.html /blog/powershell-auth-clash 301
+/blog/intune-bitlocker-entra-escrow.html /blog/intune-bitlocker-entra-escrow 301
