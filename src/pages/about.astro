@@ -57,21 +57,21 @@ import { expYears, expYearsPlus } from '../consts';
         <div class="sec-label engage-head">Recent Engagements</div>
         <div class="cases">
           <div class="case reveal reveal-delay-1">
-            <h4>Windows LAPS Escrow Failure - Hybrid Entra Environment</h4>
+            <h4>Windows LAPS Escrow Failure - Hybrid Entra Environment <span class="case-year">2025</span></h4>
             <p>340 devices silently failing to escrow LAPS passwords. Helpdesk locked out of local admin credentials during incidents.</p>
             <p>Root cause: stale alternativeSecurityIds breaking Hybrid Entra trust at the authentication layer. Diagnosed via dsregcmd and Graph beta API. Resolved via controlled leave/join remediation cycle across all affected devices.</p>
             <p class="outcome">Outcome: full escrow restored, zero helpdesk calls after remediation.</p>
           </div>
           <hr class="case-divider" />
           <div class="case reveal reveal-delay-1">
-            <h4>Autopilot Deployment with Custom LOB App Packaging</h4>
+            <h4>Autopilot Deployment with Custom LOB App Packaging <span class="case-year">2025</span></h4>
             <p>180 devices needing to move from manual imaging to fully automated Autopilot. LOB applications undocumented, never packaged for Intune.</p>
             <p>Packaged all apps as Win32 with dependency chaining, designed Autopilot profiles with ESP, compliance policies, and Conditional Access enforcement.</p>
             <p class="outcome">Outcome: completed in 3 weeks, zero reimaging, technician touchtime down from 3 hours to under 20 minutes per device.</p>
           </div>
           <hr class="case-divider" />
           <div class="case reveal reveal-delay-1">
-            <h4>Legacy Authentication Eliminated Before ISO Audit</h4>
+            <h4>Legacy Authentication Eliminated Before ISO Audit <span class="case-year">2024</span></h4>
             <p>500-seat tenant with 23% of sign-ins still on basic auth. ISO audit deadline approaching with no enforcement policy in place.</p>
             <p>Analysed 30 days of sign-in logs, identified every legacy auth source, executed phased Conditional Access rollout using report-only mode first to avoid disruption.</p>
             <p class="outcome">Outcome: legacy auth reduced from 23% to 0% before the audit deadline.</p>
@@ -111,4 +111,37 @@ import { expYears, expYearsPlus } from '../consts';
       </div>
     </div>
   </section>
+
+  <script type="application/ld+json" is:raw>
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "@id": "https://aroramsp.com/#himanshu-arora",
+    "name": "Himanshu Arora",
+    "url": "https://aroramsp.com/about",
+    "mainEntityOfPage": "https://aroramsp.com/about",
+    "jobTitle": "Microsoft 365 Consultant",
+    "description": "Independent Microsoft 365 consultant with 12+ years in the Microsoft ecosystem. Fixed-fee consulting for businesses globally covering Entra ID, Conditional Access, Exchange Online, Intune, hybrid identity, and PowerShell automation.",
+    "knowsAbout": [
+      "Microsoft 365", "Entra ID", "Conditional Access", "Exchange Online",
+      "Microsoft Intune", "Windows LAPS", "Hybrid Entra ID", "PowerShell",
+      "Microsoft Graph API", "Email Security", "SPF", "DKIM", "DMARC"
+    ],
+    "hasCredential": [
+      { "@type": "EducationalOccupationalCredential", "name": "Microsoft 365 Certified: Enterprise Administrator Expert" },
+      { "@type": "EducationalOccupationalCredential", "name": "Microsoft Certified: Identity and Access Administrator Associate" },
+      { "@type": "EducationalOccupationalCredential", "name": "Microsoft Certified: Azure Fundamentals" },
+      { "@type": "EducationalOccupationalCredential", "name": "MCSE: Productivity Solutions Expert" }
+    ],
+    "sameAs": [
+      "https://www.linkedin.com/in/himanshusac",
+      "https://github.com/hiaror"
+    ],
+    "worksFor": {
+      "@type": "Organization",
+      "@id": "https://aroramsp.com/#org",
+      "name": "AroraMSP"
+    }
+  }
+  </script>
 </Layout>
