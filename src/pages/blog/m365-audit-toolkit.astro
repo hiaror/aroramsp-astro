@@ -83,6 +83,47 @@ import { expYearsPlus } from '../../consts';
       <h2>what the toolkit does</h2>
       <p>Two PowerShell scripts that connect to your tenant using certificate-based app authentication, run a series of checks, and produce a clean HTML report you can open in any browser, share with your team, or export to PDF in one click.</p>
 
+      <h2>how it actually runs</h2>
+      <p>Once the app registration is set up, running the audit is three parameters and done. No interactive login, no browser window, no MFA prompt:</p>
+      <pre><code>.\Invoke-AroraMSPTenantAudit.ps1 `
+    -TenantId     "your-tenant-id" `
+    -ClientId     "your-app-client-id" `
+    -CertificateThumbprint "your-cert-thumbprint"</code></pre>
+      <p>The script connects to Microsoft Graph and Exchange Online using the certificate stored in your local certificate store, runs all checks, and writes a self-contained HTML report to the output directory. No data leaves your machine except the Graph and Exchange API calls to your own tenant.</p>
+
+      <h2>what a check looks like under the hood</h2>
+      <p>Each check follows the same pattern: query the API, evaluate the result, emit a PASS, WARNING, or FAIL with a remediation recommendation. Here is the legacy authentication check:</p>
+      <pre><code>$legacyBlock = $caPolicies | Where-Object {"{"}
+    $_.State -eq 'enabled' -and
+    $_.Conditions.ClientAppTypes -contains 'exchangeActiveSync' -and
+    $_.Conditions.ClientAppTypes -contains 'other' -and
+    $_.GrantControls.BuiltInControls -contains 'block'
+{"}"}
+if ($legacyBlock) {"{"}
+    Add-Finding 'Identity & Access' 'Legacy authentication blocked via CA' 'PASS' `
+        "$($legacyBlock.Count) enabled policy/policies block legacy authentication."
+{"}"} else {"{"}
+    Add-Finding 'Identity & Access' 'Legacy authentication blocked via CA' 'FAIL' `
+        'No enabled Conditional Access policy blocks legacy authentication.' `
+        'Create a CA policy targeting Exchange ActiveSync and Other clients with grant control = Block.'
+{"}"}</code></pre>
+      <p>This checks your Conditional Access policies for one that targets both <code>exchangeActiveSync</code> and <code>other</code> client app types with a block grant control. If none exists, the report flags it as a FAIL with the exact remediation step. The same pattern applies to all 20 checks across the four categories.</p>
+
+      <h2>the DMARC check as another example</h2>
+      <p>Email security checks query DNS directly for each verified domain in your tenant. The DMARC check resolves the <code>_dmarc.yourdomain.com</code> TXT record and grades the policy level:</p>
+      <pre><code>$rec = Resolve-DnsName -Name "_dmarc.$d" -Type TXT -ErrorAction Stop
+$policy = if ($dmarcTxt -match 'p=(\w+)') {"{"} $matches[1].ToLower() {"}"} else {"{"} 'unknown' {"}"}
+switch ($policy) {"{"}
+    'reject'     {"{"} Add-Finding 'Email Security' "DMARC: $d" 'PASS'    'p=reject (enforced)' {"}"}
+    'quarantine' {"{"} Add-Finding 'Email Security' "DMARC: $d" 'WARNING' 'p=quarantine'
+                   'Move to p=reject after monitoring rua aggregate reports for 30+ days.' {"}"}
+    'none'       {"{"} Add-Finding 'Email Security' "DMARC: $d" 'WARNING' 'p=none (monitor-only)'
+                   'Move to p=quarantine, then p=reject.' {"}"}
+    default      {"{"} Add-Finding 'Email Security' "DMARC: $d" 'FAIL'    'No DMARC TXT record found.'
+                   "Publish: v=DMARC1; p=quarantine; rua=mailto:dmarc@$d" {"}"}
+{"}"}</code></pre>
+      <p><code>p=reject</code> is a PASS. <code>p=quarantine</code> or <code>p=none</code> is a WARNING with the next step. No record at all is a FAIL with the exact DNS record to publish. Every check in the toolkit works the same way: a clear status and a specific action, not a vague recommendation.</p>
+
       <h2>what the tenant audit checks</h2>
       <p><strong>Identity and Access:</strong></p>
       <ul>
@@ -115,6 +156,11 @@ import { expYearsPlus } from '../../consts';
 
       <h2>the mailbox report</h2>
       <p>Pulls every mailbox in your tenant showing used storage, quota, available space, used percentage, archive status, and licence per mailbox. Sorted by storage descending. Highlights anything over 80% quota automatically. Export to PDF or CSV in one click.</p>
+      <p>The report also surfaces shared mailboxes with paid licences assigned, which is one of the most common sources of unnecessary licence spend in SMB tenants. A shared mailbox does not need a paid licence unless it has an archive or specific compliance requirements. The toolkit flags every instance so you can review and reassign.</p>
+
+      <h2>what the output looks like</h2>
+      <p>Both reports are self-contained HTML files with no external dependencies. Open them in any browser, print to PDF, or share the file directly. The audit report groups findings by category with colour-coded status indicators: green for PASS, amber for WARNING, red for FAIL. Each FAIL and WARNING includes the specific remediation step inline so whoever reads the report knows exactly what to do next without needing to cross-reference external documentation.</p>
+      <p>The report also includes an executive summary at the top showing total checks, pass rate, and a count of items requiring attention. Designed to be handed to a business owner or a compliance team without requiring a translation layer.</p>
 
       <h2>how authentication works</h2>
       <p>Both scripts use certificate-based app-only authentication. No interactive login prompts. No browser windows. Set up an app registration once, run the scripts with three parameters, and the reports generate automatically. Full setup documentation is included covering every step of the app registration, certificate creation, and permission assignment.</p>
