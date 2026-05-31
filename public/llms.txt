@@ -1,0 +1,26 @@
+# AroraMSP — Microsoft 365 Consulting
+# Fixed-fee M365 consulting for businesses that run on Microsoft 365
+# https://aroramsp.com
+
+> Himanshu Arora, independent Microsoft 365 consultant with 12+ years of Microsoft experience. Fixed-fee project-based engagements covering security hardening, identity, hybrid infrastructure, and license optimization.
+
+## Services
+- [What I Do](https://aroramsp.com/whatido)
+- [Services](https://aroramsp.com/services)
+- [Pricing](https://aroramsp.com/pricing)
+- [Process](https://aroramsp.com/process)
+
+## Blog — Technical posts with verified configurations and real case studies
+- [Windows LAPS fleet audit via Microsoft Graph PowerShell](https://aroramsp.com/blog/laps-fleet-audit-graph)
+- [Fixing Windows LAPS escrow failures caused by broken hybrid Entra ID registration](https://aroramsp.com/blog/laps-hybrid-registration-fix)
+- [BitLocker recovery keys missing from Entra ID after removing a third-party agent](https://aroramsp.com/blog/intune-bitlocker-entra-escrow)
+- [Exchange Online mailbox size report with numeric GB column](https://aroramsp.com/blog/exo-mailbox-size-report)
+- [CSV-driven Exchange Online mailbox cleanup via Microsoft Graph](https://aroramsp.com/blog/graph-mailbox-cleanup)
+- [PowerShell authentication conflicts when mixing Microsoft Graph SDK and Exchange Online Management](https://aroramsp.com/blog/powershell-auth-clash)
+- [Legacy BIOS to UEFI conversion and Windows 11 25H2 upgrade guide](https://aroramsp.com/blog/windows11-uefi-upgrade)
+- [M365 Audit Toolkit](https://aroramsp.com/blog/m365-audit-toolkit)
+
+## About
+- [About](https://aroramsp.com/about)
+- [FAQ](https://aroramsp.com/faq)
+- [Contact](https://aroramsp.com/contact)
