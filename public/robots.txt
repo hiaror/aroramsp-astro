@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://aroramsp.com/sitemap-index.xml
