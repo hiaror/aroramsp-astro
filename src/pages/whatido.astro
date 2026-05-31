@@ -14,29 +14,18 @@ import Layout from '../layouts/Layout.astro';
   <section class="page wrap">
     <div class="page-head">
       <div class="sec-label">What I Do</div>
-      <h1>Your Microsoft 365 environment, properly set up and secured.</h1>
-      <p>Most businesses run on Microsoft 365 but never get it configured correctly. Email lands in spam. Devices are not managed. Former employees still have access. Security alerts go unread. I fix that. Whether you need a full audit, a specific problem solved, or someone to take ownership of your M365 environment end to end, I handle the technical side so your team can focus on the business.</p>
+      <h1>Your Microsoft 365 is probably not working as well as it should.</h1>
+      <p>Most businesses are paying for Microsoft 365 but only using a fraction of what it can do. The rest is either misconfigured, switched off by default, or quietly creating security gaps nobody has noticed yet. I go in, find what is wrong, fix it, and make sure it stays fixed.</p>
     </div>
 
     <div class="layout-2col">
       <div class="service-list">
-        <div class="service-card reveal reveal-delay-1">
-          <span class="tag">endpoint management</span>
-          <h3>Intune Deployment and Management</h3>
-          <p class="service-plain">Making sure every device that touches your business data is managed, compliant, and secure, without your staff needing to do anything technical.</p>
-          <ul>
-            <li>Device compliance policies for Windows, iOS, Android, macOS</li>
-            <li>App protection policies for managed and unmanaged devices</li>
-            <li>Autopilot enrollment and zero-touch provisioning</li>
-            <li>Windows Update for Business rings and patch management</li>
-            <li>Defender for Endpoint integration and baseline policies</li>
-          </ul>
-        </div>
 
-        <div class="service-card reveal reveal-delay-2">
+        <div class="service-card reveal reveal-delay-1">
           <span class="tag">identity and access</span>
+          <div class="service-problem">The wrong people have access. Or the right people cannot get in.</div>
           <h3>Entra ID and Conditional Access</h3>
-          <p class="service-plain">Controlling who can access what, from where, and on which devices. The right people get in. Everyone else does not.</p>
+          <p class="service-plain">Access policies that let your staff work from anywhere while keeping everyone else out. Former employees lose access the moment they leave. MFA works without frustrating your team every time they open their laptop.</p>
           <ul>
             <li>Conditional Access policy design and implementation</li>
             <li>MFA enforcement and authentication strength policies</li>
@@ -46,10 +35,25 @@ import Layout from '../layouts/Layout.astro';
           </ul>
         </div>
 
+        <div class="service-card reveal reveal-delay-2">
+          <span class="tag">endpoint management</span>
+          <div class="service-problem">You have no idea which devices are accessing your business data.</div>
+          <h3>Intune Deployment and Management</h3>
+          <p class="service-plain">Every device that touches your data gets enrolled, managed, and kept compliant automatically. Your staff do not need to do anything. You get full visibility into what is on your network and what is not.</p>
+          <ul>
+            <li>Device compliance policies for Windows, iOS, Android, macOS</li>
+            <li>App protection policies for managed and unmanaged devices</li>
+            <li>Autopilot enrollment and zero-touch provisioning</li>
+            <li>Windows Update for Business rings and patch management</li>
+            <li>Defender for Endpoint integration and baseline policies</li>
+          </ul>
+        </div>
+
         <div class="service-card reveal reveal-delay-3">
           <span class="tag">email and collaboration</span>
+          <div class="service-problem">Your emails land in spam. Or someone is impersonating your domain.</div>
           <h3>Exchange Online and Email Security</h3>
-          <p class="service-plain">Keeping your email deliverable, your inbox protected from phishing, and your communication data governed correctly.</p>
+          <p class="service-plain">Properly configured email authentication so your messages reach inboxes and nobody can send emails pretending to be you. Anti-phishing policies that protect your staff from the attacks that actually work.</p>
           <ul>
             <li>SPF, DKIM, DMARC configuration and verification</li>
             <li>Anti-phishing, anti-spam, and safe links policies</li>
@@ -61,8 +65,9 @@ import Layout from '../layouts/Layout.astro';
 
         <div class="service-card reveal reveal-delay-4">
           <span class="tag">endpoint security</span>
+          <div class="service-problem">Every Windows device shares the same local admin password. Nobody has changed it in years.</div>
           <h3>Windows LAPS</h3>
-          <p class="service-plain">Automatically rotating local administrator passwords on every Windows device so a single compromised machine cannot become a doorway into your entire network.</p>
+          <p class="service-plain">Windows LAPS automatically rotates the local administrator password on every device and stores it securely in Entra ID. If one machine gets compromised, it cannot be used to access the rest of your fleet.</p>
           <ul>
             <li>LAPS policy deployment via Intune</li>
             <li>Entra ID LAPS escrow configuration</li>
@@ -74,8 +79,9 @@ import Layout from '../layouts/Layout.astro';
 
         <div class="service-card reveal reveal-delay-1">
           <span class="tag">automation</span>
+          <div class="service-problem">Admin tasks take hours. Reports are done manually. Things fall through the cracks.</div>
           <h3>PowerShell and Graph API Automation</h3>
-          <p class="service-plain">Replacing manual, error-prone admin tasks with scripts that run reliably and produce reports your team can actually read and act on.</p>
+          <p class="service-plain">Repetitive admin work replaced with scripts that run reliably and produce clear reports. Licence audits, mailbox reviews, user onboarding and offboarding, all automated so nothing gets missed and nothing takes longer than it should.</p>
           <ul>
             <li>Microsoft Graph PowerShell automation scripts</li>
             <li>Tenant health audit and reporting scripts</li>
@@ -87,8 +93,9 @@ import Layout from '../layouts/Layout.astro';
 
         <div class="service-card reveal reveal-delay-2">
           <span class="tag">hybrid infrastructure</span>
+          <div class="service-problem">Your on-premises systems and Microsoft 365 are not talking to each other properly.</div>
           <h3>Hybrid Entra Environments</h3>
-          <p class="service-plain">Connecting your on-premises Active Directory to Microsoft's cloud so your staff get a seamless sign-in experience across every system without managing two separate identity platforms.</p>
+          <p class="service-plain">If your business still runs Active Directory on-premises alongside Microsoft 365, the connection between them needs to be configured correctly. When it is, your staff get one login that works everywhere. When it is not, you get sync errors, broken access, and devices that cannot enrol in Intune.</p>
           <ul>
             <li>Entra Connect installation and configuration</li>
             <li>Hybrid Entra join troubleshooting and remediation</li>
@@ -99,10 +106,11 @@ import Layout from '../layouts/Layout.astro';
         </div>
 
         <div class="service-outcome reveal">
-          <h3>What a properly configured M365 environment means for your business</h3>
-          <p>Your staff sign in once and get access to everything they need. Devices are managed automatically. Former employees lose access the moment they leave. Your email reaches inboxes instead of spam folders. Security policies run in the background without anyone having to think about them. And when something needs attention, you hear about it before it becomes a problem.</p>
-          <p>That is what Microsoft 365 is supposed to deliver. Most tenants I audit are nowhere close. Getting there does not require a full-time IT department. It requires the right configuration, done once, done properly.</p>
+          <h3>What your business looks like after the work is done</h3>
+          <p>Your staff sign in once and get access to everything they need. Devices are managed and compliant without anyone having to think about it. Former employees lose access the moment they leave. Your email reaches inboxes. Security policies run in the background. And when something needs attention, you hear about it before it becomes a problem.</p>
+          <p>That is what Microsoft 365 is supposed to deliver. Getting there does not require a full-time IT department. It requires the right configuration, done once, done properly.</p>
         </div>
+
       </div>
 
       <aside class="toolkit-aside reveal">

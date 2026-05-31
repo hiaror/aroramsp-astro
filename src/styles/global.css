@@ -642,6 +642,12 @@ h1.headline .accent { color: var(--accent); }
   content: "✓"; position: absolute; left: 0; top: 4px;
   color: var(--accent); font-weight: 600; font-family: var(--mono); font-size: 13px;
 }
+.service-card .service-problem { font-size: 14px; font-weight: 600; color: var(--cyan); margin: 0 0 10px; line-height: 1.4; font-family: var(--mono); }
+.service-card .service-plain { font-size: 14px; color: var(--fg-mute); line-height: 1.6; margin: 0 0 14px; }
+.service-outcome { padding: 22px 24px; border: 1px solid var(--cyan-line); border-left: 3px solid var(--cyan); background: var(--bg-1); border-radius: 10px; margin-top: 8px; }
+.service-outcome h3 { margin: 0 0 12px; font-size: clamp(16px, 1.6vw, 18px); font-weight: 600; color: var(--fg); }
+.service-outcome p { font-size: 14px; color: var(--fg-dim); line-height: 1.7; margin: 0 0 10px; }
+.service-outcome p:last-child { margin: 0; }
 .toolkit-aside .btn { width: 100%; justify-content: center; }
 .toolkit-aside .sample-links {
   display: flex; flex-direction: column; gap: 8px; margin-top: 12px;
