@@ -1,73 +1,141 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { expYearsPlus } from '../consts';
-const expLabel = `${expYearsPlus} years`;
 ---
 <Layout
   title="Microsoft 365 Services · AroraMSP"
-  description={`M365 migrations, tenant setup, security hardening, and license optimization. Fixed-fee consulting from a senior Microsoft engineer with ${expLabel} of hands-on experience.`}
+  description="Fixed-fee Microsoft 365 consulting for businesses that need their M365 environment set up correctly, secured, and working properly. No retainers, no surprises."
   page="services"
   canonical="https://aroramsp.com/services"
-  ogTitle="Microsoft 365 Services - AroraMSP"
-  ogDescription={`M365 migrations, tenant setup, security hardening, and license optimization. Fixed-fee consulting from a senior Microsoft engineer with ${expLabel} of hands-on experience.`}
+  ogTitle="Microsoft 365 Services · AroraMSP"
+  ogDescription="Fixed-fee Microsoft 365 consulting for businesses that need their M365 environment working properly. Tenant audits, security hardening, migrations, and license optimization."
 >
+
   <section class="page wrap">
+
     <div class="page-head">
       <div class="sec-label">Services</div>
-      <h2>Microsoft 365 expertise, without the overhead of a large firm.</h2>
-      <p>Four focused services covering every stage of your M365 environment. Fixed fees, no reselling, and direct access to a senior Microsoft engineer with {expLabel} of hands-on experience supporting enterprise tenants globally.</p>
+      <h1>Something is not right with your Microsoft 365. You just cannot put your finger on it.</h1>
+      <p class="lede">You are paying for Microsoft 365. Your staff are using it. But something feels off. Emails land in spam. Someone left the company months ago and you are not completely sure their access is gone. You have heard you should have MFA but nobody has confirmed it is actually on. You got sold Business Premium but half the features have never been touched. You are not an IT person. This is not your job. But it is your business, and right now your Microsoft 365 is not protecting it the way it should.</p>
     </div>
 
-    <div class="services">
-      <div class="service reveal reveal-delay-1">
-        <div class="n"><span>01</span><span class="tag">migration</span></div>
-        <h3>Migrate to Microsoft 365</h3>
-        <p>Move from Google Workspace, on-premises Exchange, or another Microsoft tenant with no downtime and no data loss. Your users stay productive throughout the cutover.</p>
-        <ul>
-          <li>Cutover, staged, and hybrid migration paths</li>
-          <li>Mailbox, OneDrive, SharePoint, and Teams data</li>
-          <li>Entra ID and identity migration</li>
-          <li>Cross-tenant and domain consolidation</li>
-          <li>DNS cutover and mail flow verification</li>
+    <div class="services-commercial">
+
+      <div class="services-problems reveal">
+        <h2>Does any of this sound familiar?</h2>
+        <ul class="problem-list">
+          <li>A former employee left and you are not 100 percent sure their account is fully disabled</li>
+          <li>Your emails occasionally land in a customer's spam folder and you do not know why</li>
+          <li>Someone mentioned your domain could be spoofed and you have no idea if that is true</li>
+          <li>You have Microsoft 365 Business Premium but most of the security features have never been configured</li>
+          <li>Your staff share a local admin password on every Windows PC and nobody has changed it in years</li>
+          <li>You got a new laptop and it took three days to set up because there is no proper device management</li>
+          <li>You are not sure which licences you are paying for that nobody is actually using</li>
+          <li>Your IT setup grew organically and now nobody really knows what is connected to what</li>
         </ul>
+        <p class="problems-close">If you recognise two or three of those, your Microsoft 365 needs attention. Not eventually. Now.</p>
       </div>
-      <div class="service reveal reveal-delay-2">
-        <div class="n"><span>02</span><span class="tag">setup</span></div>
-        <h3>Tenant Setup and Configuration</h3>
-        <p>A correctly built Microsoft 365 tenant from day one. Identity, email, collaboration, and security configured to Microsoft best practice, not factory defaults that leave gaps your team will spend months closing.</p>
-        <ul>
-          <li>Entra ID with Conditional Access and MFA</li>
-          <li>Exchange Online with SPF, DKIM, DMARC, MTA-STS</li>
-          <li>Teams and SharePoint governance baseline</li>
-          <li>Intune device management policies</li>
-          <li>Admin role separation and break-glass accounts</li>
-        </ul>
+
+      <div class="services-approach reveal">
+        <h2>How I work</h2>
+        <p>I am an independent Microsoft 365 consultant with {expYearsPlus} years in the Microsoft ecosystem. I work with businesses that are not large enough to have a dedicated IT department but are too important to leave their M365 environment misconfigured.</p>
+        <p>Every engagement is fixed fee. You know the cost before any work starts. There are no hourly rates that balloon, no retainers, and no managed service contracts. I come in, fix the problem, document everything, and hand it back to you in a state your team can maintain.</p>
+        <p>I handle the technical side completely. You do not need to understand what Conditional Access is or how DKIM works. You just need it done correctly.</p>
       </div>
-      <div class="service reveal reveal-delay-3">
-        <div class="n"><span>03</span><span class="tag">security</span></div>
-        <h3>Security Hardening</h3>
-        <p>Close the security gaps that accumulate when Microsoft 365 is deployed quickly or managed reactively. Defender, Purview, and Intune configured to protect your users and your data against real threats, not checkbox compliance.</p>
-        <ul>
-          <li>MFA and passwordless authentication rollout</li>
-          <li>Conditional Access policy design and enforcement</li>
-          <li>Microsoft Defender for Business configuration</li>
-          <li>Data Loss Prevention and sensitivity labels</li>
-          <li>Endpoint compliance policies with Intune</li>
-          <li>Privileged Identity Management</li>
-        </ul>
+
+      <div class="services-engagements reveal">
+        <h2>Where most businesses start</h2>
+
+        <div class="engagement-card">
+          <div class="engagement-number">01</div>
+          <div class="engagement-body">
+            <h3>M365 Tenant Health Audit</h3>
+            <p class="engagement-price">USD 1,500 · fixed fee · 5 business days</p>
+            <p>If you are not sure what is wrong, start here. I connect to your tenant using read-only access, run a structured audit across identity, email security, device management, app registrations, and licensing, and produce a prioritised findings report in plain English. Every finding includes exactly what needs to change and why it matters for your business.</p>
+            <p>Most businesses that go through an audit find at least three things they did not know were misconfigured. Some find significantly more.</p>
+            <ul>
+              <li>Full access review including legacy authentication and MFA status</li>
+              <li>Email security check covering SPF, DKIM, DMARC, and anti-phishing policies</li>
+              <li>Device management and compliance policy review</li>
+              <li>App registration audit covering expiring credentials and high-privilege permissions</li>
+              <li>Licence utilisation report showing unused and misassigned licences</li>
+              <li>Plain English findings document with prioritised remediation steps</li>
+              <li>60-minute walkthrough call with your team</li>
+            </ul>
+            <a href="/contact" class="btn btn-primary">Book a free discovery call →</a>
+          </div>
+        </div>
+
+        <div class="engagement-card">
+          <div class="engagement-number">02</div>
+          <div class="engagement-body">
+            <h3>Fix or Build Something Specific</h3>
+            <p class="engagement-price">From USD 4,500 · scoped after audit</p>
+            <p>If you know what needs doing, or if the audit identified specific work, I scope it as a fixed-fee project. Common engagements include setting up Conditional Access and MFA properly, configuring email security from scratch, deploying Intune device management, migrating from on-premises Exchange, or cleaning up a tenant that has grown without any governance.</p>
+            <p>Every project is scoped in writing before work starts. If the scope changes materially, we discuss it before any additional work happens.</p>
+            <ul>
+              <li>Conditional Access and MFA deployment</li>
+              <li>Email security configuration covering SPF, DKIM, DMARC</li>
+              <li>Intune device management setup and enrollment</li>
+              <li>Exchange Online migration from on-premises</li>
+              <li>Windows LAPS deployment for local admin password rotation</li>
+              <li>Hybrid Entra ID configuration and remediation</li>
+              <li>Licence optimisation and reassignment</li>
+            </ul>
+            <a href="/contact" class="btn btn-ghost">Discuss your project →</a>
+          </div>
+        </div>
+
       </div>
-      <div class="service reveal reveal-delay-4">
-        <div class="n"><span>04</span><span class="tag">optimize</span></div>
-        <h3>License Optimization</h3>
-        <p>Most SMBs overpay between 20% and 40% on Microsoft 365 licensing. A line-by-line audit identifies unused licenses, wrong tiers, and redundant add-ons, then produces a concrete savings plan you can act on immediately.</p>
-        <ul>
-          <li>Full license inventory across all SKUs</li>
-          <li>User-by-user utilization mapping</li>
-          <li>Right-sizing between E3, E5, and Business tiers</li>
-          <li>Add-on and third-party overlap analysis</li>
-          <li>Renewal and co-term timing strategy</li>
-        </ul>
+
+      <div class="services-reassurance reveal">
+        <h2>What you can expect</h2>
+        <p>You will not get a junior consultant reading from a checklist. You will not get a sales pitch for ongoing managed services. You will not receive a 200-page report that nobody reads.</p>
+        <p>You will get a direct answer to what is wrong, a clear plan to fix it, and work done properly the first time. Everything is documented so your team can maintain it without coming back to me. If something is not in scope, I will tell you upfront rather than billing for it later.</p>
+        <p>If you are not sure whether your situation fits one of these engagements, book a free 30-minute call. No commitment. No sales pressure. Just an honest conversation about what your Microsoft 365 environment needs.</p>
+        <a href="/contact" class="btn btn-primary">Book a free 30-minute call →</a>
       </div>
+
     </div>
+
   </section>
+
+  <script type="application/ld+json" is:raw>
+  {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    "@id": "https://aroramsp.com/#org",
+    "name": "AroraMSP",
+    "url": "https://aroramsp.com",
+    "description": "Fixed-fee Microsoft 365 consulting for businesses that need their M365 environment set up correctly, secured, and working properly.",
+    "areaServed": "Worldwide",
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Microsoft 365 Consulting Services",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "M365 Tenant Health Audit",
+            "description": "Full Microsoft 365 tenant audit covering identity, email security, device management, app registrations, and licensing. Produces a prioritised findings report in plain English."
+          },
+          "price": "1500",
+          "priceCurrency": "USD"
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Microsoft 365 Project Engagement",
+            "description": "Fixed-fee project engagements covering Conditional Access, email security, Intune deployment, Exchange migration, Windows LAPS, hybrid Entra ID, and licence optimisation."
+          },
+          "price": "4500",
+          "priceCurrency": "USD"
+        }
+      ]
+    }
+  }
+  </script>
+
 </Layout>
