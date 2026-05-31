@@ -614,6 +614,11 @@ h1.headline .accent { color: var(--accent); }
 }
 
 /* === Services commercial landing page === */
+.not-found { max-width: 560px; padding: 60px 0; }
+.not-found-code { font-family: var(--mono); font-size: 96px; font-weight: 700; color: var(--cyan); line-height: 1; margin-bottom: 16px; opacity: 0.4; }
+.not-found h1 { font-size: clamp(24px, 3vw, 32px); font-weight: 700; margin: 0 0 16px; color: var(--fg); }
+.not-found p { font-size: 16px; color: var(--fg-dim); line-height: 1.6; margin: 0 0 32px; }
+.not-found-links { display: flex; flex-wrap: wrap; gap: 12px; }
 .lede-list { list-style: none; padding: 0; margin: 12px 0 16px; }
 .lede-list li { color: var(--fg-dim); font-size: 16px; line-height: 1.6; padding: 4px 0 4px 20px; position: relative; }
 .lede-list li::before { content: ""; position: absolute; left: 0; top: 13px; width: 10px; height: 2px; background: var(--cyan); }
