@@ -613,6 +613,96 @@ h1.headline .accent { color: var(--accent); }
   width: 8px; height: 1px; background: var(--cyan-line);
 }
 
+/* === Services commercial landing page === */
+.services-commercial {
+  max-width: 820px; display: flex; flex-direction: column; gap: 40px;
+}
+
+.services-problems {
+  border: 1px solid var(--line); border-left: 3px solid var(--cyan);
+  background: var(--bg-1); border-radius: 10px; padding: 22px 24px;
+}
+.services-problems h2 {
+  margin: 0 0 16px; font-size: clamp(18px, 2vw, 22px);
+  font-weight: 600; letter-spacing: -.01em; line-height: 1.3; color: var(--fg);
+}
+.problem-list { list-style: none; margin: 0; padding: 0; }
+.problem-list li {
+  color: var(--fg-dim); font-size: 14px; line-height: 1.6;
+  padding: 6px 0 6px 18px; position: relative;
+}
+.problem-list li::before {
+  content: ""; position: absolute; left: 0; top: 14px;
+  width: 8px; height: 1px; background: var(--cyan-line);
+}
+.problems-close { font-weight: 600; color: var(--fg); margin: 14px 0 0; }
+
+.services-approach { padding: 12px 0; }
+.services-approach h2 {
+  margin: 0 0 14px; font-size: clamp(18px, 2vw, 22px);
+  font-weight: 600; letter-spacing: -.01em; line-height: 1.3; color: var(--fg);
+}
+.services-approach p {
+  color: var(--fg-dim); font-size: 15px; line-height: 1.7; margin: 0 0 12px; max-width: 70ch;
+}
+.services-approach p:last-child { margin: 0; }
+
+.services-engagements { display: flex; flex-direction: column; gap: 20px; }
+.services-engagements > h2 {
+  margin: 0 0 4px; font-size: clamp(18px, 2vw, 22px);
+  font-weight: 600; letter-spacing: -.01em; line-height: 1.3; color: var(--fg);
+}
+.engagement-card {
+  display: flex; gap: 20px; padding: 22px 24px;
+  border: 1px solid var(--line); border-radius: 10px;
+  background: var(--bg-1); color: var(--fg);
+  transition: border-color 0.2s, background 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+.engagement-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px -8px var(--accent-soft), 0 0 0 1px var(--accent-line);
+}
+.engagement-number {
+  font-family: var(--mono); font-size: 32px; font-weight: 600;
+  color: var(--cyan); line-height: 1; flex-shrink: 0;
+}
+.engagement-body { display: flex; flex-direction: column; gap: 12px; }
+.engagement-body h3 {
+  margin: 0; font-size: clamp(17px, 1.8vw, 19px);
+  font-weight: 600; letter-spacing: -.01em; line-height: 1.3; color: var(--fg);
+}
+.engagement-price {
+  font-family: var(--mono); color: var(--cyan); font-size: 13px; margin: 0 0 4px;
+}
+.engagement-body p { color: var(--fg-dim); font-size: 14px; line-height: 1.65; margin: 0; }
+.engagement-body ul { margin: 4px 0; padding: 0; list-style: none; }
+.engagement-body li {
+  color: var(--fg-dim); font-size: 14px; line-height: 1.6;
+  padding: 4px 0 4px 18px; position: relative;
+}
+.engagement-body li::before {
+  content: ""; position: absolute; left: 0; top: 13px;
+  width: 8px; height: 1px; background: var(--cyan-line);
+}
+.engagement-body .btn { margin-top: 6px; align-self: flex-start; }
+
+.services-reassurance {
+  border: 1px solid var(--line); border-left: 3px solid var(--cyan);
+  background: var(--bg-1); border-radius: 10px; padding: 22px 24px;
+}
+.services-reassurance h2 {
+  margin: 0 0 14px; font-size: clamp(18px, 2vw, 22px);
+  font-weight: 600; letter-spacing: -.01em; line-height: 1.3; color: var(--fg);
+}
+.services-reassurance p {
+  color: var(--fg-dim); font-size: 15px; line-height: 1.7; margin: 0 0 12px; max-width: 70ch;
+}
+.services-reassurance .btn { margin-top: 6px; }
+
+@media (max-width: 560px) {
+  .engagement-card { flex-direction: column; gap: 12px; }
+}
+
 .toolkit-aside {
   position: sticky; top: calc(var(--nav-h) + 24px);
   border: 1px solid var(--accent-line);
