@@ -614,6 +614,10 @@ h1.headline .accent { color: var(--accent); }
 }
 
 /* === Services commercial landing page === */
+.lede-list { list-style: none; padding: 0; margin: 12px 0 16px; }
+.lede-list li { color: var(--fg-dim); font-size: 16px; line-height: 1.6; padding: 4px 0 4px 20px; position: relative; }
+.lede-list li::before { content: ""; position: absolute; left: 0; top: 13px; width: 10px; height: 2px; background: var(--cyan); }
+.lede-close { color: var(--fg-dim); font-size: 16px; line-height: 1.6; margin: 0 0 8px; font-weight: 500; }
 .services-commercial {
   max-width: 1100px; display: flex; flex-direction: column; gap: 40px;
 }
