@@ -324,6 +324,26 @@ import { expYearsPlus } from '../../consts';
         <li><strong>No devices in the tenant are escrowing at all.</strong> Tenant-level toggle problem. <strong>Fix:</strong> in the Entra portal, go to <strong>Devices &gt; Device settings</strong> and turn on "Local administrator password solution (LAPS)". That is a one-click fix; no device-side work will help until that toggle is on.</li>
       </ul>
 
+      <h2>error messages and what they mean</h2>
+      <div class="troubleshoot-list">
+        <div class="troubleshoot-item">
+          <h3>DeviceAuthStatus: FAILED. Device is either disabled or deleted</h3>
+          <p>This is the primary diagnostic signature of broken hybrid Entra registration. The device object exists in Entra and the device shows compliant in Intune, but Stage 2 of the hybrid join never completed. Check <code>alternativeSecurityIds</code> via the Graph beta endpoint. If that field is empty, the device needs a leave-and-rejoin sequence.</p>
+        </div>
+        <div class="troubleshoot-item">
+          <h3>Server ErrorSubCode: error_missing_device / Https Status: 400</h3>
+          <p>This appears in the LAPS event log when the device attempts to escrow its password but Entra cannot find a valid device object to attach it to. The root cause is an empty <code>alternativeSecurityIds</code> field. The device object exists but is not properly registered. Run the leave-join remediation and wait 15 to 24 hours before verifying escrow.</p>
+        </div>
+        <div class="troubleshoot-item">
+          <h3>alternativeSecurityIds is empty on the Entra device object</h3>
+          <p>This field is not visible in the Entra portal UI. You can only read it via the Graph beta endpoint: <code>https://graph.microsoft.com/beta/devices/$objectId</code>. An empty <code>alternativeSecurityIds</code> array means Stage 2 of hybrid join never completed. The device cannot authenticate to Entra and cannot escrow LAPS passwords until this is fixed.</p>
+        </div>
+        <div class="troubleshoot-item">
+          <h3>AzureAdJoined: NO immediately after dsregcmd /join</h3>
+          <p>This is expected and normal after the leave-join procedure. The Automatic-Device-Join scheduled task needs to run and Entra Connect needs to sync before the join completes. Do not re-run the repair procedure during this window. Wait 15 to 24 hours and then verify using <code>dsregcmd /status</code> and the Graph diagnostic script.</p>
+        </div>
+      </div>
+
       <div class="callout">
         <p>Hybrid Entra is full of these "everything looks fine, nothing works" failure modes. The diagnostic toolset for this specific one is sanitized and ready to run. If you would rather hand the diagnostic and remediation to someone who has done it on a live tenant, <a href="/contact">book a 30-minute call</a> and we can talk through the right approach for your environment.</p>
         <div class="btn-row">

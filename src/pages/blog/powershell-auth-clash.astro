@@ -405,6 +405,26 @@ not set to an instance of an object.</span></code></pre>
         <li>Upgrade to PowerShell 7 if you are still running M365 automation on PowerShell 5.1.</li>
       </ul>
 
+      <h2>error messages and what they mean</h2>
+      <div class="troubleshoot-list">
+        <div class="troubleshoot-item">
+          <h3>Method not found: 'Microsoft.Identity.Client.PublicClientApplicationBuilder Microsoft.Identity.Client.Broker.BrokerExtension.WithBroker'</h3>
+          <p>This is an assembly version conflict between the Microsoft Graph SDK and the Exchange Online Management module. The two modules load different versions of the Microsoft.Identity.Client library and one overwrites the other. The fix is to connect using certificate-based app-only authentication rather than interactive or device code auth, which avoids the MSAL broker entirely.</p>
+        </div>
+        <div class="troubleshoot-item">
+          <h3>The 'Connect-MgGraph' command was found in the module 'Microsoft.Graph.Authentication', but the module could not be loaded</h3>
+          <p>This happens when Exchange Online Management is connected first in PowerShell 5.1. The EXO module loads an older version of a shared assembly that the Graph SDK then cannot use. Fix: connect Graph before Exchange Online in every session, or switch to PowerShell 7 which handles assembly isolation differently.</p>
+        </div>
+        <div class="troubleshoot-item">
+          <h3>DeviceCodeCredential authentication failed: Object reference not set to an instance of an object</h3>
+          <p>A confirmed bug in Microsoft Graph PowerShell SDK v2.34 and later when using device code authentication in PowerShell 7. The SDK attempts to use the WAM broker for device code flow and fails with a null reference. Tracked in <a href="https://github.com/microsoftgraph/msgraph-sdk-powershell/issues/3495" target="_blank" rel="noopener">microsoftgraph/msgraph-sdk-powershell #3495</a>. The only reliable workaround is certificate-based app-only authentication.</p>
+        </div>
+        <div class="troubleshoot-item">
+          <h3>Connect-MgGraph prompts for credentials even with -ClientId and -TenantId specified</h3>
+          <p>WAM (Web Account Manager) is intercepting the authentication flow. Run <code>Set-MgGraphOption -DisableLoginByWAM $true</code> before connecting. This disables the broker and lets the SDK use the certificate directly.</p>
+        </div>
+      </div>
+
       <h2>further reading</h2>
       <ul>
         <li>Tony Redmond: <a href="https://office365itpros.com/2025/09/24/assembly-clash-microsoft-365-ps/" target="_blank" rel="noopener">Assembly Clashes Make Microsoft 365 PowerShell Frustrating</a> (September 2025)</li>
