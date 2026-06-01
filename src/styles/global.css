@@ -614,6 +614,12 @@ h1.headline .accent { color: var(--accent); }
 }
 
 /* === Services commercial landing page === */
+.troubleshoot-list { display: flex; flex-direction: column; gap: 16px; margin: 0 0 24px; }
+.troubleshoot-item { padding: 18px 22px; border: 1px solid var(--line); border-left: 3px solid var(--cyan); border-radius: 8px; background: var(--bg-1); }
+.troubleshoot-item h3 { font-family: var(--mono); font-size: 13px; font-weight: 600; color: var(--fg); margin: 0 0 8px; line-height: 1.5; word-break: break-word; }
+.troubleshoot-item p { font-size: 14px; color: var(--fg-dim); line-height: 1.65; margin: 0; }
+.troubleshoot-item p code { font-family: var(--mono); font-size: 12px; color: var(--cyan); background: var(--bg-2); padding: 1px 5px; border-radius: 3px; }
+
 .not-found { max-width: 560px; padding: 60px 0; }
 .not-found-code { font-family: var(--mono); font-size: 96px; font-weight: 700; color: var(--cyan); line-height: 1; margin-bottom: 16px; opacity: 0.4; }
 .not-found h1 { font-size: clamp(24px, 3vw, 32px); font-weight: 700; margin: 0 0 16px; color: var(--fg); }
