@@ -228,6 +228,22 @@ import { expYearsPlus } from '../../consts';
         against the same input next month.
       </p>
 
+      <h2>error messages and what they mean</h2>
+      <div class="troubleshoot-list">
+        <div class="troubleshoot-item">
+          <h3>Get-MailboxStatistics TotalItemSize returns a string like "12.43 GB (13,348,294,144 bytes)" instead of a number</h3>
+          <p>This is the default output format of <code>Get-MailboxStatistics</code>. The value is a <code>ByteQuantifiedSize</code> object formatted as a string. You cannot sort, sum, or filter it numerically in Excel without a conversion step. Extract the byte count using a regex match on the parenthesised value, divide by 1073741824 (1 GB), and write it as a numeric column.</p>
+        </div>
+        <div class="troubleshoot-item">
+          <h3>Get-EXOMailboxStatistics returns "User not found" errors mid-run</h3>
+          <p>This happens when the mailbox list includes soft-deleted mailboxes or accounts that were removed between when the list was generated and when the script runs. The script handles this with a try-catch per mailbox and continues to the next one rather than stopping the run. Soft-deleted mailboxes can be queried separately using the <code>-InactiveMailboxOnly</code> parameter.</p>
+        </div>
+        <div class="troubleshoot-item">
+          <h3>TotalItemSize and TotalDeletedItemSize show different values depending on whether you use Get-Mailbox or Get-EXOMailboxStatistics</h3>
+          <p><code>Get-Mailbox</code> is the legacy SOAP-backed cmdlet and is being retired. <code>Get-EXOMailboxStatistics</code> is the REST-backed replacement and returns current data. Use <code>Get-EXOMailboxStatistics</code> with <code>-PropertySets All</code> to get both primary and deleted item sizes in a single call.</p>
+        </div>
+      </div>
+
       <div class="callout">
         <p>Sizing a tenant-to-tenant migration, or trying to make sense of which mailboxes are eating your storage budget? That's most of what I do. <a href="/contact">Book a 30-minute call</a> and we can talk through the right approach for your environment.</p>
         <div class="btn-row">

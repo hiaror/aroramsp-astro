@@ -255,6 +255,26 @@ import { expYearsPlus } from '../../consts';
         right shape.
       </p>
 
+      <h2>error messages and what they mean</h2>
+      <div class="troubleshoot-list">
+        <div class="troubleshoot-item">
+          <h3>Graph DELETE /messages returns 403 Forbidden</h3>
+          <p>The app registration is using delegated permissions instead of application permissions, or the <code>Mail.ReadWrite</code> application permission has not been granted admin consent. Graph mailbox cleanup requires app-only authentication with <code>Mail.ReadWrite</code> at the application level and an ApplicationAccessPolicy scoping the app to the target mailboxes. Delegated auth will return 403 on mailboxes the signed-in user does not own.</p>
+        </div>
+        <div class="troubleshoot-item">
+          <h3>Transient error 429 Too Many Requests during deletion loop</h3>
+          <p>Exchange Online Graph throttles bulk message operations per mailbox. The script handles this with exponential backoff retry logic, retrying up to 8 times with increasing wait intervals. If you see sustained 429s across many mailboxes, increase the <code>-WaitSecondsBetweenPasses</code> parameter or reduce the batch size. Do not remove the retry logic.</p>
+        </div>
+        <div class="troubleshoot-item">
+          <h3>MailboxTransientThresholdExceeded: transientCount=41 lastCode=429</h3>
+          <p>The script hit the per-mailbox transient error ceiling (default 40) before completing cleanup on that mailbox. This is a safety valve to prevent one noisy mailbox from stalling the entire run. The mailbox is skipped and logged as <code>MailboxSkipped</code> in the report. Re-run the script targeting only that mailbox with a higher <code>-MaxTransientErrorsPerMailbox</code> value or during off-peak hours.</p>
+        </div>
+        <div class="troubleshoot-item">
+          <h3>Distribution list addresses in the senders CSV return zero matches</h3>
+          <p>The Graph <code>from:</code> filter resolves against the actual sender header on each message, which is the individual sending mailbox, not the distribution list address. Emails sent via a distribution list will show the real sender in the <code>from:</code> field. Put the actual sending mailbox addresses in the senders CSV, not the DL address.</p>
+        </div>
+      </div>
+
       <div class="callout">
         <p>Got a similar request sitting in your inbox right now? Bulk mailbox cleanup, tenant-wide policy work, app-only Graph automation, that's most of what I do. <a href="/contact">Book a 30-minute call</a> and we can scope it.</p>
         <div class="btn-row">

@@ -332,6 +332,26 @@ import { expYearsPlus } from '../../consts';
         proving to compliance that 96% of the estate is escrowing as expected.
       </p>
 
+      <h2>error messages and what they mean</h2>
+      <div class="troubleshoot-list">
+        <div class="troubleshoot-item">
+          <h3>HTTP 400 Bad Request: Querying local account passwords over multiple devices is unsupported</h3>
+          <p>This error comes from the <code>https://graph.microsoft.com/v1.0/directory/deviceLocalCredentials</code> endpoint when you attempt to retrieve credentials for multiple devices in a single call. The endpoint only supports per-device queries using the beta endpoint: <code>https://graph.microsoft.com/beta/directory/deviceLocalCredentials/$($d['id'])?$select=credentials</code>. Query one device at a time in a loop.</p>
+        </div>
+        <div class="troubleshoot-item">
+          <h3>Some devices show WLapsAdmin in the LAPS portal and others show Administrator</h3>
+          <p>This is expected on a mixed fleet. Windows 11 24H2 (build 10.0.26100 and above) creates a new managed local account called <code>WLapsAdmin</code> instead of using the built-in Administrator account. Devices on Windows 11 23H2 and earlier continue to use <code>Administrator</code>. Both are correct LAPS behaviour on their respective OS versions. Use the fleet audit script to report account names per device across the whole estate.</p>
+        </div>
+        <div class="troubleshoot-item">
+          <h3>alternativeSecurityIds is empty on devices that appear compliant in Intune</h3>
+          <p>This field is not visible in the Entra portal. Query it via the Graph beta endpoint. An empty <code>alternativeSecurityIds</code> array means hybrid join Stage 2 did not complete and the device cannot authenticate to Entra. LAPS cannot escrow without a valid device identity. These devices need a leave-and-rejoin remediation, not a LAPS policy change.</p>
+        </div>
+        <div class="troubleshoot-item">
+          <h3>DeviceLocalCredential.Read.All returns data but DeviceLocalCredential.ReadBasic.All does not show account names</h3>
+          <p><code>DeviceLocalCredential.ReadBasic.All</code> returns metadata only, not the actual password or full credential detail. To read the account name associated with the LAPS credential you need <code>DeviceLocalCredential.Read.All</code>, which is a higher-privilege scope and requires admin consent. Use ReadBasic for audit presence checks and Read.All when you need the account name per device.</p>
+        </div>
+      </div>
+
       <div class="callout">
         <p>Need this run across your fleet, or want the script set as a starting point? The full audit toolset is sanitized and ready to drop into a tenant. If you would rather hand the audit over to someone who has done it before, <a href="/contact">book a 30-minute call</a> and we can scope it.</p>
         <div class="btn-row">

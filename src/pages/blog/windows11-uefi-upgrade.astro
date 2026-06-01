@@ -230,6 +230,26 @@ import { expYearsPlus } from '../../consts';
         preserving and the hardware has plenty of life left.
       </p>
 
+      <h2>error messages and what they mean</h2>
+      <div class="troubleshoot-list">
+        <div class="troubleshoot-item">
+          <h3>MBR2GPT: Disk layout validation failed</h3>
+          <p>The disk does not meet the requirements for GPT conversion. Common causes: more than three primary partitions exist on the disk (MBR2GPT requires space for the EFI system partition), the disk has unallocated space in an incompatible location, or the OS partition is not the active partition. Run <code>mbr2gpt /validate /allowFullOS</code> first and read the full output to identify which check failed before attempting conversion.</p>
+        </div>
+        <div class="troubleshoot-item">
+          <h3>Secure Boot will not enable after switching from CSM to UEFI in firmware</h3>
+          <p>Usually caused by a stale Platform Key stored from a previous setup, or a graphics card with an old VBIOS that does not support Secure Boot. In the firmware setup, find the Secure Boot section and reset Secure Boot keys to factory defaults, then enable Secure Boot. If the GPU is blocking it, check for a VBIOS update from the manufacturer.</p>
+        </div>
+        <div class="troubleshoot-item">
+          <h3>PC boots to a blank screen or BIOS after switching to UEFI mode</h3>
+          <p>The boot entry was not updated before the firmware switch, or the EFI System Partition was not created correctly during MBR2GPT conversion. Boot from Windows installation media, open a command prompt, and run <code>bcdboot C:\Windows /s S: /f UEFI</code> where S: is the EFI partition. This recreates the boot files for UEFI mode.</p>
+        </div>
+        <div class="troubleshoot-item">
+          <h3>manage-bde: The drive is locked and cannot be unlocked error before MBR2GPT conversion</h3>
+          <p>BitLocker must be suspended before disk format conversion, not just unlocked. Run <code>manage-bde -protectors -disable C: -RebootCount 2</code> to suspend BitLocker for two reboots. Do not fully decrypt the drive, that takes hours and is not necessary. After conversion and UEFI switch, BitLocker re-enables automatically on the next boot.</p>
+        </div>
+      </div>
+
       <div class="callout">
         <p>Need this done across a fleet rather than one box at a time? That's most of what I do. <a href="/contact">Book a 30-minute call</a> and we can talk through the right approach for your environment.</p>
         <div class="btn-row">

@@ -250,6 +250,30 @@ STATUS: Completed successfully on DEVICE-NAME</code></pre>
         <li><a href="https://learn.microsoft.com/en-us/windows/security/operating-system-security/data-protection/bitlocker/bitlocker-group-policy-settings" target="_blank" rel="noopener">BitLocker CSP and group policy settings</a></li>
       </ul>
 
+      <h2>error messages and what they mean</h2>
+      <div class="troubleshoot-list">
+        <div class="troubleshoot-item">
+          <h3>Get-BitLockerVolume returns KeyProtector: {}</h3>
+          <p>The volume is fully encrypted but there is no RecoveryPassword protector attached. This happens when a third-party agent like Sophos provisioned BitLocker without creating a protector for Entra to escrow. <code>BackupToAAD-BitLockerKeyProtector</code> has nothing to back up. The fix is to add a RecoveryPassword protector first using <code>Add-BitLockerKeyProtector -RecoveryPasswordProtector</code>, then escrow it.</p>
+        </div>
+        <div class="troubleshoot-item">
+          <h3>BackupToAAD-BitLockerKeyProtector does not return any output and the key does not appear in Entra</h3>
+          <p>The cmdlet ran but had no RecoveryPassword protector to escrow. Run <code>Get-BitLockerVolume</code> and check the KeyProtector property. If it is empty or contains only a TpmProtector, no recovery password exists yet. Add one first, then escrow.</p>
+        </div>
+        <div class="troubleshoot-item">
+          <h3>Intune platform script shows Succeeded but the key is not in Entra</h3>
+          <p>The Intune Device status tab shows only whether the script executed without a terminating error, not whether the escrow actually succeeded. Use <code>Get-PlatformScriptRunStates.ps1</code> to read the full <code>resultMessage</code> field via Graph and check the <code>KeyProtectorId</code> confirmation line. Also check the device in Entra under Devices and look for a BitLocker key entry.</p>
+        </div>
+        <div class="troubleshoot-item">
+          <h3>Platform script does not run after being assigned in Intune</h3>
+          <p>The Intune portal Sync button and the Graph syncDevice action do not trigger IME PowerShell platform scripts. They only wake the OMA-DM client. The IME evaluates platform scripts on its own internal timer of roughly eight hours, or immediately on user logon, logoff, or unlock. To force evaluation during testing, restart the <code>IntuneManagementExtension</code> service as a local administrator and wait 237 seconds.</p>
+        </div>
+        <div class="troubleshoot-item">
+          <h3>syncDevice returns 403 Forbidden</h3>
+          <p>The app registration is missing the <code>DeviceManagementManagedDevices.PrivilegedOperations.All</code> Graph scope. This scope is required for the syncDevice action and is separate from the read scopes. Add it to the app registration and reconnect with all scopes in a single <code>Connect-MgGraph</code> call after running <code>Disconnect-MgGraph</code> first.</p>
+        </div>
+      </div>
+
       <div class="callout">
         <p>Both platform scripts, the admin-side Graph helpers, and a sanitized sample survey output are in the GitHub repository.</p>
         <div class="btn-row">
