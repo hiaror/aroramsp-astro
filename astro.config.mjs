@@ -8,7 +8,7 @@ import sitemap from '@astrojs/sitemap';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://aroramsp.com',
-  trailingSlash: 'never',
+  trailingSlash: 'always',
   integrations: [
     sitemap({
       filter: (page) => !page.includes('/blog/samples/')
