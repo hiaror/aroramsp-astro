@@ -20,6 +20,8 @@ const {
   ogDescription = "Independent Microsoft 365 consulting. Tenant security audits, Entra ID, Conditional Access, Exchange Online, and Intune for organizations globally.",
   ogImage = "https://aroramsp.com/uploads/og-preview.png",
 } = Astro.props;
+
+const canonicalUrl = canonical.endsWith("/") ? canonical : canonical + "/";
 ---
 <!doctype html>
 <html lang="en">
@@ -43,8 +45,8 @@ const {
 <link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4xD-IQ-PuZJJXxfpAO-Lf1OUBQ.woff2" />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content={canonical} />
-<link rel="canonical" href={canonical} />
+<meta property="og:url" content={canonicalUrl} />
+<link rel="canonical" href={canonicalUrl} />
 <meta property="og:title" content={ogTitle} />
 <meta property="og:description" content={ogDescription} />
 <meta property="og:image" content={ogImage} />
