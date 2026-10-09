@@ -83,9 +83,9 @@ import Layout from '../../layouts/Layout.astro';
       <ul>
         <li><strong>Managed:</strong> a Microsoft Entra tenant has claimed the domain and signs users in itself.</li>
         <li><strong>Federated:</strong> a tenant has claimed the domain and sends sign-in to an external identity provider, such as AD FS. The provider address is shown as plain text, not as a link.</li>
-        <li><strong>Unknown:</strong> no tenant claims the domain, so it is free to verify.</li>
+        <li><strong>Unknown:</strong> no tenant claims the domain and no tenant ID came back, so it is free to verify.</li>
         <li><strong>Other cloud:</strong> the worldwide lookup returned Unknown, but Microsoft named a tenant for the domain in a national cloud, such as US Government. The domain is claimed there.</li>
-        <li><strong>Inconclusive:</strong> the lookup failed or returned something unexpected. Try again in a moment.</li>
+        <li><strong>Inconclusive:</strong> the lookup failed, returned something unexpected, or the two lookups disagreed, for example no realm match but a tenant ID in the worldwide cloud. Try again in a moment.</li>
       </ul>
       <p>The organisation name and the identity provider address are set by whoever runs the tenant. Treat them as clues, not as proof of who owns it.</p>
       <p>The cloud shows where the tenant lives: the worldwide commercial cloud, US Government, or China operated by 21Vianet. The region code is shown exactly as Microsoft reports it. Microsoft documents it only as the region of the tenant and does not publish the list of possible values.</p>
@@ -131,33 +131,49 @@ import Layout from '../../layouts/Layout.astro';
     const LEARN_ADD_DOMAIN = 'https://learn.microsoft.com/entra/fundamentals/add-custom-domain';
     const LABEL = /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/;
 
-    const STATUS_TEXT: Record<Status, string> = {
+    type View = Status | 'Other cloud';
+
+    const STATUS_TEXT: Record<View, string> = {
       Managed: 'Claimed by a Microsoft Entra tenant that signs users in itself.',
       Federated: 'Claimed by a Microsoft Entra tenant that sends sign-in to an external identity provider.',
       Unknown: 'No tenant claims this domain, so it is free to verify.',
+      'Other cloud': 'The worldwide realm lookup does not recognise this domain, but Microsoft returned a tenant for it in another cloud. Treat it as claimed in that cloud, not as free to verify.',
       Inconclusive: 'The lookup did not return a clear answer. Try again in a moment.',
     };
 
-    const STATUS_BADGE: Record<Status, string> = {
+    const DISAGREE_TEXT = 'The two lookups disagree: the realm lookup found no tenant, but a tenant ID came back. Do not treat the domain as free to verify. Try again in a moment.';
+
+    const STATUS_BADGE: Record<View, string> = {
       Managed: 'claimed',
       Federated: 'claimed',
       Unknown: 'unclaimed',
+      'Other cloud': 'claimed',
       Inconclusive: 'unclear',
     };
 
+    const WORLDWIDE_CLOUD = 'microsoftonline.com';
     const CLOUD_LABELS: Record<string, string> = {
       'microsoftonline.com': 'Worldwide commercial cloud',
       'microsoftonline.us': 'US Government',
       'partner.microsoftonline.cn': 'China, operated by 21Vianet',
     };
 
-    const OTHER_CLOUD_TEXT = 'The worldwide realm lookup does not recognise this domain, but Microsoft returned a tenant for it in another cloud. Treat it as claimed in that cloud, not as free to verify.';
     const LEARN_NATIONAL_CLOUDS = 'https://learn.microsoft.com/entra/identity-platform/authentication-national-cloud';
 
+    // The page never calls a domain free to verify when a tenant ID comes back.
     // getuserrealm.srf on the worldwide endpoint returns Unknown for a domain held in a
-    // national cloud, while the OpenID document still names its tenant. Treat that as claimed.
-    function inOtherCloud(result: DomainResult): boolean {
-      return result.status === 'Unknown' && result.tenantId !== null;
+    // national cloud, while the OpenID document still names its tenant: that is Other cloud.
+    // Unknown with a tenant in the worldwide cloud, or with no cloud value, means the two
+    // lookups disagree: that is Inconclusive.
+    function viewOf(result: DomainResult): View {
+      if (result.status === 'Unknown' && result.tenantId) {
+        return result.cloud && result.cloud !== WORLDWIDE_CLOUD ? 'Other cloud' : 'Inconclusive';
+      }
+      return result.status;
+    }
+
+    function lookupsDisagree(result: DomainResult): boolean {
+      return result.status === 'Unknown' && Boolean(result.tenantId) && viewOf(result) === 'Inconclusive';
     }
 
     const form = document.getElementById('lookupForm') as HTMLFormElement | null;
@@ -254,10 +270,10 @@ import Layout from '../../layouts/Layout.astro';
       const card = el('div', 'about-card lookup-card');
       const head = el('div', 'head');
       head.appendChild(el('span', 'lookup-domain', result.domain));
-      const otherCloud = inOtherCloud(result);
-      head.appendChild(el('span', 'tool-badge ' + (otherCloud ? 'claimed' : STATUS_BADGE[result.status]), otherCloud ? 'Other cloud' : result.status));
+      const view = viewOf(result);
+      head.appendChild(el('span', 'tool-badge ' + STATUS_BADGE[view], view));
       card.appendChild(head);
-      card.appendChild(row('Status', otherCloud ? OTHER_CLOUD_TEXT : STATUS_TEXT[result.status]));
+      card.appendChild(row('Status', lookupsDisagree(result) ? DISAGREE_TEXT : STATUS_TEXT[view]));
       card.appendChild(row('Organisation', result.organisation || 'Not returned'));
       card.appendChild(row('Tenant ID', tenantCell(result)));
       card.appendChild(row('Cloud', cloudText(result.cloud)));
@@ -292,16 +308,19 @@ import Layout from '../../layouts/Layout.astro';
       const box = el('div', 'callout');
       const text = el('p');
       const buttons = el('div', 'btn-row');
-      if (inOtherCloud(result)) {
+      const view = viewOf(result);
+      if (view === 'Other cloud') {
         text.textContent = result.domain + ' is held by a tenant in another Microsoft cloud (' + cloudText(result.cloud) + '). National clouds are separate from the worldwide cloud and have their own sign-in endpoints, so confirm which cloud you need before you go further.';
         buttons.appendChild(link(LEARN_NATIONAL_CLOUDS, 'National clouds (Microsoft Learn)', 'btn btn-ghost'));
-      } else if (result.status === 'Unknown') {
+      } else if (view === 'Unknown') {
         text.textContent = 'No tenant claims ' + result.domain + ', so you can verify it in your own tenant now. Add it as a custom domain and publish the TXT record that Microsoft gives you.';
         buttons.appendChild(link(LEARN_ADD_DOMAIN, 'Add a custom domain (Microsoft Learn)', 'btn btn-ghost'));
-      } else if (result.status === 'Managed' || result.status === 'Federated') {
+      } else if (view === 'Managed' || view === 'Federated') {
         text.textContent = result.domain + ' is claimed by a tenant. If the tenant ID is your own, the domain is already in place. If it is not, read the guide: first find out whether that tenant is managed or unmanaged, then release the domain from inside it.';
         buttons.appendChild(link(GUIDE_STEP_2, 'Step 2: managed or unmanaged', 'btn btn-ghost'));
         buttons.appendChild(link(GUIDE_STEP_4, 'Step 4: release the domain', 'btn btn-ghost'));
+      } else if (lookupsDisagree(result)) {
+        text.textContent = 'The two lookups disagree for ' + result.domain + ', so do not treat it as free to verify. Wait a moment and try again, or run the PowerShell command further down this page.';
       } else {
         text.textContent = 'The lookup did not return a clear answer for ' + result.domain + '. Wait a moment and try again, or run the PowerShell command further down this page.';
       }

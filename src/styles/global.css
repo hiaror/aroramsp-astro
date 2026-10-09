@@ -1407,7 +1407,8 @@ html:not([data-theme]) .theme-picker-btn .icon-moon { display: block; }
   transform: translateY(-2px);
   box-shadow: 0 8px 32px -8px var(--accent-soft);
 }
-.tool-card.featured {
+.tool-card.featured,
+.home-tool-card.featured {
   border-color: var(--accent-line);
   background: color-mix(in oklab, var(--accent) 5%, var(--bg-1));
 }
@@ -1629,6 +1630,7 @@ pre {
 }
 
 /* === Domain Tenant Lookup tool === */
+.home-tool-card.featured { margin-bottom: 16px; }
 .lookup-form { margin: 0 0 24px; }
 .lookup-btn { align-self: flex-start; }
 .lookup-btn[disabled] { opacity: .6; cursor: not-allowed; }
