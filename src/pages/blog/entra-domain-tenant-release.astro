@@ -9,6 +9,8 @@ import { expYearsPlus } from '../../consts';
   canonical="https://aroramsp.com/blog/entra-domain-tenant-release"
   ogTitle="Domain Already Added to Another Microsoft 365 Organisation: Find the Tenant and Release It"
   ogDescription="A custom domain will not verify because another tenant holds it. Find that tenant in seconds with home realm discovery, then release the domain with Microsoft Graph PowerShell."
+  ogImage="https://aroramsp.com/uploads/og-entra-domain-tenant-release.png"
+  ogImageAlt="AroraMSP blog: Domain already added to another Microsoft 365 organisation: find the tenant and release it."
 >
   <Fragment slot="head">
     <meta name="keywords" content="Microsoft Entra ID, Microsoft 365, custom domain, domain verification, domain already in use, home realm discovery, getuserrealm, tenant ID lookup, Microsoft Graph PowerShell, forceDelete, Remove-MgDomain" />
@@ -32,7 +34,7 @@ import { expYearsPlus } from '../../consts';
       "datePublished": "2026-10-10",
       "dateModified": "2026-10-10",
       "url": "https://aroramsp.com/blog/entra-domain-tenant-release",
-      "image": "https://aroramsp.com/uploads/og-preview.png",
+      "image": "https://aroramsp.com/uploads/og-entra-domain-tenant-release.png",
       "mainEntityOfPage": "https://aroramsp.com/blog/entra-domain-tenant-release",
       "wordCount": 2400,
       "keywords": ["Microsoft Entra ID", "custom domain", "domain verification", "home realm discovery", "Microsoft Graph PowerShell", "forceDelete"]
@@ -69,9 +71,9 @@ import { expYearsPlus } from '../../consts';
 
       <h2>The error, and why it does not tell you where the domain is</h2>
 
-      <p>A custom domain in Microsoft Entra ID can be verified in only one tenant at a time. When I added the domain to my tenant, verification failed and the admin centre reported that the domain was already in use by another organisation. It showed an administrator account for that organisation with most of its characters hidden, and nothing else that helped: no tenant name, no tenant ID, and no way to tell whether the other tenant belonged to a customer, a former provider, or me.</p>
+      <p>A custom domain in Microsoft Entra ID can be verified in only one tenant at a time. When I added the domain to my tenant, verification failed and the admin centre reported that the domain was already in use by another organisation. It showed an administrator account for that organisation with most of its characters hidden, and nothing else that helped: no tenant name, no tenant ID, and no way to tell whether the other tenant belonged to a customer, a former provider, or me. Some versions of the message name the other organisation's initial onmicrosoft.com domain, while mine showed only the masked administrator. Even when that domain is shown, you still do not have the tenant ID, the cloud, or whether the tenant is managed.</p>
 
-      <p>That is the real difficulty with this error. It is about verification failing in your own tenant, so it says nothing about where the domain actually is, and the holding tenant is not visible to the person who needs the domain. The information that answers the question is public and takes seconds to retrieve, but nothing on that screen tells you it exists.</p>
+      <p>That is the real difficulty with this error. It is about verification failing in your own tenant, so it tells you little about where the domain actually is, and the holding tenant is not visible to the person who needs the domain. The information that answers the question is public and takes seconds to retrieve, but nothing on that screen tells you it exists.</p>
 
       <h2>Finding the holding tenant with home realm discovery</h2>
 
@@ -285,7 +287,7 @@ yourdomain.com       True     False</code></pre>
       <div class="troubleshoot-list">
         <div class="troubleshoot-item">
           <h3>Domain already added to another Microsoft 365 organisation</h3>
-          <p>Another tenant has verified the domain, and a domain can be verified in only one tenant at a time. The exact message varies by admin centre and language. The admin centre does not say which tenant. Run the realm lookup and the OpenID lookup, or the <a href="/tools/domain-tenant-lookup">Domain Tenant Lookup</a>, to get the organisation name, the tenant ID and the cloud, then decide whether the tenant is managed or unmanaged.</p>
+          <p>Another tenant has verified the domain, and a domain can be verified in only one tenant at a time. The exact message varies by admin centre and language, and it may not say which tenant holds the domain, as in my case. Run the realm lookup and the OpenID lookup, or the <a href="/tools/domain-tenant-lookup">Domain Tenant Lookup</a>, to get the organisation name, the tenant ID and the cloud, then decide whether the tenant is managed or unmanaged.</p>
         </div>
         <div class="troubleshoot-item">
           <h3>Failed. Reason = Cannot delete the domain currently referenced by at least 1 objects. Conflicting object User/&lt;OBJECT_ID&gt;.</h3>
