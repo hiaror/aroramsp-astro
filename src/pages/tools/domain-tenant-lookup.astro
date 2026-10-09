@@ -1,0 +1,410 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+<Layout
+  title="Domain Tenant Lookup · AroraMSP"
+  description="Free tool to find which Microsoft Entra tenant holds a custom domain. Shows whether the domain is managed, federated or unclaimed, with the tenant ID, cloud and region, from Microsoft's public endpoints."
+  page="tools"
+  canonical="https://aroramsp.com/tools/domain-tenant-lookup"
+  ogTitle="Domain Tenant Lookup - AroraMSP"
+  ogDescription="Find which Microsoft Entra tenant holds a custom domain. Managed, federated or unclaimed, with the tenant ID, cloud and region. Free, no sign-in."
+>
+  <Fragment slot="head">
+    <meta name="keywords" content="Microsoft Entra ID, custom domain, domain verification, home realm discovery, tenant ID lookup, getuserrealm, federated domain, Microsoft 365" />
+    <script type="application/ld+json" is:raw>
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Domain Tenant Lookup",
+      "url": "https://aroramsp.com/tools/domain-tenant-lookup",
+      "description": "Find which Microsoft Entra tenant holds a custom domain, using Microsoft's public home realm discovery endpoints.",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "Any",
+      "isAccessibleForFree": true,
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "author": {
+        "@type": "Person",
+        "@id": "https://aroramsp.com/#himanshu-arora",
+        "name": "Himanshu Arora",
+        "url": "https://aroramsp.com/about"
+      }
+    }
+    </script>
+    <script type="application/ld+json" is:raw>
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://aroramsp.com/" },
+        { "@type": "ListItem", "position": 2, "name": "Tools", "item": "https://aroramsp.com/tools" },
+        { "@type": "ListItem", "position": 3, "name": "Domain Tenant Lookup", "item": "https://aroramsp.com/tools/domain-tenant-lookup" }
+      ]
+    }
+    </script>
+  </Fragment>
+
+  <section class="page wrap">
+    <article class="article">
+      <div class="post-meta reveal">
+        <a href="/tools">&larr; all tools</a>
+        <span class="dot"></span>
+        <span class="tag">free tool &middot; entra id &middot; custom domains</span>
+      </div>
+
+      <h1>Domain Tenant Lookup: find the tenant that holds a domain.</h1>
+      <p class="lede">
+        Enter a domain to see whether a Microsoft Entra tenant has claimed it, how that tenant signs users in, and its tenant ID, cloud and region. Useful when a custom domain will not verify because another tenant already holds it. Free, with no sign-in.
+      </p>
+
+      <noscript>
+        <div class="callout warn">
+          <p><strong>This lookup needs JavaScript.</strong> To check a domain without it, use the PowerShell command in the Prefer PowerShell section below.</p>
+        </div>
+      </noscript>
+
+      <form class="form lookup-form" id="lookupForm" novalidate>
+        <div class="field">
+          <label for="domainInput">Domain</label>
+          <input id="domainInput" name="domain" type="text" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="contoso.com" required aria-describedby="domainHint" />
+        </div>
+        <div class="field">
+          <label for="compareInput">Compare with another domain (optional)</label>
+          <input id="compareInput" name="compareDomain" type="text" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="contoso.onmicrosoft.com" aria-describedby="domainHint" />
+        </div>
+        <div class="response-line" id="domainHint">Paste a domain, an email address or a URL. It is reduced to the domain name before the lookup, and a leading www. is removed.</div>
+        <button type="submit" class="btn btn-primary lookup-btn" id="lookupBtn" disabled>Look up <span class="arrow">→</span></button>
+        <div class="response-line" id="lookupStatus" role="status"></div>
+        <div class="form-msg err" id="lookupErr" role="alert"></div>
+      </form>
+
+      <div class="lookup-results" id="lookupResults" aria-live="polite"></div>
+
+      <h2>What the results mean</h2>
+      <ul>
+        <li><strong>Managed:</strong> a Microsoft Entra tenant has claimed the domain and signs users in itself.</li>
+        <li><strong>Federated:</strong> a tenant has claimed the domain and sends sign-in to an external identity provider, such as AD FS. The provider address is shown as plain text, not as a link.</li>
+        <li><strong>Unknown:</strong> no tenant claims the domain, so it is free to verify.</li>
+        <li><strong>Other cloud:</strong> the worldwide lookup returned Unknown, but Microsoft named a tenant for the domain in a national cloud, such as US Government. The domain is claimed there.</li>
+        <li><strong>Inconclusive:</strong> the lookup failed or returned something unexpected. Try again in a moment.</li>
+      </ul>
+      <p>The organisation name and the identity provider address are set by whoever runs the tenant. Treat them as clues, not as proof of who owns it.</p>
+      <p>The cloud shows where the tenant lives: the worldwide commercial cloud, US Government, or China operated by 21Vianet. The region code is shown exactly as Microsoft reports it. Microsoft documents it only as the region of the tenant and does not publish the list of possible values.</p>
+
+      <h2>Prefer PowerShell?</h2>
+      <p>The same realm lookup runs from any PowerShell session, with no module and no sign-in:</p>
+      <div class="code-label">// powershell</div>
+      <pre><code id="psCommand">Invoke-RestMethod "https://login.microsoftonline.com/getuserrealm.srf?login=test@contoso.com&amp;json=1"</code></pre>
+      <p>For the tenant ID, cloud and region in one step, and a comparison between two domains, use <a href="https://github.com/hiaror/entra-domain-tenant-release/blob/main/scripts/Get-DomainTenant.ps1" target="_blank" rel="noopener">Get-DomainTenant.ps1</a> from the <a href="https://github.com/hiaror/entra-domain-tenant-release" target="_blank" rel="noopener">entra-domain-tenant-release</a> repository on GitHub. The repository also walks through releasing a domain from a tenant you administer.</p>
+
+      <h2>Privacy</h2>
+      <p>When you run a lookup, your browser sends the domain names you entered to this site's lookup service. The service queries two public Microsoft sign-in endpoints, getuserrealm.srf and the tenant's OpenID configuration document, and returns a short summary to your browser. Microsoft receives the request from this site's service, not from your browser. The lookup code on this site does not log or store the domains you enter.</p>
+
+      <h2>Disclaimer</h2>
+      <p>Results are what Microsoft's public endpoints return at the moment of the lookup. getuserrealm.srf is not formally documented by Microsoft, so its fields can change without notice. Confirm in the Microsoft Entra admin center before you act on a result.</p>
+    </article>
+  </section>
+
+  <script>
+    type Status = 'Managed' | 'Federated' | 'Unknown' | 'Inconclusive';
+
+    type DomainResult = {
+      domain: string;
+      status: Status;
+      organisation: string | null;
+      tenantId: string | null;
+      cloud: string | null;
+      region: string | null;
+      identityProvider: string | null;
+    };
+
+    type LookupResponse = {
+      domain?: DomainResult;
+      compare?: DomainResult;
+      sameTenant?: boolean | null;
+      error?: string;
+      field?: string;
+    };
+
+    const REPO = 'https://github.com/hiaror/entra-domain-tenant-release';
+    const GUIDE_STEP_2 = REPO + '#step-2-managed-or-unmanaged';
+    const GUIDE_STEP_4 = REPO + '#step-4-release-the-domain';
+    const LEARN_ADD_DOMAIN = 'https://learn.microsoft.com/entra/fundamentals/add-custom-domain';
+    const LABEL = /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/;
+
+    const STATUS_TEXT: Record<Status, string> = {
+      Managed: 'Claimed by a Microsoft Entra tenant that signs users in itself.',
+      Federated: 'Claimed by a Microsoft Entra tenant that sends sign-in to an external identity provider.',
+      Unknown: 'No tenant claims this domain, so it is free to verify.',
+      Inconclusive: 'The lookup did not return a clear answer. Try again in a moment.',
+    };
+
+    const STATUS_BADGE: Record<Status, string> = {
+      Managed: 'claimed',
+      Federated: 'claimed',
+      Unknown: 'unclaimed',
+      Inconclusive: 'unclear',
+    };
+
+    const CLOUD_LABELS: Record<string, string> = {
+      'microsoftonline.com': 'Worldwide commercial cloud',
+      'microsoftonline.us': 'US Government',
+      'partner.microsoftonline.cn': 'China, operated by 21Vianet',
+    };
+
+    const OTHER_CLOUD_TEXT = 'The worldwide realm lookup does not recognise this domain, but Microsoft returned a tenant for it in another cloud. Treat it as claimed in that cloud, not as free to verify.';
+    const LEARN_NATIONAL_CLOUDS = 'https://learn.microsoft.com/entra/identity-platform/authentication-national-cloud';
+
+    // getuserrealm.srf on the worldwide endpoint returns Unknown for a domain held in a
+    // national cloud, while the OpenID document still names its tenant. Treat that as claimed.
+    function inOtherCloud(result: DomainResult): boolean {
+      return result.status === 'Unknown' && result.tenantId !== null;
+    }
+
+    const form = document.getElementById('lookupForm') as HTMLFormElement | null;
+    const domainInput = document.getElementById('domainInput') as HTMLInputElement | null;
+    const compareInput = document.getElementById('compareInput') as HTMLInputElement | null;
+    const button = document.getElementById('lookupBtn') as HTMLButtonElement | null;
+    const statusLine = document.getElementById('lookupStatus');
+    const errorLine = document.getElementById('lookupErr');
+    const results = document.getElementById('lookupResults');
+    const psCommand = document.getElementById('psCommand');
+
+    // Lenient input: trim, lower-case, then reduce an email address, URL,
+    // protocol, path, port, trailing dot or leading www. to the bare domain.
+    function normaliseDomain(raw: string): string {
+      let value = raw.trim().toLowerCase();
+      value = value.replace(/^mailto:/, '');
+      value = value.replace(/^[a-z][a-z0-9+.-]*:\/\//, '');
+      value = value.split(/[/?#\s]/)[0];
+      const at = value.lastIndexOf('@');
+      if (at !== -1) value = value.slice(at + 1);
+      value = value.replace(/:\d*$/, '');
+      value = value.replace(/\.+$/, '');
+      value = value.replace(/^www\.(?=[^.]+\.[^.]+)/, '');
+      return value;
+    }
+
+    // Same rules as the server. Returns an error message, or an empty string when valid.
+    function checkDomain(domain: string): string {
+      if (domain === '') return 'Enter a domain name, such as contoso.com.';
+      if (domain.length > 253) return 'A domain name can be at most 253 characters long.';
+      const labels = domain.split('.');
+      if (labels.length < 2) return 'Enter a full domain name with at least one dot, such as contoso.com.';
+      if (!labels.every((label) => LABEL.test(label))) {
+        return 'A domain name can contain only the letters a to z, digits and hyphens, in parts of 1 to 63 characters that do not start or end with a hyphen.';
+      }
+      if (!/[a-z]/.test(labels[labels.length - 1])) return 'IP addresses are not accepted. Enter a domain name.';
+      return '';
+    }
+
+    function el<K extends keyof HTMLElementTagNameMap>(tag: K, className?: string, text?: string): HTMLElementTagNameMap[K] {
+      const node = document.createElement(tag);
+      if (className) node.className = className;
+      if (text !== undefined) node.textContent = text;
+      return node;
+    }
+
+    function link(href: string, text: string, className?: string): HTMLAnchorElement {
+      const a = el('a', className, text);
+      a.href = href;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      return a;
+    }
+
+    function row(label: string, value: string | Node): HTMLDivElement {
+      const line = el('div', 'row');
+      line.appendChild(el('span', 'k', label));
+      const cell = el('span', 'v');
+      if (typeof value === 'string') cell.textContent = value;
+      else cell.appendChild(value);
+      line.appendChild(cell);
+      return line;
+    }
+
+    function cloudText(cloud: string | null): string {
+      if (!cloud) return 'Not returned';
+      const label = CLOUD_LABELS[cloud];
+      return label ? label + ' (' + cloud + ')' : cloud;
+    }
+
+    function tenantCell(result: DomainResult): string | Node {
+      if (!result.tenantId) return 'None found';
+      const wrap = el('span', 'lookup-tenant');
+      const id = el('span', undefined, result.tenantId);
+      const copy = el('button', 'btn btn-ghost lookup-copy', 'Copy');
+      copy.type = 'button';
+      copy.setAttribute('aria-label', 'Copy the tenant ID for ' + result.domain);
+      const tenantId = result.tenantId;
+      copy.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(tenantId);
+          copy.textContent = 'Copied';
+        } catch {
+          copy.textContent = 'Copy failed';
+        }
+        window.setTimeout(() => { copy.textContent = 'Copy'; }, 2000);
+      });
+      wrap.appendChild(id);
+      wrap.appendChild(copy);
+      return wrap;
+    }
+
+    function resultCard(result: DomainResult): HTMLDivElement {
+      const card = el('div', 'about-card lookup-card');
+      const head = el('div', 'head');
+      head.appendChild(el('span', 'lookup-domain', result.domain));
+      const otherCloud = inOtherCloud(result);
+      head.appendChild(el('span', 'tool-badge ' + (otherCloud ? 'claimed' : STATUS_BADGE[result.status]), otherCloud ? 'Other cloud' : result.status));
+      card.appendChild(head);
+      card.appendChild(row('Status', otherCloud ? OTHER_CLOUD_TEXT : STATUS_TEXT[result.status]));
+      card.appendChild(row('Organisation', result.organisation || 'Not returned'));
+      card.appendChild(row('Tenant ID', tenantCell(result)));
+      card.appendChild(row('Cloud', cloudText(result.cloud)));
+      card.appendChild(row('Region code', result.region || 'Not returned'));
+      if (result.status === 'Federated') {
+        card.appendChild(row('Identity provider', result.identityProvider || 'Not returned'));
+      }
+      return card;
+    }
+
+    function compareCallout(data: LookupResponse): HTMLDivElement {
+      const first = data.domain as DomainResult;
+      const second = data.compare as DomainResult;
+      const box = el('div', data.sameTenant === null ? 'callout warn' : 'callout');
+      const text = el('p');
+      if (data.sameTenant === true) {
+        text.appendChild(el('strong', undefined, 'Same tenant. '));
+        text.appendChild(document.createTextNode(first.domain + ' and ' + second.domain + ' belong to the same Microsoft Entra tenant.'));
+      } else if (data.sameTenant === false) {
+        text.appendChild(el('strong', undefined, 'Different tenants. '));
+        text.appendChild(document.createTextNode(first.domain + ' and ' + second.domain + ' belong to separate Microsoft Entra tenants.'));
+      } else {
+        const missing = [first, second].filter((r) => !r.tenantId).map((r) => r.domain).join(' and ');
+        text.appendChild(el('strong', undefined, 'Cannot compare. '));
+        text.appendChild(document.createTextNode('No tenant ID was found for ' + missing + '.'));
+      }
+      box.appendChild(text);
+      return box;
+    }
+
+    function nextSteps(result: DomainResult): HTMLDivElement {
+      const box = el('div', 'callout');
+      const text = el('p');
+      const buttons = el('div', 'btn-row');
+      if (inOtherCloud(result)) {
+        text.textContent = result.domain + ' is held by a tenant in another Microsoft cloud (' + cloudText(result.cloud) + '). National clouds are separate from the worldwide cloud and have their own sign-in endpoints, so confirm which cloud you need before you go further.';
+        buttons.appendChild(link(LEARN_NATIONAL_CLOUDS, 'National clouds (Microsoft Learn)', 'btn btn-ghost'));
+      } else if (result.status === 'Unknown') {
+        text.textContent = 'No tenant claims ' + result.domain + ', so you can verify it in your own tenant now. Add it as a custom domain and publish the TXT record that Microsoft gives you.';
+        buttons.appendChild(link(LEARN_ADD_DOMAIN, 'Add a custom domain (Microsoft Learn)', 'btn btn-ghost'));
+      } else if (result.status === 'Managed' || result.status === 'Federated') {
+        text.textContent = result.domain + ' is claimed by a tenant. If the tenant ID is your own, the domain is already in place. If it is not, read the guide: first find out whether that tenant is managed or unmanaged, then release the domain from inside it.';
+        buttons.appendChild(link(GUIDE_STEP_2, 'Step 2: managed or unmanaged', 'btn btn-ghost'));
+        buttons.appendChild(link(GUIDE_STEP_4, 'Step 4: release the domain', 'btn btn-ghost'));
+      } else {
+        text.textContent = 'The lookup did not return a clear answer for ' + result.domain + '. Wait a moment and try again, or run the PowerShell command further down this page.';
+      }
+      box.appendChild(text);
+      if (buttons.childElementCount > 0) box.appendChild(buttons);
+      return box;
+    }
+
+    function render(data: LookupResponse): void {
+      if (!results || !data.domain) return;
+      const first = data.domain;
+      const nodes: Node[] = [];
+      nodes.push(el('h2', undefined, 'Result'));
+      nodes.push(resultCard(first));
+      if (data.compare) {
+        nodes.push(resultCard(data.compare));
+        nodes.push(compareCallout(data));
+      }
+      nodes.push(el('h2', undefined, 'What next'));
+      nodes.push(nextSteps(first));
+      results.replaceChildren(...nodes);
+      if (psCommand) {
+        psCommand.textContent = 'Invoke-RestMethod "https://login.microsoftonline.com/getuserrealm.srf?login=test@' + first.domain + '&json=1"';
+      }
+    }
+
+    function showError(message: string, field?: HTMLInputElement | null): void {
+      if (errorLine) {
+        errorLine.textContent = message;
+        errorLine.classList.add('show');
+      }
+      if (field) {
+        field.setAttribute('aria-invalid', 'true');
+        field.focus();
+      }
+    }
+
+    function clearMessages(): void {
+      if (errorLine) {
+        errorLine.textContent = '';
+        errorLine.classList.remove('show');
+      }
+      if (statusLine) statusLine.textContent = '';
+      domainInput?.removeAttribute('aria-invalid');
+      compareInput?.removeAttribute('aria-invalid');
+    }
+
+    function setBusy(busy: boolean): void {
+      if (!button) return;
+      button.disabled = busy;
+      button.setAttribute('aria-busy', busy ? 'true' : 'false');
+      if (statusLine) statusLine.textContent = busy ? 'Looking up. This can take a few seconds.' : '';
+    }
+
+    if (form && domainInput && compareInput) {
+      // The button ships disabled so that, without this script, the form cannot
+      // submit natively and put the domain in the page URL.
+      if (button) button.disabled = false;
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        clearMessages();
+
+        const domain = normaliseDomain(domainInput.value);
+        const domainError = checkDomain(domain);
+        if (domainError) {
+          showError(domainError, domainInput);
+          return;
+        }
+
+        const hasCompare = compareInput.value.trim() !== '';
+        const compare = hasCompare ? normaliseDomain(compareInput.value) : '';
+        if (hasCompare) {
+          const compareError = checkDomain(compare);
+          if (compareError) {
+            showError('Compare with: ' + compareError, compareInput);
+            return;
+          }
+        }
+
+        domainInput.value = domain;
+        if (hasCompare) compareInput.value = compare;
+
+        setBusy(true);
+        try {
+          const response = await fetch('/api/domain-lookup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(hasCompare ? { domain, compareDomain: compare } : { domain }),
+          });
+          const data = (await response.json().catch(() => null)) as LookupResponse | null;
+          if (!response.ok || !data || !data.domain) {
+            const field = data?.field === 'compareDomain' ? compareInput : data?.field === 'domain' ? domainInput : null;
+            showError(data?.error || 'The lookup service did not respond as expected. Try again in a moment.', field);
+            return;
+          }
+          render(data);
+        } catch {
+          showError('The lookup service could not be reached. Check your connection and try again.');
+        } finally {
+          setBusy(false);
+        }
+      });
+    }
+  </script>
+</Layout>

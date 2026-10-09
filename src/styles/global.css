@@ -1627,3 +1627,17 @@ pre {
   line-height: 1;
   vertical-align: middle;
 }
+
+/* === Domain Tenant Lookup tool === */
+.lookup-form { margin: 0 0 24px; }
+.lookup-btn { align-self: flex-start; }
+.lookup-btn[disabled] { opacity: .6; cursor: not-allowed; }
+.lookup-btn[aria-busy="true"] { cursor: progress; }
+.lookup-results .about-card { margin: 0 0 14px; }
+.lookup-card .head .lookup-domain { text-transform: none; letter-spacing: 0; font-size: 13px; color: var(--fg); overflow-wrap: anywhere; }
+.lookup-card .row .v { overflow-wrap: anywhere; }
+.lookup-tenant { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.lookup-copy { font-size: 11px; padding: 4px 10px; }
+.tool-badge.claimed { background: color-mix(in oklab, var(--accent) 15%, transparent); color: var(--accent); }
+.tool-badge.unclaimed { background: color-mix(in oklab, var(--good) 15%, transparent); color: var(--good); }
+.tool-badge.unclear { background: color-mix(in oklab, var(--warn) 15%, transparent); color: var(--warn); }
