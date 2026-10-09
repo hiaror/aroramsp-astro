@@ -1,4 +1,4 @@
-# AroraMSP — Microsoft 365 Consulting
+# AroraMSP: Microsoft 365 Consulting
 # Fixed-fee M365 consulting for businesses that run on Microsoft 365
 # https://aroramsp.com
 
@@ -10,7 +10,7 @@
 - [Pricing](https://aroramsp.com/pricing)
 - [Process](https://aroramsp.com/process)
 
-## Blog — Technical posts with verified configurations and real case studies
+## Blog: Technical posts with verified configurations and real case studies
 - [Domain already added to another Microsoft 365 organisation: find the tenant and release it](https://aroramsp.com/blog/entra-domain-tenant-release)
 - [Windows LAPS fleet audit via Microsoft Graph PowerShell](https://aroramsp.com/blog/laps-fleet-audit-graph)
 - [Fixing Windows LAPS escrow failures caused by broken hybrid Entra ID registration](https://aroramsp.com/blog/laps-hybrid-registration-fix)

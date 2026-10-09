@@ -19,6 +19,7 @@ import { expYearsPlus } from '../../consts';
       "description": "A custom domain will not verify because another tenant holds it. Find that tenant in seconds with home realm discovery, then release the domain with Microsoft Graph PowerShell.",
       "author": {
         "@type": "Person",
+        "@id": "https://aroramsp.com/#himanshu-arora",
         "name": "Himanshu Arora",
         "url": "https://aroramsp.com/about"
       },
@@ -170,9 +171,31 @@ Id                                   Type                  Name        UPN
 
       <p>Mine had exactly one blocker: an account from 2018 with no licence, still enabled, that still had an email address on the domain as its primary SMTP proxy address. Keep the <code>Format-Table</code> at the end of each command, because the first time I ran this block without it, objects of different shapes printed as blank lines. If a subdomain of the domain is verified in the same tenant, remove that first as well, since Microsoft lists it as a removal error.</p>
 
+      <h2>The part that surprised me: forceDelete reported no error</h2>
+
+      <p>With that reference list in front of me, I tried forceDelete next, the Graph operation that renames everything still using a domain to the initial onmicrosoft.com domain and then deletes the domain. I set <code>disableUserAccounts</code> to <code>false</code>, because it defaults to <code>true</code> and disables every account it renames:</p>
+
+      <div class="code-label">// run this</div>
+      <pre><code>$body = @&#123; disableUserAccounts = $false &#125; | ConvertTo-Json
+Invoke-MgGraphRequest -Method POST -Uri "https://graph.microsoft.com/v1.0/domains/yourdomain.com/forceDelete" -Body $body -ContentType "application/json"</code></pre>
+
+      <p>The call was accepted without any error. My checks of the tenant list and the realm lookup over the next few minutes showed nothing wrong either, because neither of them reads the domain state. The failure was first seen when I read that state a few minutes later, with the reason sitting inside the status string itself:</p>
+
+      <div class="code-label">// run this</div>
+      <pre><code>$state = (Get-MgDomain -DomainId "yourdomain.com").State
+$state | Select-Object Operation, Status | Format-List</code></pre>
+
+      <div class="code-label">// output</div>
+      <pre><code>Operation : ForceDelete
+Status    : Failed. Reason = Cannot delete the domain currently referenced by at least 1 objects. Conflicting object User/33333333-3333-3333-3333-333333333333.</code></pre>
+
+      <p>Because the reason is appended to the status, I test it with <code>-like 'Failed*'</code> rather than <code>-eq 'Failed'</code>, which would have missed it. And because none of my earlier checks read the state, I know when I first saw the failure, not when the operation actually failed.</p>
+
+      <p>The error named the conflicting user and said nothing about Exchange. Linking it to Exchange is my reading, not something the error states: the user's primary SMTP address was still on the domain, and Microsoft states that forceDelete needs any references where Exchange is the provisioning service to be updated or removed first. A failed forceDelete can also stay recorded in the domain state, so after clearing the blocker in the next steps I watched for the domain to disappear from <code>Get-MgDomain</code> rather than reading the state again.</p>
+
       <h2>Step 3: delete the stale account, recycle bin included</h2>
 
-      <p>Renaming the account off the domain is the non-destructive route, and the repository describes it, but I did not test it. My account was stale, carried nothing I needed and had no licence, so I deleted it. Deleting a user needs more than the scopes used so far, so I disconnected, reconnected with the user scopes added, and checked the tenant again:</p>
+      <p>That left the account for me to deal with directly. Renaming it off the domain is the non-destructive route, and the repository describes it, but I did not test it. My account was stale, carried nothing I needed and had no licence, so I deleted it. Deleting a user needs more than the scopes used so far, so I disconnected, reconnected with the user scopes added, and checked the tenant again:</p>
 
       <div class="code-label">// run this</div>
       <pre><code>Disconnect-MgGraph
@@ -211,27 +234,6 @@ RegionScope     :
 
 No tenant claims this domain. It is free to verify.</code></pre>
 
-      <h2>The part that surprised me: forceDelete reported no error</h2>
-
-      <p>Before I deleted that account, I had tried forceDelete, the Graph operation that renames everything still using a domain to the initial onmicrosoft.com domain and then deletes the domain. I set <code>disableUserAccounts</code> to <code>false</code>, because it defaults to <code>true</code> and disables every account it renames:</p>
-
-      <div class="code-label">// run this</div>
-      <pre><code>$body = @&#123; disableUserAccounts = $false &#125; | ConvertTo-Json
-Invoke-MgGraphRequest -Method POST -Uri "https://graph.microsoft.com/v1.0/domains/yourdomain.com/forceDelete" -Body $body -ContentType "application/json"</code></pre>
-
-      <p>The call was accepted without any error. My checks of the tenant list and the realm lookup over the next few minutes showed nothing wrong either, because neither of them reads the domain state. The failure was first seen when I read that state a few minutes later, with the reason sitting inside the status string itself:</p>
-
-      <div class="code-label">// run this</div>
-      <pre><code>$state = (Get-MgDomain -DomainId "yourdomain.com").State
-if ($state.Status -like 'Failed*') &#123; Write-Warning $state.Status &#125;</code></pre>
-
-      <div class="code-label">// output</div>
-      <pre><code>Status: Failed. Reason = Cannot delete the domain currently referenced by at least 1 objects. Conflicting object User/33333333-3333-3333-3333-333333333333.</code></pre>
-
-      <p>Because the reason is appended to the status, I test it with <code>-like 'Failed*'</code> rather than <code>-eq 'Failed'</code>, which would have missed it. And because none of my earlier checks read the state, I know when I first saw the failure, not when the operation actually failed.</p>
-
-      <p>The error named the conflicting user and said nothing about Exchange. Linking it to Exchange is my reading, not something the error states: the user's primary SMTP address was still on the domain, and Microsoft states that forceDelete needs any references where Exchange is the provisioning service to be updated or removed first. A failed forceDelete can also stay recorded in the domain state, so after clearing the blocker I watched for the domain to disappear from <code>Get-MgDomain</code> rather than reading the state again.</p>
-
       <h2>Step 5: verify the domain in your own tenant</h2>
 
       <p>Once the realm lookup returns <code>Unknown</code> and the OpenID lookup returns no tenant, the domain is free. After working in the holding tenant it is easy to still be connected to it, so I disconnected, connected to my own tenant and confirmed the tenant ID before verifying:</p>
@@ -256,7 +258,7 @@ yourdomain.com       True     False</code></pre>
 
       <h2>What I took away from it</h2>
 
-      <p>The thing I would change is the order I worked in. The answer was public the whole time, and a lookup that takes seconds told me more than the error message ever did, so I now start every domain already in use problem with home realm discovery, before anything else.</p>
+      <p>The first lesson is that the answer was public the whole time. A lookup that takes seconds told me more than the error message ever did, and home realm discovery is the first thing I would run for any domain already in use problem.</p>
 
       <p>The second lesson is that old tenants do not go away on their own. A trial or a lab you set up years ago can keep a domain verified long after you stop thinking about it, and in my case a single forgotten account from 2018, with no licence and one email address on the domain, was enough to hold the whole domain in place.</p>
 
@@ -264,14 +266,29 @@ yourdomain.com       True     False</code></pre>
 
       <p>Finally, I check which tenant I am in before every change. Connecting with <code>-ContextScope Process</code> and reading <code>Get-MgContext</code> costs a few seconds, and it is the cheapest protection there is against deleting something in the wrong tenant.</p>
 
+      <h2>Microsoft references</h2>
+
+      <ul>
+        <li><a href="https://learn.microsoft.com/en-us/entra/identity/users/domains-manage" target="_blank" rel="noopener">Add and verify custom domain names in Microsoft Entra ID</a></li>
+        <li><a href="https://learn.microsoft.com/en-us/entra/identity/users/domains-admin-takeover" target="_blank" rel="noopener">Admin takeover of an unmanaged directory</a></li>
+        <li><a href="https://learn.microsoft.com/en-us/graph/api/domain-delete" target="_blank" rel="noopener">Delete domain (Microsoft Graph)</a></li>
+        <li><a href="https://learn.microsoft.com/en-us/graph/api/domain-forcedelete" target="_blank" rel="noopener">domain: forceDelete (Microsoft Graph)</a></li>
+        <li><a href="https://learn.microsoft.com/en-us/graph/api/resources/domainstate" target="_blank" rel="noopener">domainState resource type (Microsoft Graph)</a></li>
+        <li><a href="https://learn.microsoft.com/en-us/troubleshoot/microsoft-365/admin/domain-management/error-remove-domain-from-office-365" target="_blank" rel="noopener">You get an error message when you try to remove a domain from Microsoft 365</a></li>
+        <li><a href="https://learn.microsoft.com/en-us/graph/api/user-delete" target="_blank" rel="noopener">Delete a user (Microsoft Graph)</a></li>
+        <li><a href="https://learn.microsoft.com/en-us/entra/fundamentals/users-restore" target="_blank" rel="noopener">Restore or permanently remove a recently deleted user</a></li>
+        <li><a href="https://learn.microsoft.com/en-us/graph/api/directory-deleteditems-delete" target="_blank" rel="noopener">Permanently delete item (directory object) (Microsoft Graph)</a></li>
+        <li><a href="https://learn.microsoft.com/en-us/powershell/microsoftgraph/authentication-commands" target="_blank" rel="noopener">Microsoft Graph PowerShell authentication commands</a></li>
+      </ul>
+
       <h2>error messages and what they mean</h2>
       <div class="troubleshoot-list">
         <div class="troubleshoot-item">
-          <h3>The domain is already in use by another organisation</h3>
-          <p>Another tenant has verified the domain, and a domain can be verified in only one tenant at a time. The admin centre does not say which tenant. Run the realm lookup and the OpenID lookup, or the <a href="/tools/domain-tenant-lookup">Domain Tenant Lookup</a>, to get the organisation name, the tenant ID and the cloud, then decide whether the tenant is managed or unmanaged.</p>
+          <h3>Domain already added to another Microsoft 365 organisation</h3>
+          <p>Another tenant has verified the domain, and a domain can be verified in only one tenant at a time. The exact message varies by admin centre and language. The admin centre does not say which tenant. Run the realm lookup and the OpenID lookup, or the <a href="/tools/domain-tenant-lookup">Domain Tenant Lookup</a>, to get the organisation name, the tenant ID and the cloud, then decide whether the tenant is managed or unmanaged.</p>
         </div>
         <div class="troubleshoot-item">
-          <h3>Force delete failed. Status: Failed. Reason = Cannot delete the domain currently referenced by at least 1 objects. Conflicting object User/&lt;OBJECT_ID&gt;.</h3>
+          <h3>Failed. Reason = Cannot delete the domain currently referenced by at least 1 objects. Conflicting object User/&lt;OBJECT_ID&gt;.</h3>
           <p>forceDelete was accepted but could not finish, because an object still references the domain. The object ID after <code>User/</code> is the account to deal with. In my case it was an unlicensed account whose primary SMTP address was on the domain, and my reading is that the Exchange precondition is what forceDelete hit. Rename the account off the domain, or delete it from the recycle bin as well if it is stale, then remove the domain.</p>
         </div>
         <div class="troubleshoot-item">

@@ -268,7 +268,20 @@ import { expYears, expYearsPlus } from '../consts';
         <span class="read">read post <span class="arrow">→</span></span>
       </a>
 
-      <a href="/blog/powershell-auth-clash" class="post-card reveal reveal-delay-2">
+      <a href="/blog/intune-bitlocker-entra-escrow" class="post-card reveal reveal-delay-2">
+        <div class="post-meta">
+          <span>2026-05-31</span>
+          <span class="dot"></span>
+          <span class="tag">intune · bitlocker</span>
+          <span class="dot"></span>
+          <span>12 min read</span>
+        </div>
+        <h3>BitLocker recovery keys missing from Entra ID after removing a third-party agent.</h3>
+        <p>The encryption stays active. The key is not in Entra ID. Clicking Sync does nothing. The two-path platform script approach and the IME timing fact that explains why scripts do not run when expected.</p>
+        <span class="read">read post <span class="arrow">→</span></span>
+      </a>
+
+      <a href="/blog/powershell-auth-clash" class="post-card reveal reveal-delay-3">
         <div class="post-meta">
           <span>2026-05-10</span>
           <span class="dot"></span>
@@ -278,19 +291,6 @@ import { expYears, expYearsPlus } from '../consts';
         </div>
         <h3>Microsoft 365 PowerShell authentication failures: three bugs, one fix.</h3>
         <p>The Graph SDK and Exchange Online module fight each other in three different ways: an MSAL assembly clash on PowerShell 5.1, a Graph SDK module load failure when the order is reversed, and a confirmed SDK bug where v2.34+ device-code tokens cache as null. A test matrix across PS 5.1 and PS 7, and the certificate-based fix that works in every order.</p>
-        <span class="read">read post <span class="arrow">→</span></span>
-      </a>
-
-      <a href="/blog/m365-audit-toolkit" class="post-card reveal reveal-delay-3">
-        <div class="post-meta">
-          <span>2026-05-09</span>
-          <span class="dot"></span>
-          <span class="tag">powershell · m365 · security</span>
-          <span class="dot"></span>
-          <span>7 min read</span>
-        </div>
-        <h3>How I Built a PowerShell Toolkit That Audits Your Entire Microsoft 365 Tenant in Minutes</h3>
-        <p>Two PowerShell scripts that connect to your tenant via certificate-based app authentication and produce self-contained HTML reports. Tenant audit covers identity, email, endpoint, app registrations, and licensing. Mailbox report shows per-mailbox storage with quota tracking.</p>
         <span class="read">read post <span class="arrow">→</span></span>
       </a>
 
