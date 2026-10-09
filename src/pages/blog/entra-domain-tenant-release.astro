@@ -1,0 +1,302 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { expYearsPlus } from '../../consts';
+---
+<Layout
+  title="Domain Already Added to Another Microsoft 365 Organisation: Find the Tenant and Release It · AroraMSP"
+  description="A custom domain will not verify because another tenant holds it. Find that tenant in seconds with home realm discovery, then release the domain with Microsoft Graph PowerShell."
+  page="blog"
+  canonical="https://aroramsp.com/blog/entra-domain-tenant-release"
+  ogTitle="Domain Already Added to Another Microsoft 365 Organisation: Find the Tenant and Release It"
+  ogDescription="A custom domain will not verify because another tenant holds it. Find that tenant in seconds with home realm discovery, then release the domain with Microsoft Graph PowerShell."
+>
+  <Fragment slot="head">
+    <meta name="keywords" content="Microsoft Entra ID, Microsoft 365, custom domain, domain verification, domain already in use, home realm discovery, getuserrealm, tenant ID lookup, Microsoft Graph PowerShell, forceDelete, Remove-MgDomain" />
+    <script type="application/ld+json" is:inline set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "TechArticle",
+      "headline": "Domain Already Added to Another Microsoft 365 Organisation: Find the Tenant and Release It",
+      "description": "A custom domain will not verify because another tenant holds it. Find that tenant in seconds with home realm discovery, then release the domain with Microsoft Graph PowerShell.",
+      "author": {
+        "@type": "Person",
+        "name": "Himanshu Arora",
+        "url": "https://aroramsp.com/about"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "@id": "https://aroramsp.com/#org",
+        "name": "AroraMSP",
+        "url": "https://aroramsp.com"
+      },
+      "datePublished": "2026-10-10",
+      "dateModified": "2026-10-10",
+      "url": "https://aroramsp.com/blog/entra-domain-tenant-release",
+      "image": "https://aroramsp.com/uploads/og-preview.png",
+      "mainEntityOfPage": "https://aroramsp.com/blog/entra-domain-tenant-release",
+      "wordCount": 2400,
+      "keywords": ["Microsoft Entra ID", "custom domain", "domain verification", "home realm discovery", "Microsoft Graph PowerShell", "forceDelete"]
+    })}></script>
+    <script type="application/ld+json" is:inline set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://aroramsp.com" },
+        { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://aroramsp.com/blog" },
+        { "@type": "ListItem", "position": 3, "name": "Domain Already Added to Another Microsoft 365 Organisation: Find the Tenant and Release It", "item": "https://aroramsp.com/blog/entra-domain-tenant-release" }
+      ]
+    })}></script>
+  </Fragment>
+
+  <section class="page wrap">
+    <article class="article">
+      <div class="post-meta">
+        <a href="/blog" class="back">← blog</a>
+        <span class="author">
+          <a href="https://github.com/hiaror" target="_blank" rel="noopener">Himanshu Arora</a>
+          · {expYearsPlus} yrs Microsoft ecosystem
+        </span>
+        <span>2026-10-10</span>
+        <span class="dot"></span>
+        <span class="tag">entra id · domains</span>
+        <span class="dot"></span>
+        <span>13 min read</span>
+      </div>
+
+      <h1>Domain already added to another Microsoft 365 organisation: find the tenant and release it.</h1>
+
+      <p class="lede">The lookup came back with my own name as the organisation. I was trying to add a business domain to my Microsoft 365 tenant, verification kept failing because another tenant already held the domain, and a free public lookup showed that the other tenant was one I had set up myself in 2018 and long since forgotten about. This is how I found that tenant, released the domain from it with Microsoft Graph PowerShell, ran into a forceDelete that was accepted without any error and still failed, and verified the domain in my own tenant without touching DNS.</p>
+
+      <h2>The error, and why it does not tell you where the domain is</h2>
+
+      <p>A custom domain in Microsoft Entra ID can be verified in only one tenant at a time. When I added the domain to my tenant, verification failed and the admin centre reported that the domain was already in use by another organisation. It showed an administrator account for that organisation with most of its characters hidden, and nothing else that helped: no tenant name, no tenant ID, and no way to tell whether the other tenant belonged to a customer, a former provider, or me.</p>
+
+      <p>That is the real difficulty with this error. It is about verification failing in your own tenant, so it says nothing about where the domain actually is, and the holding tenant is not visible to the person who needs the domain. The information that answers the question is public and takes seconds to retrieve, but nothing on that screen tells you it exists.</p>
+
+      <h2>Finding the holding tenant with home realm discovery</h2>
+
+      <p>Two public Microsoft endpoints tell you almost everything about where a domain lives, and neither needs a sign-in or a module. The first is the user realm lookup, which you can call with any address on the domain, because the address itself does not need to exist:</p>
+
+      <div class="code-label">// run this</div>
+      <pre><code>Invoke-RestMethod "https://login.microsoftonline.com/getuserrealm.srf?login=test@yourdomain.com&amp;json=1"</code></pre>
+
+      <div class="code-label">// output</div>
+      <pre><code>State                  : 4
+UserState              : 1
+Login                  : test@yourdomain.com
+NameSpaceType          : Managed
+DomainName             : yourdomain.com
+FederationBrandName    : Contoso Ltd
+CloudInstanceName      : microsoftonline.com
+CloudInstanceIssuerUri : urn:federation:MicrosoftOnline</code></pre>
+
+      <p>A <code>NameSpaceType</code> of <code>Managed</code> or <code>Federated</code> means a tenant has claimed the domain, and <code>FederationBrandName</code> is the organisation name of that tenant. In the sanitised capture above it reads Contoso Ltd. When I ran it against my domain, it read my own name, and that one field told me more than the error ever had: the tenant holding the domain was one I had created myself in 2018 and then forgotten. Microsoft does not formally document <code>getuserrealm.srf</code>, so I read its fields as observed behaviour that can change, not as a contract.</p>
+
+      <p>The second endpoint is the tenant's OpenID configuration document, which you can request by domain name. Its issuer URL contains the tenant ID, and it also tells you which cloud the tenant lives in:</p>
+
+      <div class="code-label">// run this</div>
+      <pre><code>$cfg = Invoke-RestMethod "https://login.microsoftonline.com/yourdomain.com/v2.0/.well-known/openid-configuration"
+$cfg.issuer              # contains the holding tenant GUID
+$cfg.cloud_instance_name # microsoftonline.com for the worldwide commercial cloud
+$cfg.tenant_region_scope # for example NA, EU, AS</code></pre>
+
+      <div class="code-label">// output</div>
+      <pre><code>https://login.microsoftonline.com/11111111-1111-1111-1111-111111111111/v2.0
+microsoftonline.com
+NA</code></pre>
+
+      <p>The GUID between the host name and <code>/v2.0</code> is the holding tenant ID, and it is what you connect to later. If you run the same two lookups against a domain you know is in your own tenant and the GUIDs differ, the domain sits in a separate directory and you have found the tenant holding it.</p>
+
+      <p>I later turned these lookups into a free web tool, the <a href="/tools/domain-tenant-lookup">Domain Tenant Lookup</a>, which works in your browser with no PowerShell and no sign-in, and can also compare two domains to tell you whether they share a tenant. If you prefer to stay in PowerShell, <code>Get-DomainTenant.ps1</code> in the <a href="https://github.com/hiaror/entra-domain-tenant-release" target="_blank" rel="noopener">GitHub repository</a> runs both lookups in one step.</p>
+
+      <h2>Managed or unmanaged, and why it decides your route</h2>
+
+      <p>Before changing anything, it is worth knowing what kind of tenant holds the domain, because the answer decides which route is open to you. An unmanaged tenant is one that Microsoft created automatically when someone signed up for a service with an address on the domain, and no administrator was ever appointed. Because nobody runs it, Microsoft lets the owner of the domain take it over from their own tenant through external admin takeover, which is a domain verify call with <code>forceTakeover</code> set to <code>true</code>:</p>
+
+      <div class="code-label">// run this</div>
+      <pre><code>Connect-MgGraph -TenantId &lt;DESTINATION_TENANT_ID&gt; -Scopes "Domain.ReadWrite.All" -ContextScope Process
+
+$body = @&#123; forceTakeover = $true &#125; | ConvertTo-Json
+
+Invoke-MgGraphRequest -Method POST `
+    -Uri "https://graph.microsoft.com/v1.0/domains/yourdomain.com/verify" `
+    -Body $body `
+    -ContentType "application/json"</code></pre>
+
+      <p>A managed tenant has a real administrator, and external takeover does not move a domain out of it. The <code>Managed</code> value in the realm lookup does not settle this, because it describes how sign-in is handled rather than whether anyone administers the tenant, but two other signals do, and I saw both. The admin centre had already shown a masked administrator for the other organisation, which an unmanaged tenant would not have. The <code>forceTakeover</code> call, made with the expected TXT record live in DNS, came back with HTTP 400, the code <code>Request_BadRequest</code> and this message:</p>
+
+      <div class="code-label">// output</div>
+      <pre><code>Invalid cross-cloud verification code</code></pre>
+
+      <p>Both tenants were in the same worldwide commercial cloud, so the wording is misleading. Microsoft does not document this error, and I saw it against a managed tenant, so I treat it as one more sign of a managed tenant rather than as evidence of a cloud mismatch. My forgotten tenant was managed, and it was mine, so the route was to release the domain from inside it as its administrator.</p>
+
+      <h2>Releasing the domain with Microsoft Graph PowerShell</h2>
+
+      <p>The order of the next steps matters, so I have numbered them. They assume you administer the holding tenant: Domain Name Administrator is the least privileged role for removing a domain, deleting or renaming a user needs at least User Administrator, and the Global Administrator of a tenant you created yourself covers all of it.</p>
+
+      <h2>Step 1: connect to the holding tenant and confirm it</h2>
+
+      <p>Use the tenant ID from the OpenID lookup, and sign in with an account whose user name is not on the domain you are removing, because Microsoft notes that you cannot delete a domain your own sign-in name uses. I connect with <code>-ContextScope Process</code> so that the sign-in lasts for this PowerShell session only, since Microsoft Graph PowerShell otherwise caches the sign-in across sessions, and a cached session pointed at the wrong tenant is the most expensive mistake available here.</p>
+
+      <div class="code-label">// run this</div>
+      <pre><code>Connect-MgGraph -TenantId &lt;HOLDING_TENANT_ID&gt; -Scopes "Domain.ReadWrite.All","Directory.Read.All" -ContextScope Process
+Get-MgContext | Select-Object TenantId, Account | Format-List</code></pre>
+
+      <p>The <code>TenantId</code> must match the holding tenant ID exactly before you go any further.</p>
+
+      <h2>Step 2: list what still uses the domain</h2>
+
+      <p>The domain must not be the default domain of the tenant, and Microsoft documents that a domain cannot be deleted while any object still depends on it, so the next job is to find out what those objects are:</p>
+
+      <div class="code-label">// run this</div>
+      <pre><code>Get-MgDomain | Select-Object Id, IsVerified, IsDefault, IsInitial | Format-Table -AutoSize
+
+$refs = Get-MgDomainNameReference -DomainId "yourdomain.com" -All
+"References found: $(($refs | Measure-Object).Count)"
+$refs | ForEach-Object &#123;
+    [PSCustomObject]@&#123;
+        Id   = $_.Id
+        Type = $_.AdditionalProperties.'@odata.type'
+        Name = $_.AdditionalProperties.displayName
+        UPN  = $_.AdditionalProperties.userPrincipalName
+    &#125;
+&#125; | Format-Table -AutoSize</code></pre>
+
+      <div class="code-label">// output</div>
+      <pre><code>References found: 1
+
+Id                                   Type                  Name        UPN
+--                                   ----                  ----        ---
+33333333-3333-3333-3333-333333333333 #microsoft.graph.user Old Account user@yourdomain.com</code></pre>
+
+      <p>Mine had exactly one blocker: an account from 2018 with no licence, still enabled, that still had an email address on the domain as its primary SMTP proxy address. Keep the <code>Format-Table</code> at the end of each command, because the first time I ran this block without it, objects of different shapes printed as blank lines. If a subdomain of the domain is verified in the same tenant, remove that first as well, since Microsoft lists it as a removal error.</p>
+
+      <h2>Step 3: delete the stale account, recycle bin included</h2>
+
+      <p>Renaming the account off the domain is the non-destructive route, and the repository describes it, but I did not test it. My account was stale, carried nothing I needed and had no licence, so I deleted it. Deleting a user needs more than the scopes used so far, so I disconnected, reconnected with the user scopes added, and checked the tenant again:</p>
+
+      <div class="code-label">// run this</div>
+      <pre><code>Disconnect-MgGraph
+Connect-MgGraph -TenantId &lt;HOLDING_TENANT_ID&gt; -Scopes "Domain.ReadWrite.All","Directory.Read.All","User.ReadWrite.All","User.DeleteRestore.All" -ContextScope Process
+Get-MgContext | Select-Object TenantId, Account | Format-List</code></pre>
+
+      <p>A single <code>Remove-MgUser</code> moves the account to the recycle bin, where Microsoft keeps it with all of its properties for 30 days so that it can be restored, and while it sits there it can still block the domain. I deleted it from the recycle bin straight away, so I never tested whether it would have blocked, but the second delete settles the question either way:</p>
+
+      <div class="code-label">// run this</div>
+      <pre><code>Remove-MgUser -UserId &lt;OBJECT_ID&gt;
+Start-Sleep -Seconds 30
+Remove-MgDirectoryDeletedItem -DirectoryObjectId &lt;OBJECT_ID&gt;</code></pre>
+
+      <h2>Step 4: remove the domain and watch it leave</h2>
+
+      <p>With the account removed properly, recycle bin included, the reference count was zero and the normal removal went through:</p>
+
+      <div class="code-label">// run this</div>
+      <pre><code>$count = (Get-MgDomainNameReference -DomainId "yourdomain.com" -All | Measure-Object).Count
+"References found: $count"
+if ($count -eq 0) &#123; Remove-MgDomain -DomainId "yourdomain.com" &#125;</code></pre>
+
+      <p>Within about a minute the domain had left the old tenant and the realm lookup returned <code>Unknown</code>. This is what the script reports for a domain that no tenant claims:</p>
+
+      <div class="code-label">// run this</div>
+      <pre><code>.\scripts\Get-DomainTenant.ps1 -Domain yourdomain.com</code></pre>
+
+      <div class="code-label">// output</div>
+      <pre><code>Domain          : yourdomain.com
+NameSpaceType   : Unknown
+FederationBrand :
+AuthURL         :
+TenantId        :
+CloudInstance   :
+RegionScope     :
+
+No tenant claims this domain. It is free to verify.</code></pre>
+
+      <h2>The part that surprised me: forceDelete reported no error</h2>
+
+      <p>Before I deleted that account, I had tried forceDelete, the Graph operation that renames everything still using a domain to the initial onmicrosoft.com domain and then deletes the domain. I set <code>disableUserAccounts</code> to <code>false</code>, because it defaults to <code>true</code> and disables every account it renames:</p>
+
+      <div class="code-label">// run this</div>
+      <pre><code>$body = @&#123; disableUserAccounts = $false &#125; | ConvertTo-Json
+Invoke-MgGraphRequest -Method POST -Uri "https://graph.microsoft.com/v1.0/domains/yourdomain.com/forceDelete" -Body $body -ContentType "application/json"</code></pre>
+
+      <p>The call was accepted without any error. My checks of the tenant list and the realm lookup over the next few minutes showed nothing wrong either, because neither of them reads the domain state. The failure was first seen when I read that state a few minutes later, with the reason sitting inside the status string itself:</p>
+
+      <div class="code-label">// run this</div>
+      <pre><code>$state = (Get-MgDomain -DomainId "yourdomain.com").State
+if ($state.Status -like 'Failed*') &#123; Write-Warning $state.Status &#125;</code></pre>
+
+      <div class="code-label">// output</div>
+      <pre><code>Status: Failed. Reason = Cannot delete the domain currently referenced by at least 1 objects. Conflicting object User/33333333-3333-3333-3333-333333333333.</code></pre>
+
+      <p>Because the reason is appended to the status, I test it with <code>-like 'Failed*'</code> rather than <code>-eq 'Failed'</code>, which would have missed it. And because none of my earlier checks read the state, I know when I first saw the failure, not when the operation actually failed.</p>
+
+      <p>The error named the conflicting user and said nothing about Exchange. Linking it to Exchange is my reading, not something the error states: the user's primary SMTP address was still on the domain, and Microsoft states that forceDelete needs any references where Exchange is the provisioning service to be updated or removed first. A failed forceDelete can also stay recorded in the domain state, so after clearing the blocker I watched for the domain to disappear from <code>Get-MgDomain</code> rather than reading the state again.</p>
+
+      <h2>Step 5: verify the domain in your own tenant</h2>
+
+      <p>Once the realm lookup returns <code>Unknown</code> and the OpenID lookup returns no tenant, the domain is free. After working in the holding tenant it is easy to still be connected to it, so I disconnected, connected to my own tenant and confirmed the tenant ID before verifying:</p>
+
+      <div class="code-label">// run this</div>
+      <pre><code>Disconnect-MgGraph
+Connect-MgGraph -TenantId &lt;DESTINATION_TENANT_ID&gt; -Scopes "Domain.ReadWrite.All" -ContextScope Process
+Get-MgContext | Select-Object TenantId, Account | Format-List
+Invoke-MgGraphRequest -Method POST -Uri "https://graph.microsoft.com/v1.0/domains/yourdomain.com/verify"
+Get-MgDomain -DomainId "yourdomain.com" | Select-Object Id, IsVerified, IsDefault | Format-Table -AutoSize</code></pre>
+
+      <div class="code-label">// output</div>
+      <pre><code>Id             IsVerified IsDefault
+--             ---------- ---------
+yourdomain.com       True     False</code></pre>
+
+      <p>Verification succeeded a few minutes after the domain left the old tenant, with no DNS change at all. The verification TXT record for my tenant was already live in DNS from my earlier attempts, and it was still valid, so there was nothing to add. Nothing in the whole release touched MX, SPF or any other record, so the mail still running on the domain carried on without interruption. In my case the mail was not hosted in the holding tenant. If the holding tenant's Exchange Online is still receiving mail for a domain, that mail stops when the domain is removed, so move it first.</p>
+
+      <h2>A caveat for domains held in a national cloud</h2>
+
+      <p>In testing, I found one case where the realm lookup gives the wrong impression. A domain held by a tenant in the US Government cloud returned a <code>NameSpaceType</code> of <code>Unknown</code> from the worldwide realm endpoint, which on its own reads as free to verify, while its OpenID configuration still named the tenant, with a <code>cloud_instance_name</code> of <code>microsoftonline.us</code>. This is observed behaviour, not documented by Microsoft, so I read the two lookups together. Unknown with no tenant ID means the domain is free to verify, Unknown with a tenant ID in another cloud means the domain is held in that cloud and is not free to verify, and Unknown with a tenant ID in the worldwide cloud, or with no cloud value, means the two lookups disagree and the result is inconclusive. Both the web tool and <code>Get-DomainTenant.ps1</code> now follow that rule.</p>
+
+      <h2>What I took away from it</h2>
+
+      <p>The thing I would change is the order I worked in. The answer was public the whole time, and a lookup that takes seconds told me more than the error message ever did, so I now start every domain already in use problem with home realm discovery, before anything else.</p>
+
+      <p>The second lesson is that old tenants do not go away on their own. A trial or a lab you set up years ago can keep a domain verified long after you stop thinking about it, and in my case a single forgotten account from 2018, with no licence and one email address on the domain, was enough to hold the whole domain in place.</p>
+
+      <p>The third is that an accepted request is not a finished one. forceDelete returned no error and still failed, and I only found out by reading the domain state, so I now read the domain state after a forceDelete rather than trusting the response, and when I remove a user to free a domain I delete it from the recycle bin as well.</p>
+
+      <p>Finally, I check which tenant I am in before every change. Connecting with <code>-ContextScope Process</code> and reading <code>Get-MgContext</code> costs a few seconds, and it is the cheapest protection there is against deleting something in the wrong tenant.</p>
+
+      <h2>error messages and what they mean</h2>
+      <div class="troubleshoot-list">
+        <div class="troubleshoot-item">
+          <h3>The domain is already in use by another organisation</h3>
+          <p>Another tenant has verified the domain, and a domain can be verified in only one tenant at a time. The admin centre does not say which tenant. Run the realm lookup and the OpenID lookup, or the <a href="/tools/domain-tenant-lookup">Domain Tenant Lookup</a>, to get the organisation name, the tenant ID and the cloud, then decide whether the tenant is managed or unmanaged.</p>
+        </div>
+        <div class="troubleshoot-item">
+          <h3>Force delete failed. Status: Failed. Reason = Cannot delete the domain currently referenced by at least 1 objects. Conflicting object User/&lt;OBJECT_ID&gt;.</h3>
+          <p>forceDelete was accepted but could not finish, because an object still references the domain. The object ID after <code>User/</code> is the account to deal with. In my case it was an unlicensed account whose primary SMTP address was on the domain, and my reading is that the Exchange precondition is what forceDelete hit. Rename the account off the domain, or delete it from the recycle bin as well if it is stale, then remove the domain.</p>
+        </div>
+        <div class="troubleshoot-item">
+          <h3>Invalid cross-cloud verification code</h3>
+          <p>Returned as HTTP 400 with <code>Request_BadRequest</code> when I tried external admin takeover with <code>forceTakeover</code> set to <code>true</code>, with the TXT record live in DNS and both tenants in the same cloud. Microsoft does not document this error. I saw it against a managed tenant, where takeover is not available, so release the domain from inside that tenant instead.</p>
+        </div>
+        <div class="troubleshoot-item">
+          <h3>Domain has associated subdomains</h3>
+          <p>Microsoft lists this as an error when removing a domain. A subdomain of the domain is still verified in the same tenant, so remove the subdomain first, then remove the parent domain.</p>
+        </div>
+      </div>
+
+      <div class="callout">
+        <p>The scripts, the five step-by-step docs and the sanitised logs from the real run are in the GitHub repository, and the lookup itself is free to use in your browser.</p>
+        <div class="btn-row">
+          <a href="https://github.com/hiaror/entra-domain-tenant-release" target="_blank" rel="noopener" class="btn btn-ghost"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>View on GitHub</a>
+          <a href="/tools/domain-tenant-lookup" class="btn btn-ghost">Open the lookup tool</a>
+          <a href="/contact" class="btn btn-ghost">Work with me →</a>
+        </div>
+      </div>
+
+      <div class="post-foot">
+        <span>Himanshu Arora · AroraMSP</span>
+        <span>2026-10-10</span>
+      </div>
+    </article>
+  </section>
+</Layout>

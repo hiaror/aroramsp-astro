@@ -11,6 +11,7 @@
 - [Process](https://aroramsp.com/process)
 
 ## Blog — Technical posts with verified configurations and real case studies
+- [Domain already added to another Microsoft 365 organisation: find the tenant and release it](https://aroramsp.com/blog/entra-domain-tenant-release)
 - [Windows LAPS fleet audit via Microsoft Graph PowerShell](https://aroramsp.com/blog/laps-fleet-audit-graph)
 - [Fixing Windows LAPS escrow failures caused by broken hybrid Entra ID registration](https://aroramsp.com/blog/laps-hybrid-registration-fix)
 - [BitLocker recovery keys missing from Entra ID after removing a third-party agent](https://aroramsp.com/blog/intune-bitlocker-entra-escrow)

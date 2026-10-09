@@ -95,6 +95,7 @@ import Layout from '../../layouts/Layout.astro';
       <div class="code-label">// powershell</div>
       <pre><code id="psCommand">Invoke-RestMethod "https://login.microsoftonline.com/getuserrealm.srf?login=test@contoso.com&amp;json=1"</code></pre>
       <p>For the tenant ID, cloud and region in one step, and a comparison between two domains, use <a href="https://github.com/hiaror/entra-domain-tenant-release/blob/main/scripts/Get-DomainTenant.ps1" target="_blank" rel="noopener">Get-DomainTenant.ps1</a> from the <a href="https://github.com/hiaror/entra-domain-tenant-release" target="_blank" rel="noopener">entra-domain-tenant-release</a> repository on GitHub. The repository also walks through releasing a domain from a tenant you administer.</p>
+      <p>For the real release behind this tool, from the lookup that returned my own name to a forceDelete that was accepted and still failed, read <a href="/blog/entra-domain-tenant-release">Domain already added to another Microsoft 365 organisation: find the tenant and release it</a>.</p>
 
       <h2>Privacy</h2>
       <p>When you run a lookup, your browser sends the domain names you entered to this site's lookup service. The service queries two public Microsoft sign-in endpoints, getuserrealm.srf and the tenant's OpenID configuration document, and returns a short summary to your browser. Microsoft receives the request from this site's service, not from your browser. The lookup code on this site does not log or store the domains you enter.</p>

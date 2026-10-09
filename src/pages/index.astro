@@ -184,6 +184,7 @@ import { expYears, expYearsPlus } from '../consts';
       <p>Shows which Microsoft 365 tenant has already claimed a domain when your own tenant will not let you add it. Works in your browser, with no sign-in.</p>
       <div class="home-tool-actions">
         <a href="/tools/domain-tenant-lookup" class="btn btn-primary" style="font-size:12px; padding: 8px 14px;">Open the tool</a>
+        <a href="/blog/entra-domain-tenant-release" class="btn btn-ghost" style="font-size:12px; padding: 8px 14px;">Read the post</a>
       </div>
     </div>
     <div class="home-tools-grid">
@@ -254,7 +255,20 @@ import { expYears, expYearsPlus } from '../consts';
       <p>Field notes from real production work on Microsoft 365, Intune, and Entra ID. Short, practical, no marketing fluff.</p>
     </div>
     <div class="post-list">
-      <a href="/blog/powershell-auth-clash" class="post-card reveal reveal-delay-1">
+      <a href="/blog/entra-domain-tenant-release" class="post-card reveal reveal-delay-1">
+        <div class="post-meta">
+          <span>2026-10-10</span>
+          <span class="dot"></span>
+          <span class="tag">entra id · domains</span>
+          <span class="dot"></span>
+          <span>13 min read</span>
+        </div>
+        <h3>Domain already added to another Microsoft 365 organisation: find the tenant and release it.</h3>
+        <p>A business domain would not verify because another tenant held it, and a free public lookup came back with my own name, on a tenant I set up in 2018 and forgot. Home realm discovery, the Microsoft Graph PowerShell release, a forceDelete that was accepted and still failed, and verification with no DNS change.</p>
+        <span class="read">read post <span class="arrow">→</span></span>
+      </a>
+
+      <a href="/blog/powershell-auth-clash" class="post-card reveal reveal-delay-2">
         <div class="post-meta">
           <span>2026-05-10</span>
           <span class="dot"></span>
@@ -267,7 +281,7 @@ import { expYears, expYearsPlus } from '../consts';
         <span class="read">read post <span class="arrow">→</span></span>
       </a>
 
-      <a href="/blog/m365-audit-toolkit" class="post-card reveal reveal-delay-2">
+      <a href="/blog/m365-audit-toolkit" class="post-card reveal reveal-delay-3">
         <div class="post-meta">
           <span>2026-05-09</span>
           <span class="dot"></span>
@@ -277,19 +291,6 @@ import { expYears, expYearsPlus } from '../consts';
         </div>
         <h3>How I Built a PowerShell Toolkit That Audits Your Entire Microsoft 365 Tenant in Minutes</h3>
         <p>Two PowerShell scripts that connect to your tenant via certificate-based app authentication and produce self-contained HTML reports. Tenant audit covers identity, email, endpoint, app registrations, and licensing. Mailbox report shows per-mailbox storage with quota tracking.</p>
-        <span class="read">read post <span class="arrow">→</span></span>
-      </a>
-
-      <a href="/blog/laps-fleet-audit-graph" class="post-card reveal reveal-delay-3">
-        <div class="post-meta">
-          <span>2026-05-08</span>
-          <span class="dot"></span>
-          <span class="tag">laps · graph</span>
-          <span class="dot"></span>
-          <span>11 min read</span>
-        </div>
-        <h3>WLapsAdmin or Administrator? Auditing Windows LAPS at fleet scale.</h3>
-        <p>The reason some devices show Administrator instead of WLapsAdmin in the recovery portal is one Windows 11 build number nobody talks about. The end-to-end Microsoft Graph PowerShell audit, with cross-reference, OS eligibility, and the per-device account name lookup Microsoft blocks in bulk.</p>
         <span class="read">read post <span class="arrow">→</span></span>
       </a>
 
