@@ -411,6 +411,11 @@ import Layout from '../../layouts/Layout.astro';
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(hasCompare ? { domain, compareDomain: compare } : { domain }),
           });
+          // 429 comes from the Cloudflare rate limiting rule, not from the lookup code.
+          if (response.status === 429) {
+            showError('Too many lookups in a short time. Wait a few seconds and try again.');
+            return;
+          }
           const data = (await response.json().catch(() => null)) as LookupResponse | null;
           if (!response.ok || !data || !data.domain) {
             const field = data?.field === 'compareDomain' ? compareInput : data?.field === 'domain' ? domainInput : null;
